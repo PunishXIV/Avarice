@@ -1,0 +1,14 @@
+﻿{
+  "Author": "Puni.sh",
+  "Name": "Avarice",
+  "InternalName": "Avarice",
+  "Description": "Positional feedback with pixel perfect rear/flank tracking, range indicators, and more.",
+  "Punchline": "Positional feedback with pixel perfect rear/flank tracking, range indicators, and more.",
+  "ApplicableVersion": "any",
+  "DalamudApiLevel": 7,
+  "IconUrl": "https://love.puni.sh/resources/avarice.png",
+  "Tags": [
+    "combat"
+  ],
+  "Changelog": "- Adds option to disable anticipation on MNK during AoE"
+}
