@@ -8,6 +8,7 @@ using Dalamud.Utility.Signatures;
 using ECommons.MathHelpers;
 using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using PunishLib;
 using System;
 
 #pragma warning disable CS0649
@@ -51,7 +52,7 @@ public unsafe class Avarice : IDalamudPlugin
     public Avarice(DalamudPluginInterface pi)
     {
         P = this;
-        ECommons.ECommons.Init(pi, this, Module.ObjectFunctions, Module.DalamudReflector);
+        PunishLibMain.Init(pi, this, Module.ObjectFunctions, Module.DalamudReflector);
         new TickScheduler(delegate
         {
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();
@@ -184,7 +185,6 @@ public unsafe class Avarice : IDalamudPlugin
 
     public void Dispose()
     {
-        ECommons.ECommons.Dispose();
         Safe(() => Svc.PluginInterface.SavePluginConfig(config));
         //Svc.GameNetwork.NetworkMessage -= OnNetworkMessage;
         Svc.PluginInterface.UiBuilder.Draw -= windowSystem.Draw;
@@ -196,6 +196,7 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").UnregisterFunc();
         });
         memory.Dispose();
+        PunishLibMain.Dispose();
         P = null;
     }
 

@@ -20,8 +20,8 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<TargetFramework>net6.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
-		<Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
+		<Nullable>disable</Nullable>
+		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -31,8 +31,8 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<TargetFramework>net6.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
-		<Nullable>enable</Nullable>
-		<LangVersion>latest</LangVersion>
+		<Nullable>disable</Nullable>
+		<LangVersion>preview</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
-  		<ProjectReference Include="..\..\PunishLib\ECommons\ECommons.csproj" />
+  		<ProjectReference Include="..\..\PunishLib\ECommons\ECommons\ECommons.csproj" />
   		<ProjectReference Include="..\..\PunishLib\PunishLib\PunishLib.csproj" />
 	</ItemGroup>
 
