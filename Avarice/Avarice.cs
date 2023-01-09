@@ -9,6 +9,7 @@ using ECommons.MathHelpers;
 using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using PunishLib;
+using PunishLib.Sponsor;
 using System;
 
 #pragma warning disable CS0649
@@ -53,6 +54,7 @@ public unsafe class Avarice : IDalamudPlugin
     {
         P = this;
         PunishLibMain.Init(pi, this, Module.ObjectFunctions, Module.DalamudReflector);
+        SponsorManager.SetSponsorInfo("https://ko-fi.com/spetsnaz/");
         new TickScheduler(delegate
         {
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();

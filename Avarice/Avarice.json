@@ -10,5 +10,6 @@
   "Tags": [
     "combat"
   ],
-  "Changelog": "- Adds option to disable anticipation on MNK during AoE"
+  "Changelog": "- Adds option to disable anticipation on MNK during AoE",
+  "Sponsor": "https://google.com/"
 }
