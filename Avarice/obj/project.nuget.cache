@@ -1,10 +1,20 @@
 {
   "version": 2,
-  "dgSpecHash": "pcJgpiz2wKqEj7npHCZQOPIwdG7u4fevDV1bUmeWTQyVLyPJ8nz7uM8Vz1qdm42TqfPZ6JYa6e2dkcu2SXJs3Q==",
-  "success": true,
+  "dgSpecHash": "4elMqsofqfBCWnZIgLwF+3Yf+4hrtfyYRFLUwbhVSi3QpM2dseXiF4rdBU5A1TDBU1ed92qHb9CGy46FRhiAkg==",
+  "success": false,
   "projectFilePath": "C:\\VS\\Avarice\\Avarice\\Avarice.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\LSS\\.nuget\\packages\\dalamudpackager\\2.1.10\\dalamudpackager.2.1.10.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\VS\\PunishLib\\ECommons\\ECommons.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\VS\\PunishLib\\ECommons\\ECommons.csproj",
+      "targetGraphs": [
+        "net6.0-windows7.0"
+      ]
+    }
+  ]
 }

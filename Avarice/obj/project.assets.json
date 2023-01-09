@@ -63,8 +63,8 @@
     },
     "ECommons/1.0.0.2": {
       "type": "project",
-      "path": "../../ECommons/ECommons/ECommons.csproj",
-      "msbuildProject": "../../ECommons/ECommons/ECommons.csproj"
+      "path": "../../PunishLib/ECommons/ECommons/ECommons.csproj",
+      "msbuildProject": "../../PunishLib/ECommons/ECommons/ECommons.csproj"
     },
     "PunishLib/1.0.0": {
       "type": "project",
@@ -74,8 +74,8 @@
   },
   "projectFileDependencyGroups": {
     "net6.0-windows7.0": [
+      "C:\\VS\\PunishLib\\ECommons\\ECommons.csproj",
       "DalamudPackager >= 2.1.10",
-      "ECommons >= 1.0.0.2",
       "PunishLib >= 1.0.0"
     ]
   },
@@ -106,8 +106,8 @@
         "net6.0-windows7.0": {
           "targetAlias": "net6.0-windows",
           "projectReferences": {
-            "C:\\VS\\ECommons\\ECommons\\ECommons.csproj": {
-              "projectPath": "C:\\VS\\ECommons\\ECommons\\ECommons.csproj"
+            "C:\\VS\\PunishLib\\ECommons\\ECommons.csproj": {
+              "projectPath": "C:\\VS\\PunishLib\\ECommons\\ECommons.csproj"
             },
             "C:\\VS\\PunishLib\\PunishLib\\PunishLib.csproj": {
               "projectPath": "C:\\VS\\PunishLib\\PunishLib\\PunishLib.csproj"
@@ -149,5 +149,16 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.101\\RuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1104",
+      "level": "Error",
+      "message": "Unable to find project 'C:\\VS\\PunishLib\\ECommons\\ECommons.csproj'. Check that the project reference is valid and that the project file exists.",
+      "libraryId": "C:\\VS\\PunishLib\\ECommons\\ECommons.csproj",
+      "targetGraphs": [
+        "net6.0-windows7.0"
+      ]
+    }
+  ]
 }

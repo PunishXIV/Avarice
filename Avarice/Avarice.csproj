@@ -45,7 +45,7 @@
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
-  		<ProjectReference Include="..\..\ECommons\ECommons\ECommons.csproj" />
+  		<ProjectReference Include="..\..\PunishLib\ECommons\ECommons.csproj" />
   		<ProjectReference Include="..\..\PunishLib\PunishLib\PunishLib.csproj" />
 	</ItemGroup>
 
