@@ -10,5 +10,5 @@
   "Tags": [
     "combat"
   ],
-  "Changelog": "- Adds option to disable anticipation on MNK during AoE"
+  "Changelog": "- Minor release for project dependency upgrade, no major changes"
 }
