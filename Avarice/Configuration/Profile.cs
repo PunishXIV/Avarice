@@ -1,4 +1,5 @@
-﻿using Dalamud.Interface.Style;
+﻿using Dalamud.Interface.GameFonts;
+using Dalamud.Interface.Style;
 using System.IO;
 
 namespace Avarice.Configuration;
@@ -120,5 +121,6 @@ public class Profile
 		public Vector4 CompassColorN = ImGuiColors.DalamudRed;
     public Vector4 CompassColor = ImGuiColors.DalamudYellow;
     public float CompassDistance = 1f;
-    public float CompassSize = 5f;
+    public float CompassFontScale = 1f;
+    public GameFontFamilyAndSize CompassFont = GameFontFamilyAndSize.MiedingerMid36;
 }

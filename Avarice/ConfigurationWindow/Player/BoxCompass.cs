@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Dalamud.Interface.Components;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,15 +23,31 @@ namespace Avarice.ConfigurationWindow.Player
 								ImGui.SameLine();
 								ImGui.SetNextItemWidth(150f);
 								ImGuiEx.EnumCombo($"##cb1", ref P.currentProfile.CompassCondition);
-								ImGuiEx.InvisibleButton(3);
-								ImGui.SameLine();
-								ImGui.SetNextItemWidth(150f);
-								ImGui.SliderFloat("Size", ref Prof.CompassSize.ValidateRange(0, 100f), 0.5f, 20f);
 
 								ImGuiEx.InvisibleButton(3);
 								ImGui.SameLine();
 								ImGui.SetNextItemWidth(150f);
-								ImGui.SliderFloat("Distance", ref Prof.CompassDistance.ValidateRange(0, float.MaxValue), 0.01f, 20f);
+								ImGuiEx.EnumCombo("Game font family and size", ref Prof.CompassFont);
+
+								ImGuiEx.InvisibleButton(3);
+								ImGui.SameLine();
+								ImGui.SetNextItemWidth(150f);
+								ImGui.SliderFloat("Font Scale", ref Prof.CompassFontScale.ValidateRange(0, 100f), 0.5f, 20f);
+
+								ImGuiEx.InvisibleButton(3);
+								ImGui.SameLine();
+								ImGui.SetNextItemWidth(150f);
+								ImGui.SliderFloat("Distance Offset", ref Prof.CompassDistance.ValidateRange(0, float.MaxValue), 0.01f, 20f);
+
+								ImGuiEx.InvisibleButton(3);
+								ImGui.SameLine();
+								ImGui.SetNextItemWidth(150f);
+								ImGui.ColorEdit4("North Color", ref Prof.CompassColorN, ImGuiColorEditFlags.NoInputs);
+
+								ImGuiEx.InvisibleButton(3);
+								ImGui.SameLine();
+								ImGui.SetNextItemWidth(150f);
+								ImGui.ColorEdit4("Other Colors", ref Prof.CompassColor, ImGuiColorEditFlags.NoInputs);
 						}
 						ImGui.PopID();
 				}
