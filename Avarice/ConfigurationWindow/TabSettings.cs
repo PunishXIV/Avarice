@@ -1,4 +1,5 @@
-﻿using Dalamud.Interface.Components;
+﻿using Avarice.ConfigurationWindow.Player;
+using Dalamud.Interface.Components;
 using static Avarice.ConfigurationWindow.ConfigWindow;
 
 namespace Avarice.ConfigurationWindow;
@@ -12,7 +13,7 @@ internal static class TabSettings
         { ClassDisplayCondition.Display_on_all_jobs, "DoW/DoM/DoH/DoL" },
     };
 
-    static InfoBox BoxGeneral = new()
+    static InfoBox BoxGeneral = new() 
     {
         ContentsAction = delegate
         {
@@ -183,6 +184,7 @@ internal static class TabSettings
                 BoxGeneral.DrawStretched();
                 BoxPlayerDot.DrawStretched();
                 BoxPlayerHitbox.DrawStretched();
+                BoxCompass.Draw();
                 BoxPlayerDotOthers.DrawStretched();
                 ImGui.Checkbox("Debug Mode", ref P.currentProfile.Debug);
                 ImGuiComponents.HelpMarker("Displays the debug menu tab, for development purposes.");
