@@ -183,8 +183,8 @@ internal static class TabSettings
                 ImGuiHelpers.ScaledDummy(5f);
                 BoxGeneral.DrawStretched();
                 BoxPlayerDot.DrawStretched();
-                BoxPlayerHitbox.DrawStretched();
                 BoxCompass.Draw();
+                BoxPlayerHitbox.DrawStretched();
                 BoxPlayerDotOthers.DrawStretched();
                 ImGui.Checkbox("Debug Mode", ref P.currentProfile.Debug);
                 ImGuiComponents.HelpMarker("Displays the debug menu tab, for development purposes.");
