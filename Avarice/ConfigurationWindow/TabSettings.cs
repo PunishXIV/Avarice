@@ -1,4 +1,5 @@
-﻿using Dalamud.Interface.Components;
+﻿using Avarice.ConfigurationWindow.Player;
+using Dalamud.Interface.Components;
 using static Avarice.ConfigurationWindow.ConfigWindow;
 
 namespace Avarice.ConfigurationWindow;
@@ -182,6 +183,7 @@ internal static class TabSettings
                 ImGuiHelpers.ScaledDummy(5f);
                 BoxGeneral.DrawStretched();
                 BoxPlayerDot.DrawStretched();
+                BoxCompass.Draw();
                 BoxPlayerHitbox.DrawStretched();
                 BoxPlayerDotOthers.DrawStretched();
                 ImGui.Checkbox("Debug Mode", ref P.currentProfile.Debug);

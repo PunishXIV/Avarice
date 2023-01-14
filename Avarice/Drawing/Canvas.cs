@@ -1,5 +1,6 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Interface.GameFonts;
 using ECommons.GameFunctions;
 using static Avarice.Drawing.DrawFunctions;
 using static Avarice.Drawing.Functions;
@@ -38,6 +39,52 @@ internal unsafe class Canvas : Window
 
     public override void Draw()
     {
+        if (P.currentProfile.CompassEnable.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.CompassCondition))
+        {
+            static void DrawLetter(string l, Vector2 pos, Vector4? color = null)
+            {
+								var size = ImGui.CalcTextSize(l);
+								ImGui.SetCursorPos(new(pos.X - size.X / 2, pos.Y - size.Y / 2));
+								ImGuiEx.Text(color ?? Prof.CompassColor, l);
+						}
+
+            if(Prof.CompassFont != GameFontFamilyAndSize.Undefined)
+            {
+                ImGui.PushFont(Svc.PluginInterface.UiBuilder.GetGameFontHandle(new(Prof.CompassFont)).ImFont);
+            }
+
+            ImGui.SetWindowFontScale(Prof.CompassFontScale);
+						{
+								if (Svc.GameGui.WorldToScreen(LP.Position with { Z = LP.Position.Z - Prof.CompassDistance }, out var pos))
+								{
+										DrawLetter("N", pos, Prof.CompassColorN);
+								}
+						}
+						{
+								if (Svc.GameGui.WorldToScreen(LP.Position with { Z = LP.Position.Z + Prof.CompassDistance }, out var pos))
+								{
+										DrawLetter("S", pos, Prof.CompassColor);
+								}
+						}
+						{
+								if (Svc.GameGui.WorldToScreen(LP.Position with { X = LP.Position.X - Prof.CompassDistance }, out var pos))
+								{
+										DrawLetter("W", pos, Prof.CompassColor);
+								}
+						}
+						{
+								if (Svc.GameGui.WorldToScreen(LP.Position with { X = LP.Position.X + Prof.CompassDistance }, out var pos))
+								{
+										DrawLetter("E", pos, Prof.CompassColor);
+								}
+						}
+						ImGui.SetWindowFontScale(1f);
+						if (Prof.CompassFont != GameFontFamilyAndSize.Undefined)
+						{
+                ImGui.PopFont();
+						}
+				}
+
         if (P.currentProfile.EnableCurrentPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
         {
             {

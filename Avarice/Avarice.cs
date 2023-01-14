@@ -5,6 +5,7 @@ using Dalamud.Game.Command;
 using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
+using ECommons.Events;
 using ECommons.MathHelpers;
 using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
@@ -81,6 +82,10 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
             Svc.Framework.Update += Tick;
         });
+        if (ProperOnLogin.PlayerPresent)
+        {
+            var x = Svc.ClientState.LocalPlayer!.Address;
+        }
     }
 
     private CardinalDirection GetCardinalDirectionForObject(IntPtr arg)

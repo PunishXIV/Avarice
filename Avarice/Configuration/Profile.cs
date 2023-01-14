@@ -1,4 +1,8 @@
-﻿namespace Avarice.Configuration;
+﻿using Dalamud.Interface.GameFonts;
+using Dalamud.Interface.Style;
+using System.IO;
+
+namespace Avarice.Configuration;
 
 [Serializable]
 public class Profile
@@ -110,4 +114,13 @@ public class Profile
 
     public float MnkDemolish = 6f;
     public bool MnkAoEDisable = false;
+
+
+    public DisplayCondition CompassCondition = DisplayCondition.Always;
+    public ClassDisplayCondition CompassEnable = ClassDisplayCondition.Do_not_display;
+    public Vector4 CompassColorN = ImGuiColors.DalamudRed;
+    public Vector4 CompassColor = ImGuiColors.DalamudYellow;
+    public float CompassDistance = 1f;
+    public float CompassFontScale = 1f;
+    public GameFontFamilyAndSize CompassFont = GameFontFamilyAndSize.MiedingerMid36;
 }

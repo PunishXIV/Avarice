@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Puni.sh</Authors>
-		<Version>2.0.0.2</Version>
+		<Version>2.0.1.0</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -15,12 +15,12 @@
 		<PackageId>Avarice</PackageId>
 		<Product>Avarice</Product>
 		<NoWarn>CS1591</NoWarn>
+		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
-		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
@@ -31,7 +31,6 @@
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
-		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
