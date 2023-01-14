@@ -13,7 +13,7 @@ internal static class TabSettings
         { ClassDisplayCondition.Display_on_all_jobs, "DoW/DoM/DoH/DoL" },
     };
 
-    static InfoBox BoxGeneral = new() 
+    static InfoBox BoxGeneral = new()
     {
         ContentsAction = delegate
         {

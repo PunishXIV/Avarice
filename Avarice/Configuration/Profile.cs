@@ -10,7 +10,7 @@ public class Profile
     public string Name = "";
     public bool IsDefault = false;
     public bool EnableChatMessages = false;
-    public bool EnableVFX = true; 
+    public bool EnableVFX = true;
     public bool Announce = false;
     public bool Debug = false;
     public float MeleeSkillAtk = 3f;
@@ -116,9 +116,9 @@ public class Profile
     public bool MnkAoEDisable = false;
 
 
-		public DisplayCondition CompassCondition = DisplayCondition.Always;
-		public ClassDisplayCondition CompassEnable = ClassDisplayCondition.Do_not_display;
-		public Vector4 CompassColorN = ImGuiColors.DalamudRed;
+    public DisplayCondition CompassCondition = DisplayCondition.Always;
+    public ClassDisplayCondition CompassEnable = ClassDisplayCondition.Do_not_display;
+    public Vector4 CompassColorN = ImGuiColors.DalamudRed;
     public Vector4 CompassColor = ImGuiColors.DalamudYellow;
     public float CompassDistance = 1f;
     public float CompassFontScale = 1f;
