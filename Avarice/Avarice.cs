@@ -205,6 +205,7 @@ public unsafe class Avarice : IDalamudPlugin
         });
         memory.Dispose();
         PunishLibMain.Dispose();
+        ECommonsMain.Dispose();
         P = null;
     }
 
