@@ -54,7 +54,8 @@ public unsafe class Avarice : IDalamudPlugin
     public Avarice(DalamudPluginInterface pi)
     {
         P = this;
-        PunishLibMain.Init(pi, this, Module.ObjectFunctions, Module.DalamudReflector);
+        ECommonsMain.Init(pi, this, Module.DalamudReflector, Module.ObjectFunctions);
+        PunishLibMain.Init(pi, this);
         SponsorManager.SetSponsorInfo("https://ko-fi.com/spetsnaz");
         new TickScheduler(delegate
         {
@@ -123,7 +124,7 @@ public unsafe class Avarice : IDalamudPlugin
                         var success = (int)(100f * (float)currentProfile.CurrentEncounterStats.Hits / (float)total);
                         Svc.Chat.Print(new SeStringBuilder()
                             .AddText($"Positionals summary for encounter: {currentProfile.CurrentEncounterStats.Hits}/{total} - ")
-                            .AddUiForeground($"{success}%", GenericHelpers.GetParsedSeSetingColor(success))
+                            .AddUiForeground($"{success}%", ECommons.GenericHelpers.GetParsedSeSetingColor(success))
                             .Build());
                     }
                     currentProfile.CurrentEncounterStats.Finished = true;
