@@ -2,50 +2,40 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Puni.sh</Authors>
-		<Version>2.0.1.0</Version>
+		<Version>2.0.1.1</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
+		<TargetFramework>net7.0-windows</TargetFramework>
+		<Platforms>x64</Platforms>
+		<LangVersion>preview</LangVersion>
+		<DalamudDevPlugins>$(appdata)\XIVLauncher\devPlugins\Avarice\</DalamudDevPlugins>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 		<DalamudPluginPath>$(appdata)\XIVLauncher\installedPlugins\Avarice\$(version)</DalamudPluginPath>
-		<DalamudDevPlugins>$(appdata)\XIVLauncher\devPlugins\Avarice\</DalamudDevPlugins>
+		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
 		<AssemblyName>Avarice</AssemblyName>
-		<RootNamespace>Avarice</RootNamespace>
 		<PackageId>Avarice</PackageId>
 		<Product>Avarice</Product>
-		<NoWarn>CS1591</NoWarn>
+		<RootNamespace>Avarice</RootNamespace>
 		<Nullable>disable</Nullable>
+		<NoWarn>CS1591</NoWarn>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Release'">
-		<TargetFramework>net7.0-windows</TargetFramework>
-		<Platforms>x64</Platforms>
-		<LangVersion>latest</LangVersion>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<ProduceReferenceAssembly>false</ProduceReferenceAssembly>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
 		<OutputPath>bin/Release</OutputPath>
 	</PropertyGroup>
 
-	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<TargetFramework>net7.0-windows</TargetFramework>
-		<Platforms>x64</Platforms>
-		<LangVersion>latest</LangVersion>
-		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-		<OutputPath>$(DalamudDevPlugins)</OutputPath>
-	</PropertyGroup>
-
 	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<PackageReference Include="PunishLib" Version="1.0.1.1" />
-		<PackageReference Include="ECommons" Version="2.0.0" />
+		<PackageReference Include="PunishLib" Version="1.0.1.2" />
+		<PackageReference Include="ECommons" Version="2.0.0.1" />
 	</ItemGroup>
 
 	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
-  		<ProjectReference Include="..\..\ECommons\ECommons\ECommons.csproj" />
-  		<ProjectReference Include="..\..\PunishLib\PunishLib\PunishLib.csproj" />
+  		<ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+  		<ProjectReference Include="..\PunishLib\PunishLib\PunishLib.csproj" />
 	</ItemGroup>
 
 	<PropertyGroup Condition="'$(OS)' != 'Windows_NT' OR '$(CI)' == 'true'">
