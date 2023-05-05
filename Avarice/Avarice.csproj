@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Puni.sh</Authors>
-		<Version>2.0.1.1</Version>
+		<Version>2.0.1.2</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -28,15 +28,12 @@
 		<OutputPath>bin/Release</OutputPath>
 	</PropertyGroup>
 
-	<ItemGroup Condition="'$(Configuration)' == 'Release'">
-		<PackageReference Include="PunishLib" Version="1.0.1.2" />
-		<PackageReference Include="ECommons" Version="2.0.0.1" />
-	</ItemGroup>
+	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
+		<OutputPath>$(DalamudDevPlugins)</OutputPath>
+	</PropertyGroup>
 
-	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
-  		<ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
-  		<ProjectReference Include="..\PunishLib\PunishLib\PunishLib.csproj" />
-	</ItemGroup>
+	<ProjectReference Include="..\ECommons\ECommons\ECommons.csproj" />
+	<ProjectReference Include="..\PunishLib\PunishLib\PunishLib.csproj" />
 
 	<PropertyGroup Condition="'$(OS)' != 'Windows_NT' OR '$(CI)' == 'true'">
 		<DalamudLibPath>$(DALAMUD_HOME)/</DalamudLibPath>
@@ -44,7 +41,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DalamudPackager" Version="2.1.10" />
+		<PackageReference Include="DalamudPackager" Version="2.1.11" />
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
