@@ -9,7 +9,6 @@
 		<TargetFramework>net7.0-windows</TargetFramework>
 		<Platforms>x64</Platforms>
 		<LangVersion>preview</LangVersion>
-		<DalamudDevPlugins>$(appdata)\XIVLauncher\devPlugins\Avarice\</DalamudDevPlugins>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 		<DalamudPluginPath>$(appdata)\XIVLauncher\installedPlugins\Avarice\$(version)</DalamudPluginPath>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -29,7 +28,7 @@
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-		<OutputPath>$(DalamudDevPlugins)</OutputPath>
+		<OutputPath>bin/Debug</OutputPath>
 	</PropertyGroup>
 
 	<ItemGroup>
