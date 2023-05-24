@@ -21,7 +21,7 @@ namespace Avarice
         internal Memory()
         {
             SignatureHelper.Initialise(this);
-            LastComboMove = (uint*)(Svc.SigScanner.GetStaticAddressFromSig("F3 0F 11 05 ?? ?? ?? ?? F3 0F 10 45 ?? E8") + 0x4);
+            LastComboMove = (uint*)(Svc.SigScanner.GetStaticAddressFromSig("F3 0F 11 05 ?? ?? ?? ?? 48 83 C7 08") + 0x4);
             ReceiveActionEffectHook.Enable();
         }
 
