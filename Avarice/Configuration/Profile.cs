@@ -115,6 +115,7 @@ public class Profile
     public float MnkDemolish = 6f;
     public bool MnkAoEDisable = false;
 
+    public bool DrgAnticipatedDisableRightEye = true;
 
     public DisplayCondition CompassCondition = DisplayCondition.Always;
     public ClassDisplayCondition CompassEnable = ClassDisplayCondition.Do_not_display;

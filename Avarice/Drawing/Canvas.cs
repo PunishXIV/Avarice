@@ -1,6 +1,8 @@
 ﻿using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Interface.GameFonts;
+
+using ECommons;
 using ECommons.GameFunctions;
 using static Avarice.Drawing.DrawFunctions;
 using static Avarice.Drawing.Functions;
@@ -171,6 +173,7 @@ internal unsafe class Canvas : Window
 
         if (P.currentProfile.EnableAnticipatedPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
              && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u)))
+             && (!P.currentProfile.DrgAnticipatedDisableRightEye || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1910u)))
              && (!P.currentProfile.NinAnticipatedDisableMeikyoShisui || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1233u))))
         {
             {

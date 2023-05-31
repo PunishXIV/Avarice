@@ -99,6 +99,15 @@ internal static unsafe class TabAnticipation
         }
     };
 
+    static InfoBox BoxDrg = new()
+    {
+        Label = "Job Specific: Dragoon",
+        ContentsAction = delegate
+        {
+            ImGui.Checkbox("Disable when under the effect of Right Eye", ref P.currentProfile.DrgAnticipatedDisableRightEye);
+        }
+    };
+
     internal static void Draw()
     {
         ImGuiHelpers.ScaledDummy(5f);
@@ -106,5 +115,6 @@ internal static unsafe class TabAnticipation
         BoxSam.DrawStretched();
         BoxNinja.DrawStretched();
         BoxMnk.DrawStretched();
+        BoxDrg.DrawStretched();
     }
 }
