@@ -11,5 +11,5 @@
   "Tags": [
     "combat"
   ],
-  "Changelog": "- Minor release for project dependency upgrade, no major changes"
+  "Changelog": "- DRG: option to disable drawing anticipated positional if user is under the effects of Right Eye"
 }
