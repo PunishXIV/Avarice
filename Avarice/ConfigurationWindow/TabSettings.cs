@@ -17,23 +17,12 @@ internal static class TabSettings
     {
         ContentsAction = delegate
         {
-            /*
-            ImGuiEx.Text("0x");
-            ImGui.SameLine();
-            ImGui.SetNextItemWidth(50f);
-            ImGuiEx.InputHex("ActionEffect1##ae1", ref P.config.ActionEffect1Opcode);
-            ImGui.SameLine();
-            if (ImGui.Button("Redownload opcode"))
-            {
-                LoadOpcode.Start();
-            }
-            ImGuiComponents.HelpMarker("After patching the game it may be required to change this value (usually it is downloaded from remote server automatically). " +
-                "You can manually download the latest opcode using the download button to the left.");
-            */
-            ImGui.Checkbox("Enable positional feedback VFX", ref P.currentProfile.EnableVFX);
+            ImGui.Checkbox("Enable positional feedback VFX on failed positionals", ref P.currentProfile.EnableVFXFailure);
             ImGuiComponents.HelpMarker("Displays either a checkmark or cross above the player's head when they hit or miss a positional. This feature requires VFXEditor to be installed in order to function.");
-            ImGui.Checkbox("Output positional feedback to chat", ref P.currentProfile.EnableChatMessages);
+            ImGui.Checkbox("Also enable VFX on successful positionals", ref P.currentProfile.EnableVFXSuccess);
+            ImGui.Checkbox("Output positional feedback to chat on failed positional", ref P.currentProfile.EnableChatMessagesFailure);
             ImGuiComponents.HelpMarker("Prints either a success or failure message in the chat when you hit or miss a positional.");
+            ImGui.Checkbox("Also print feedback to chat on successful positionals", ref P.currentProfile.EnableChatMessagesSuccess);
             ImGui.Checkbox("Output encounter performance summary", ref P.currentProfile.Announce);
             ImGuiComponents.HelpMarker("Prints an overall summary of your encounter and the positionals hit/missed when leaving combat.");
         },

@@ -45,14 +45,14 @@ namespace Avarice
                     }
                     if (positionalState == PositionalState.Success)
                     {
-                        if (P.currentProfile.EnableChatMessages) Svc.Chat.Print("Positional HIT!");
-                        if (P.currentProfile.EnableVFX) VfxEditorManager.DisplayVfx(true);
+                        if (P.currentProfile.EnableChatMessagesSuccess) Svc.Chat.Print("Positional HIT!");
+                        if (P.currentProfile.EnableVFXSuccess) VfxEditorManager.DisplayVfx(true);
                         P.RecordStat(false);
                     }
                     else if (positionalState == PositionalState.Failure)
                     {
-                        if (P.currentProfile.EnableChatMessages) Svc.Chat.Print("Positional MISS!");
-                        if (P.currentProfile.EnableVFX) VfxEditorManager.DisplayVfx(false);
+                        if (P.currentProfile.EnableChatMessagesFailure) Svc.Chat.Print("Positional MISS!");
+                        if (P.currentProfile.EnableVFXFailure) VfxEditorManager.DisplayVfx(false);
                         P.RecordStat(true);
                     }
                     PluginLog.Debug($"Positional state: {positionalState}");

@@ -9,8 +9,10 @@ public class Profile
 {
     public string Name = "";
     public bool IsDefault = false;
-    public bool EnableChatMessages = false;
-    public bool EnableVFX = true;
+    public bool EnableChatMessagesSuccess = false;
+    public bool EnableChatMessagesFailure = true;
+    public bool EnableVFXSuccess = false;
+    public bool EnableVFXFailure = true;
     public bool Announce = false;
     public bool Debug = false;
     public float MeleeSkillAtk = 3f;
