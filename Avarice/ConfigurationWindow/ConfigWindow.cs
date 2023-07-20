@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface.Components;
 using ECommons.MathHelpers;
+using System.Windows.Forms.Design.Behavior;
 
 namespace Avarice.ConfigurationWindow;
 
@@ -31,9 +32,16 @@ internal unsafe partial class ConfigWindow : Window
         );
     }
 
+    int ActionOverride = 0;
     void Debug()
     {
         {
+            ImGui.InputInt("Action override test", ref ActionOverride);
+            if(ImGui.Button("set action override"))
+            {
+                Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride", () => new List<uint>() { 0 })[0] = (uint)ActionOverride;
+            }
+            ImGuiEx.Text($"Current action override: {(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var data) ? data[0] : 0)}");
             ImGuiEx.Text($"Combo: {*P.memory.LastComboMove}");
             foreach (var x in Svc.ClientState.LocalPlayer?.StatusList)
             {

@@ -1,4 +1,6 @@
-﻿using Dalamud.Game.ClientState.JobGauge.Types;
+﻿using Avarice.StaticData;
+using Dalamud.Game.ClientState.JobGauge.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.GameFunctions;
 using ECommons.MathHelpers;
@@ -29,6 +31,30 @@ internal unsafe static class Functions
 
     internal static void DrawAnticipatedPos(BattleNpc bnpc)
     {
+        if(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var overrideData) && overrideData[0] != 0)
+        {
+            if (overrideData[0] == uint.MaxValue) return;
+            if (Data.ActionPositional.TryGetValue((ActionID)overrideData[0], out var pos))
+            {
+                if(pos == EnemyPositional.Rear)
+                {
+                    DrawRear();
+                    return;
+                }
+                else if(pos == EnemyPositional.Flank)
+                {
+                    DrawSides();
+                    return;
+                }
+            }
+        }
+
+        void DrawRear() => ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);
+        void DrawSides()
+        {
+            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(270 - 45), Maths.Radians(270 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
+            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(90 - 45), Maths.Radians(90 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
+        }
         var move = *P.memory.LastComboMove;
         var mnk = Svc.ClientState.LocalPlayer.ClassJob.Id == 20 && Svc.ClientState.LocalPlayer.Level >= 30;
         var mnkRear = mnk && MnkIsRear(bnpc);
@@ -42,7 +68,7 @@ internal unsafe static class Functions
             || Util.CanExecuteWheelingThrust() ||  (move.EqualsAny(87u) && drglvl)
             ) //rear
         {
-            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);
+            DrawRear();
         }
         else if (move.EqualsAny(7479u)
             || Util.CanExecuteGibbet()
@@ -51,10 +77,11 @@ internal unsafe static class Functions
             || Util.CanExecuteFangAndClaw()
             ) //sides/flank
         {
-            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(270 - 45), Maths.Radians(270 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
-            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(90 - 45), Maths.Radians(90 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
+            DrawSides();
         }
     }
+
+
 
     private static bool MnkIsRear(BattleNpc bnpc)
     {
