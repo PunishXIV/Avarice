@@ -116,6 +116,7 @@ public class Profile
 
     public float MnkDemolish = 6f;
     public bool MnkAoEDisable = false;
+    public bool MnkPerfectBalanceDisable = true;
 
     public bool DrgAnticipatedDisableRightEye = true;
 
