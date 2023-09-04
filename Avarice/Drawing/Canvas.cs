@@ -174,7 +174,8 @@ internal unsafe class Canvas : Window
         if (P.currentProfile.EnableAnticipatedPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
              && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u)))
              && (!P.currentProfile.DrgAnticipatedDisableRightEye || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1910u)))
-             && (!P.currentProfile.NinAnticipatedDisableMeikyoShisui || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1233u))))
+             && (!P.currentProfile.NinAnticipatedDisableMeikyoShisui || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1233u)))
+             && (!P.currentProfile.MnkPerfectBalanceDisable || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(110u))))
         {
             {
                 if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())

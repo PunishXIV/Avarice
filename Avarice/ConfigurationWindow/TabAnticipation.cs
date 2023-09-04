@@ -96,6 +96,9 @@ internal static unsafe class TabAnticipation
             ImGuiComponents.HelpMarker("Threshold (in seconds) for the Demolish DoT to highlight the rear positional indicator.");
             ImGui.Checkbox("Disable Anticipation during AoE", ref P.currentProfile.MnkAoEDisable);
             ImGuiComponents.HelpMarker("Disables highlighting positionals after a Four-Point Fury.");
+            ImGui.Checkbox("Disable anticipation when under the effect of Perfect Balance", ref P.currentProfile.MnkPerfectBalanceDisable);
+            ImGuiComponents.HelpMarker("Perfectly balanced, as all things should be.");
+
         }
     };
 
