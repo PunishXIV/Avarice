@@ -17,8 +17,8 @@ namespace Avarice.ConfigurationWindow.Player
 				{
 						ImGui.PushID("compass");
 						ImGui.SetNextItemWidth(SelectWidth);
-						ImGuiEx.EnumCombo("##compass", ref P.currentProfile.CompassEnable, ClassDisplayConditionNames);
-						if (P.currentProfile.CompassEnable.IsEnabled())
+            ImGui.Checkbox("##compass", ref P.currentProfile.CompassEnable);
+						if (P.currentProfile.CompassEnable)
 						{
 								ImGui.SameLine();
 								ImGui.SetNextItemWidth(150f);

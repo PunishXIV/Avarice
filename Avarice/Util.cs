@@ -33,7 +33,7 @@ internal static unsafe class Util
         ImGuiHelpers.ScaledDummy(20f);
     }
 
-    internal static bool IsClassDisplayConditionMatching(this ClassDisplayCondition d)
+    /*internal static bool IsClassDisplayConditionMatching(this ClassDisplayCondition d)
     {
         if(Svc.ClientState.LocalPlayer == null || d == ClassDisplayCondition.Do_not_display)
         {
@@ -45,12 +45,12 @@ internal static unsafe class Util
                 (d == ClassDisplayCondition.Display_on_positional_jobs
                 && Svc.ClientState.LocalPlayer.ClassJob.Id.EqualsAny(Avarice.PositionalJobs));
         }
-    }
+    }*/
 
-    internal static bool IsEnabled(this ClassDisplayCondition d)
+    /*internal static bool IsEnabled(this ClassDisplayCondition d)
     {
         return d != ClassDisplayCondition.Do_not_display;
-    }
+    }*/
 
     internal static bool IsPositionalJob()
     {
@@ -86,7 +86,7 @@ internal static unsafe class Util
 
     internal static float GetConfiguredRadius()
     {
-        if (P.currentProfile.EnableCurrentPie.IsEnabled() && P.currentProfile.Radius2 && !P.currentProfile.Radius3) return GetAttackRadius();
+        if (P.currentProfile.EnableCurrentPie && P.currentProfile.Radius2 && !P.currentProfile.Radius3) return GetAttackRadius();
         return GetSkillRadius();
     }
 

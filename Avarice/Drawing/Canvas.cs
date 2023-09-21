@@ -41,7 +41,7 @@ internal unsafe class Canvas : Window
 
     public override void Draw()
     {
-        if (P.currentProfile.CompassEnable.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.CompassCondition))
+        if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
         {
             static void DrawLetter(string l, Vector2 pos, Vector4? color = null)
             {
@@ -87,7 +87,7 @@ internal unsafe class Canvas : Window
 						}
 				}
 
-        if (P.currentProfile.EnableCurrentPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
+        if (P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
         {
             {
                 if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
@@ -103,7 +103,7 @@ internal unsafe class Canvas : Window
             }
         }
 
-        if (P.currentProfile.EnableMaxMeleeRing.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
+        if (P.currentProfile.EnableMaxMeleeRing && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
         {
             {
                 if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
@@ -160,18 +160,18 @@ internal unsafe class Canvas : Window
             }
         }*/
 
-        if (P.currentProfile.EnablePlayerRing.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
+        if (P.currentProfile.EnablePlayerRing && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
         {
             CircleXZ(Svc.ClientState.LocalPlayer.Position, Svc.ClientState.LocalPlayer.HitboxRadius, P.currentProfile.PlayerRingSettings);
         }
 
-        if (P.currentProfile.EnableFrontSegment.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
+        if (P.currentProfile.EnableFrontSegment && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
         {
             DrawFrontalPosition(Svc.Targets.Target);
             if (Svc.Targets.Target?.Address != Svc.Targets.FocusTarget?.Address) DrawFrontalPosition(Svc.Targets.FocusTarget);
         }
 
-        if (P.currentProfile.EnableAnticipatedPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
+        if (P.currentProfile.EnableAnticipatedPie && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
              && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u)))
              && (!P.currentProfile.DrgAnticipatedDisableRightEye || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1910u)))
              && (!P.currentProfile.NinAnticipatedDisableMeikyoShisui || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1233u))))
@@ -190,7 +190,7 @@ internal unsafe class Canvas : Window
             }
         }
 
-        if (P.currentProfile.EnablePlayerDot.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
+        if (P.currentProfile.EnablePlayerDot && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
         {
             if (Svc.GameGui.WorldToScreen(Svc.ClientState.LocalPlayer.Position, out Vector2 pos))
                 ImGui.GetWindowDrawList().AddCircleFilled(
