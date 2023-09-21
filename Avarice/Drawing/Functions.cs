@@ -33,7 +33,6 @@ internal unsafe static class Functions
     {
         if(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var overrideData) && overrideData[0] != 0)
         {
-            if (overrideData[0] == uint.MaxValue) return;
             if (Data.ActionPositional.TryGetValue((ActionID)overrideData[0], out var pos))
             {
                 if(pos == EnemyPositional.Rear)
@@ -47,6 +46,7 @@ internal unsafe static class Functions
                     return;
                 }
             }
+            return;
         }
 
         void DrawRear() => ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);

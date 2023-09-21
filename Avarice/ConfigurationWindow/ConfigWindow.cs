@@ -36,6 +36,14 @@ internal unsafe partial class ConfigWindow : Window
     void Debug()
     {
         {
+            if (ImGui.Button("vfx yes"))
+            {
+                VfxEditorManager.DisplayVfx(true);
+            }
+            if (ImGui.Button("vfx no"))
+            {
+                VfxEditorManager.DisplayVfx(false);
+            }
             ImGui.InputInt("Action override test", ref ActionOverride);
             if(ImGui.Button("set action override"))
             {
