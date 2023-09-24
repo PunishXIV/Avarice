@@ -25,6 +25,7 @@ internal unsafe partial class ConfigWindow : Window
             ("Settings", TabSettings.Draw, null, true),
             ("Anticipation", TabAnticipation.Draw, null, true),
             ("Profiles", TabProfiles.Draw, null, true),
+            //("Tank middle", TabTank.Draw, null, true),
             ("Statistics", TabStatistics.Draw, null, true),
             ("About", delegate { PunishLib.ImGuiMethods.AboutTab.Draw(P); }, null, true),
             (P.currentProfile.Debug ? "Log" : null, InternalLog.PrintImgui, null, false),
@@ -35,6 +36,10 @@ internal unsafe partial class ConfigWindow : Window
     int ActionOverride = 0;
     void Debug()
     {
+        if (ImGui.CollapsingHeader("StaticAutoDetectRadiusData"))
+        {
+            ImGuiEx.Text(P.StaticAutoDetectRadiusData.Select(x => x.ToString()).Join("\n"));
+        }
         {
             if (ImGui.Button("vfx yes"))
             {

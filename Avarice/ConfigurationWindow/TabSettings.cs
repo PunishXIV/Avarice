@@ -35,8 +35,8 @@ internal static class TabSettings
         ContentsAction = delegate
         {
             //ImGui.SetNextItemWidth(SelectWidth);
-            ImGui.Checkbox("##Current Slice Highlight Settings", ref P.currentProfile.EnableCurrentPie);
-            if (P.currentProfile.EnableCurrentPie)
+            ImGui.Checkbox("Current Slice Highlight Settings", ref P.currentProfile.EnableCurrentPie);
+            //if (P.currentProfile.EnableCurrentPie)
             {
                 ImGui.SameLine();
                 ImGui.SetNextItemWidth(150f);
@@ -61,8 +61,8 @@ internal static class TabSettings
         ContentsAction = delegate
         {
             ImGui.SetNextItemWidth(200f);
-            ImGui.Checkbox("##Front Slice Indicator", ref P.currentProfile.EnableFrontSegment);
-            if (P.currentProfile.EnableFrontSegment)
+            ImGui.Checkbox("Front Slice Indicator", ref P.currentProfile.EnableFrontSegment);
+            //if (P.currentProfile.EnableFrontSegment)
             {
                 ImGuiEx.Spacing(20f, true);
                 ImGuiEx.Text("Colour:");
@@ -80,8 +80,8 @@ internal static class TabSettings
         ContentsAction = delegate
         {
             ImGui.SetNextItemWidth(SelectWidth);
-            ImGui.Checkbox("##Target/focus max melee ring", ref P.currentProfile.EnableMaxMeleeRing);
-            if (P.currentProfile.EnableMaxMeleeRing)
+            ImGui.Checkbox("Target Ring Settings", ref P.currentProfile.EnableMaxMeleeRing);
+            //if (P.currentProfile.EnableMaxMeleeRing)
             {
                 DrawUnfilledMultiSettings("b", ref P.currentProfile.MaxMeleeSettingsN,
                     ref P.currentProfile.MaxMeleeSettingsS,
@@ -123,8 +123,8 @@ internal static class TabSettings
                 "Whilst you can customize the size of this feature with the \"Thickness\" " +
                 "parameter, it's recommended to leave it at the default value.");
             ImGui.SetNextItemWidth(SelectWidth);
-            ImGui.Checkbox("##Player dot", ref P.currentProfile.EnablePlayerDot);
-            if (P.currentProfile.EnablePlayerDot)
+            ImGui.Checkbox("Player Damage Pixel", ref P.currentProfile.EnablePlayerDot);
+            //if (P.currentProfile.EnablePlayerDot)
             {
                 DrawUnfilledSettings("dot", ref P.currentProfile.PlayerDotSettings);
             }
@@ -156,8 +156,8 @@ internal static class TabSettings
         {
             ImGuiEx.TextWrapped("Displays a ring around the player character, allowing you to see the reach of auto attacks.");
             ImGui.SetNextItemWidth(SelectWidth);
-            ImGui.Checkbox("##Player hitbox outline", ref P.currentProfile.EnablePlayerRing);
-            if (P.currentProfile.EnablePlayerRing)
+            ImGui.Checkbox("Player Reach Outline", ref P.currentProfile.EnablePlayerRing);
+            //if (P.currentProfile.EnablePlayerRing)
             {
                 DrawUnfilledSettings("hitbox", ref P.currentProfile.PlayerRingSettings);
             }
@@ -175,8 +175,8 @@ internal static class TabSettings
                 BoxCompass.Draw();
                 BoxPlayerHitbox.DrawStretched();
                 BoxPlayerDotOthers.DrawStretched();
-                ImGui.Checkbox("Debug Mode", ref P.currentProfile.Debug);
-                ImGuiComponents.HelpMarker("Displays the debug menu tab, for development purposes.");
+                //ImGui.Checkbox("Debug Mode", ref P.currentProfile.Debug);
+                //ImGuiComponents.HelpMarker("Displays the debug menu tab, for development purposes.");
             }, null, true),
             ("Target", delegate
             {
@@ -185,7 +185,8 @@ internal static class TabSettings
                 BoxFront.DrawStretched();
                 BoxMeleeRing.DrawStretched();
                 BoxHitboxSettings.DrawStretched();
-            }, null, true)
+            }, null, true),
+            ("Duty Centralisation", TabTank.Draw, null, true)
         );
         
     }

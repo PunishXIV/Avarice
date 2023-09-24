@@ -41,6 +41,7 @@ internal unsafe class Canvas : Window
 
     public override void Draw()
     {
+        DrawTankMiddle();
         if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
         {
             static void DrawLetter(string l, Vector2 pos, Vector4? color = null)

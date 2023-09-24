@@ -11,8 +11,8 @@ internal static unsafe class TabAnticipation
         ContentsAction = delegate
         {
             ImGui.SetNextItemWidth(SelectWidth);
-            ImGui.Checkbox("##Anticipated segment indicator", ref P.currentProfile.EnableAnticipatedPie);
-            if (P.currentProfile.EnableAnticipatedPie)
+            ImGui.Checkbox("Anticipated Segment Indicator", ref P.currentProfile.EnableAnticipatedPie);
+            //if (P.currentPrfile.EnableAnticipatedPie)
             {
                 ImGui.PushID("AnticipatedPieSettings");
                 ImGui.SameLine();

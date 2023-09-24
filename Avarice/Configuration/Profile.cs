@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Style;
+using Lumina.Excel.GeneratedSheets;
 using System.IO;
 
 namespace Avarice.Configuration;
@@ -126,4 +127,7 @@ public class Profile
     public float CompassDistance = 1f;
     public float CompassFontScale = 1f;
     public GameFontFamilyAndSize CompassFont = GameFontFamilyAndSize.MiedingerMid36;
+
+    public bool EnableTankMiddle = false;
+    public bool EnableDutyMiddle = false;
 }

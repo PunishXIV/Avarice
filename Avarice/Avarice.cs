@@ -29,6 +29,7 @@ public unsafe class Avarice : IDalamudPlugin
 
     internal static uint[] PositionalJobs = new uint[] { 2, 4, 29, 30, 20, 34, 39, 22 };
     internal uint Job = 0;
+    internal HashSet<uint> StaticAutoDetectRadiusData;
 
     internal static readonly Dictionary<int, HashSet<int>> PositionalData = new()
     {
@@ -73,13 +74,23 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
             Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configWindow.IsOpen = true; };
             Svc.Condition.ConditionChange += OnConditionChange;
-            Svc.Commands.AddHandler("/avarice", new CommandInfo(delegate
-            { configWindow.IsOpen = !configWindow.IsOpen; })
+            Svc.Commands.AddHandler("/avarice", new CommandInfo((string cmd, string args) =>
+            {
+                if (args == "debug")
+                {
+                    P.currentProfile.Debug = !P.currentProfile.Debug;
+                }
+                else
+                {
+                    configWindow.IsOpen = !configWindow.IsOpen;
+                }
+            })
             { HelpMessage = "Toggle configuration/stats window" });
             //LoadOpcode.Start();
             LuminaSheets.Init();
             Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
             Svc.Framework.Update += Tick;
+            StaticAutoDetectRadiusData = Util.LoadStaticAutoDetectRadiusData();
         });
         if (ProperOnLogin.PlayerPresent)
         {

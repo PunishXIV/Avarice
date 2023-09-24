@@ -2,7 +2,9 @@
 using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Utility;
 using ECommons.GameFunctions;
+using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using static Avarice.Drawing.DrawFunctions;
@@ -12,6 +14,34 @@ namespace Avarice.Drawing;
 
 internal unsafe static class Functions
 {
+    internal static void DrawTankMiddle()
+    {
+        if (!P.currentProfile.EnableTankMiddle && !P.currentProfile.EnableDutyMiddle) return; //get out early
+        if (Player.Available && Util.TryAutoDetectMiddleOfArena(out var mid))
+        {
+            var points = P.config.DutyMiddleExtras.Where(x => x.TerritoryType == Svc.ClientState.TerritoryType);
+            if (P.currentProfile.EnableTankMiddle && Svc.Targets.Target is BattleNpc bnpc)
+            {
+                var distance = Vector3.Distance(mid, bnpc.Position);
+                foreach(var x in points)
+                {
+                    var addDistance = Vector3.Distance(x.Position, bnpc.Position);
+                    if(addDistance < distance) distance = addDistance;
+                }
+                var col = distance > P.config.DutyMidRadius ? P.config.UncenteredPixelColor : P.config.CenteredPixelColor;
+                Util.DrawDot(bnpc.Position, P.config.CenterPixelThickness, col);
+            }
+            if (P.currentProfile.EnableDutyMiddle)
+            {
+                Util.DrawDot(mid, P.config.CenterPixelThickness, P.config.DutyMidPixelCol);
+                foreach (var x in points)
+                {
+                    Util.DrawDot(x.Position, P.config.CenterPixelThickness, P.config.DutyMidPixelCol);
+                }
+            }
+        }
+    }
+
     internal static void DrawFrontalPosition(GameObject go) 
     {
         if (go is BattleNpc bnpc && bnpc.IsHostile() &&

@@ -1,10 +1,81 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
+using ECommons.GameHelpers;
 using ECommons.MathHelpers;
+using PunishLib.ImGuiMethods;
+using System.IO;
 
 namespace Avarice;
 
 internal static unsafe class Util
 {
+    internal static void DrawDot(Vector3 where, float thickness, Vector4 col) => DrawDot(where, thickness, col.ToUint());
+
+    internal static void DrawDot(Vector3 where, float thickness, uint col)
+    {
+        if (Svc.GameGui.WorldToScreen(where, out Vector2 pos))
+            ImGui.GetWindowDrawList().AddCircleFilled(
+            new Vector2(pos.X, pos.Y),
+            thickness,
+            col,
+            100);
+    }
+
+    internal static bool TryAutoDetectMiddleOfArena(out Vector3 mid)
+    {
+        if(Player.Available)
+        {
+            var shouldAuto = P.StaticAutoDetectRadiusData.Contains(Svc.ClientState.TerritoryType);
+            if(P.config.DutyMiddleOverrides.TryGetValue(Svc.ClientState.TerritoryType, out var v))
+            {
+                if (v == null)
+                {
+                    shouldAuto = true;
+                }
+                else
+                {
+                    mid = v.Value;
+                    return true;
+                }
+            }
+            if (shouldAuto)
+            {
+                if (Player.Object.Position.X.InRange(-50f, 50f) && Player.Object.Position.Z.InRange(-50f, 50f))
+                {
+                    mid = Vector3.Zero;
+                    return true;
+                }
+                else if (Player.Object.Position.X.InRange(50, 150) && Player.Object.Position.Z.InRange(50, 150))
+                {
+                    mid = new(100f, 0f, 100f);
+                    return true;
+                }
+            }
+        }
+        mid = default;
+        return false;
+    }
+
+    internal static HashSet<uint> LoadStaticAutoDetectRadiusData()
+    {
+        var ret = new HashSet<uint>();
+        try
+        {
+            var path = Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "AutoDetectTankRadius.csv");
+            foreach(var x in File.ReadAllText(path).Split("\n", StringSplitOptions.TrimEntries))
+            {
+                if(x != "" && uint.TryParse(x, out var res))
+                {
+                    ret.Add(res);
+                } 
+            }
+        }
+        catch(Exception e)
+        {
+            e.Log();
+        }
+        return ret;
+    }
+
     internal static bool CanExecuteGallows()
     {
         return Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId == 2589u)
@@ -26,11 +97,14 @@ internal static unsafe class Util
         return Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId  == 803u); // Wheel in Motion
     }
 
-    internal static void DrawStretched(this InfoBox box)
+    internal static void DrawStretched(this Drawing.InfoBox box)
     {
-        box.Size = new(ImGui.GetContentRegionAvail().X, box.Size.Y);
+        /*box.Size = new(ImGui.GetContentRegionAvail().X, box.Size.Y);
         box.Draw();
-        ImGuiHelpers.ScaledDummy(20f);
+        ImGuiHelpers.ScaledDummy(20f);*/
+        ImGuiGroup.BeginGroupBox(box.Label);
+        box.ContentsAction();
+        ImGuiGroup.EndGroupBox();
     }
 
     /*internal static bool IsClassDisplayConditionMatching(this ClassDisplayCondition d)
