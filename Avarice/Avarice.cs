@@ -218,7 +218,7 @@ public unsafe class Avarice : IDalamudPlugin
         P = null;
     }
 
-    private void Tick(Framework framework)
+    private void Tick(object framework)
     {
         if (Svc.ClientState.LocalPlayer != null)
         {

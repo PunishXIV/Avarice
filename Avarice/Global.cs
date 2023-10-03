@@ -20,7 +20,9 @@ global using ECommons.ImGuiMethods;
 global using Avarice.Configuration;
 global using Avarice.ConfigurationWindow;
 global using static Avarice.Global;
-using Dalamud.Game.ClientState.Objects.SubKinds;
+global using ECommons.DalamudServices.Legacy;
+global using Dalamud.Interface.Utility;
+global using Dalamud.Game.ClientState.Objects.SubKinds;
 
 namespace Avarice;
 internal static class Global
