@@ -91,6 +91,7 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
             Svc.Framework.Update += Tick;
             StaticAutoDetectRadiusData = Util.LoadStaticAutoDetectRadiusData();
+            if(config.SplatoonUnsafePixel) TabSplatoon.WriteRequest();
         });
         if (ProperOnLogin.PlayerPresent)
         {

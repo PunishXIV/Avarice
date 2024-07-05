@@ -197,7 +197,7 @@ internal unsafe class Canvas : Window
                 ImGui.GetWindowDrawList().AddCircleFilled(
                 new Vector2(pos.X, pos.Y),
                 P.currentProfile.PlayerDotSettings.Thickness,
-                ImGui.ColorConvertFloat4ToU32(P.currentProfile.PlayerDotSettings.Color),
+                ImGui.ColorConvertFloat4ToU32(TabSplatoon.IsUnsafe()?P.config.SplatoonPixelCol:P.currentProfile.PlayerDotSettings.Color),
                 100);
         }
 

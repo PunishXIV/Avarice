@@ -20,4 +20,6 @@ internal class Config : IPluginConfiguration
     public Dictionary<uint, Vector3?> DutyMiddleOverrides = new();
 
     public List<ExtraPoint> DutyMiddleExtras = new();
+    public bool SplatoonUnsafePixel = false;
+    public Vector4 SplatoonPixelCol = EColor.RedBright;
 }

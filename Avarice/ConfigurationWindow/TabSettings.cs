@@ -186,7 +186,8 @@ internal static class TabSettings
                 BoxMeleeRing.DrawStretched();
                 BoxHitboxSettings.DrawStretched();
             }, null, true),
-            ("Duty Centralisation", TabTank.Draw, null, true)
+            ("Duty Centralisation", TabTank.Draw, null, true),
+            (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out _)?"Splatoon":null, TabSplatoon.Draw, null, true)
         );
         
     }
