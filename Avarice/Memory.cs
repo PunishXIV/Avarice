@@ -3,6 +3,7 @@ using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using ECommons.Hooks;
 using ECommons.Hooks.ActionEffectTypes;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,11 @@ namespace Avarice
 {
     internal unsafe class Memory
     {
-        internal uint* LastComboMove;
+        internal uint LastComboMove => ActionManager.Instance()->Combo.Action;
 
         internal Memory()
         {
             SignatureHelper.Initialise(this);
-            LastComboMove = (uint*)(Svc.SigScanner.GetStaticAddressFromSig("F3 0F 11 05 ?? ?? ?? ?? 48 83 C7 08") + 0x4);
             ActionEffect.ActionEffectEvent += ReceiveActionEffectDetour;
         }
 

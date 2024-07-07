@@ -174,13 +174,23 @@ internal static unsafe class Util
         return P.currentProfile.MeleeAutoAtk + (P.currentProfile.MeleeAutoIncludeHitbox ? Svc.ClientState.LocalPlayer.HitboxRadius : 0);
     }
 
-    internal static CardinalDirection GetDirection(GameObject bnpc)
+    internal static CardinalDirection GetDirection(IGameObject bnpc)
     {
         return MathHelper.GetCardinalDirection(GetAngle(bnpc));
     }
 
-    internal static float GetAngle(GameObject bnpc)
+    internal static float GetAngle(IGameObject bnpc)
     {
         return (MathHelper.GetRelativeAngle(Svc.ClientState.LocalPlayer.Position, bnpc.Position) + bnpc.Rotation.RadToDeg()) % 360;
+    }
+
+    public static bool IsViperAnticipatedRear()
+    {
+        return Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u));
+    }
+
+    public static bool IsViperAnticipatedFront()
+    {
+        return Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u));
     }
 }

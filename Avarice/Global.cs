@@ -23,10 +23,11 @@ global using static Avarice.Global;
 global using ECommons.DalamudServices.Legacy;
 global using Dalamud.Interface.Utility;
 global using Dalamud.Game.ClientState.Objects.SubKinds;
+using ECommons.GameHelpers;
 
 namespace Avarice;
 internal static class Global
 {
 		internal static Profile Prof => P.currentProfile;
-		internal static PlayerCharacter LP => Svc.ClientState.LocalPlayer;
+		internal static IPlayerCharacter LP => Player.Object;
 }

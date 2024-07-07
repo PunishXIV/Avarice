@@ -10,7 +10,7 @@ internal class VfxEditorManager
         {
             RemoveVfx();
             var plugin = Get();
-            plugin.CallStatic("VfxEditor.Spawn.VfxSpawn", "OnSelf", success ? "vfx/lockon/eff/m0489trg_a0c.avfx" : "vfx/lockon/eff/m0489trg_b0c.avfx", false);
+            plugin.CallStatic("VfxEditor.Spawn.VfxSpawn", "OnSelf", [success ? "vfx/lockon/eff/m0489trg_a0c.avfx" : "vfx/lockon/eff/m0489trg_b0c.avfx", false]);
         }
         catch (Exception e)
         {
@@ -24,7 +24,7 @@ internal class VfxEditorManager
         try
         {
             var plugin = Get();
-            plugin.CallStatic("VfxEditor.Spawn.VfxSpawn", "Remove");
+            plugin.CallStatic("VfxEditor.Spawn.VfxSpawn", "Remove", []);
         }
         catch (Exception e)
         {

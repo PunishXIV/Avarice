@@ -53,7 +53,7 @@ internal unsafe class Canvas : Window
 
             if(Prof.CompassFont != GameFontFamilyAndSize.Undefined)
             {
-                ImGui.PushFont(Svc.PluginInterface.UiBuilder.GetGameFontHandle(new(Prof.CompassFont)).ImFont);
+                //ImGui.PushFont(Svc.PluginInterface.UiBuilder.GetGameFontHandle(new(Prof.CompassFont)).ImFont);
             }
 
             ImGui.SetWindowFontScale(Prof.CompassFontScale);
@@ -84,20 +84,20 @@ internal unsafe class Canvas : Window
 						ImGui.SetWindowFontScale(1f);
 						if (Prof.CompassFont != GameFontFamilyAndSize.Undefined)
 						{
-                ImGui.PopFont();
+                //ImGui.PopFont();
 						}
 				}
 
         if (P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     DrawCurrentPos(bnpc);
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     DrawCurrentPos(bnpc);
                 }
@@ -107,7 +107,7 @@ internal unsafe class Canvas : Window
         if (P.currentProfile.EnableMaxMeleeRing && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     if (P.currentProfile.Radius3)
                     {
@@ -124,7 +124,7 @@ internal unsafe class Canvas : Window
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc
                     && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     if (P.currentProfile.Radius3)
@@ -148,13 +148,13 @@ internal unsafe class Canvas : Window
             && IsConditionMatching(P.config.MaxMeleeAttackSettings.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     CircleXZ(bnpc.Position, bnpc.HitboxRadius + 2.0f, P.config.MaxMeleeAttackSettings);
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     CircleXZ(bnpc.Position, bnpc.HitboxRadius + 2.0f, P.config.MaxMeleeAttackSettings);
                 }
@@ -178,13 +178,13 @@ internal unsafe class Canvas : Window
              && (!P.currentProfile.NinAnticipatedDisableMeikyoShisui || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1233u))))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
                 {
                     DrawAnticipatedPos(bnpc);
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && bnpc.HasPositional())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && bnpc.HasPositional())
                 {
                     DrawAnticipatedPos(bnpc);
                 }
@@ -205,7 +205,7 @@ internal unsafe class Canvas : Window
         {
             foreach (var x in Svc.Party)
             {
-                if (x.GameObject is PlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
+                if (x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
                 {
                     if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out Vector2 pos))
                         ImGui.GetWindowDrawList().AddCircleFilled(
@@ -221,7 +221,7 @@ internal unsafe class Canvas : Window
         {
             foreach (var x in Svc.Objects)
             {
-                if (x is PlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
+                if (x is IPlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
                     && (!P.currentProfile.PartyDot || !Svc.Party.Any(x => x.Address == x.GameObject?.Address)))
                 {
                     if (Svc.GameGui.WorldToScreen(x.Position, out Vector2 pos))

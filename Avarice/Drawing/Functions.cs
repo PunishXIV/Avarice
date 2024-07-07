@@ -20,7 +20,7 @@ internal unsafe static class Functions
         if (Player.Available && Util.TryAutoDetectMiddleOfArena(out var mid))
         {
             var points = P.config.DutyMiddleExtras.Where(x => x.TerritoryType == Svc.ClientState.TerritoryType);
-            if (P.currentProfile.EnableTankMiddle && Svc.Targets.Target is BattleNpc bnpc)
+            if (P.currentProfile.EnableTankMiddle && Svc.Targets.Target is IBattleNpc bnpc)
             {
                 var distance = Vector3.Distance(mid, bnpc.Position);
                 foreach(var x in points)
@@ -42,9 +42,9 @@ internal unsafe static class Functions
         }
     }
 
-    internal static void DrawFrontalPosition(GameObject go) 
+    internal static void DrawFrontalPosition(IGameObject go) 
     {
-        if (go is BattleNpc bnpc && bnpc.IsHostile() &&
+        if (go is IBattleNpc bnpc && bnpc.IsHostile() &&
                 (!P.currentProfile.FrontStand || GetDirection(bnpc) == CardinalDirection.North))
         {
             if (P.currentProfile.VLine && P.currentProfile.FrontStand)
@@ -59,7 +59,7 @@ internal unsafe static class Functions
         }
     }
 
-    internal static void DrawAnticipatedPos(BattleNpc bnpc)
+    internal static void DrawAnticipatedPos(IBattleNpc bnpc)
     {
         if(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var overrideData) && overrideData[0] != 0)
         {
@@ -85,7 +85,7 @@ internal unsafe static class Functions
             ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(270 - 45), Maths.Radians(270 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
             ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(90 - 45), Maths.Radians(90 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
         }
-        var move = *P.memory.LastComboMove;
+        var move = P.memory.LastComboMove;
         var mnk = Svc.ClientState.LocalPlayer.ClassJob.Id == 20 && Svc.ClientState.LocalPlayer.Level >= 30;
         var mnkRear = mnk && MnkIsRear(bnpc);
         if (move == 16473 && P.currentProfile.MnkAoEDisable) return; //mnk Four-point Fury AoE
@@ -96,6 +96,7 @@ internal unsafe static class Functions
             || NinRearTrickAttackAvailable()
             || (mnk && mnkRear)
             || Util.CanExecuteWheelingThrust() ||  (move.EqualsAny(87u) && drglvl)
+            || Util.IsViperAnticipatedRear()
             ) //rear
         {
             DrawRear();
@@ -105,6 +106,7 @@ internal unsafe static class Functions
             || (move == 2242 && Svc.Gauges.Get<NINGauge>().HutonTimer <= P.currentProfile.NinHutinTh && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3563).ClassJobLevel)
             || (mnk && !mnkRear && move.EqualsAny(54u, 61u))
             || Util.CanExecuteFangAndClaw()
+            || Util.IsViperAnticipatedFront()
             ) //sides/flank
         {
             DrawSides();
@@ -113,7 +115,7 @@ internal unsafe static class Functions
 
 
 
-    private static bool MnkIsRear(BattleNpc bnpc)
+    private static bool MnkIsRear(IBattleNpc bnpc)
     {
         return Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(109u, 110u))
             && (!bnpc.StatusList.TryGetFirst(x => x.StatusId.EqualsAny(246u, 3001u), out var status) || status.RemainingTime < P.currentProfile.MnkDemolish);
@@ -128,7 +130,7 @@ internal unsafe static class Functions
             && Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(507u, 614u)); 
     }
 
-    internal static void DrawCurrentPos(BattleNpc bnpc)
+    internal static void DrawCurrentPos(IBattleNpc bnpc)
     {
         var angle = GetAngle(bnpc);
         var direction = MathHelper.GetCardinalDirection(angle);
@@ -150,7 +152,7 @@ internal unsafe static class Functions
         }
     }
 
-    internal static void DrawSegmentedCircle(BattleNpc bnpc, float addRadius, bool lines)
+    internal static void DrawSegmentedCircle(IBattleNpc bnpc, float addRadius, bool lines)
     {
         var radius = bnpc.HitboxRadius + addRadius;
 

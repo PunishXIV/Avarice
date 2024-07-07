@@ -27,7 +27,7 @@ internal unsafe partial class ConfigWindow : Window
             ("Profiles", TabProfiles.Draw, null, true),
             //("Tank middle", TabTank.Draw, null, true),
             ("Statistics", TabStatistics.Draw, null, true),
-            ("About", delegate { PunishLib.ImGuiMethods.AboutTab.Draw(P); }, null, true),
+            ("About", delegate { PunishLib.ImGuiMethods.AboutTab.Draw(Svc.PluginInterface.InternalName); }, null, true),
             (P.currentProfile.Debug ? "Log" : null, InternalLog.PrintImgui, null, false),
             (P.currentProfile.Debug ? "Debug" : null, Debug, null, true)
         );
@@ -55,7 +55,7 @@ internal unsafe partial class ConfigWindow : Window
                 Svc.PluginInterface.GetOrCreateData("Avarice.ActionOverride", () => new List<uint>() { 0 })[0] = (uint)ActionOverride;
             }
             ImGuiEx.Text($"Current action override: {(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var data) ? data[0] : 0)}");
-            ImGuiEx.Text($"Combo: {*P.memory.LastComboMove}");
+            ImGuiEx.Text($"Combo: {P.memory.LastComboMove}");
             foreach (var x in Svc.ClientState.LocalPlayer?.StatusList)
             {
                 ImGuiEx.TextCopy($"{x.GameData.Name}: id={x.StatusId}, time={x.RemainingTime}");
