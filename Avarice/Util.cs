@@ -189,8 +189,73 @@ internal static unsafe class Util
         return Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u));
     }
 
-    public static bool IsViperAnticipatedFront()
+    public static bool IsViperAnticipatedFlank()
     {
         return Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u));
+    }
+
+    public static bool IsDragoonAnticipatedRear()
+    {   //87    = Disembowel        (Lvl 18 -> 96)
+        //36955 = Spiral Blow       (Lvl 96+)
+        //Disembowel & Spiral Blow are used to prime Chaos Thrust/Chaotic Spring (lvl 50) for rear positional
+
+        //88    = Chaos Thrust      (Lvl 50 -> 86)
+        //25772 = Chaotic Spring    (Lvl 86+)
+        //Chaos Thrust & Chaotic Spring are used to prime Wheeling Thrust (lvl 58) for rear positional
+        //3556  = Wheeling Thrust
+
+        var levelcheckChaos = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(88).ClassJobLevel;
+        var levelcheckWheel = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3556).ClassJobLevel;
+        var move = P.memory.LastComboMove;
+        return (levelcheckChaos && move.EqualsAny(87u, 36955u)) || (levelcheckWheel && move.EqualsAny(88u, 25772u));
+    }
+    public static bool IsDragoonAnticipatedFlank()
+    {   //84    = Full Thrust       (Lvl 26 -> 86)
+        //25771 = Heavens' Thrust   (Lvl 86+)
+        //Full Thrust & Heavens' Thrust are used to prime Fang and Claw (Lvl 56) for flank positional
+        //3554  = Fang and Claw
+
+        var levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3554).ClassJobLevel;
+        var move = P.memory.LastComboMove;
+        return levelcheck && move.EqualsAny(84u, 25771u);
+    }
+
+    public static bool IsSamuraiAnticipatedRear()
+    {   //7478 = Jinpu        (Lvl 18 -> 96)
+        //Jinpu are used to prime Gekko (lvl 30) for rear positional
+        //7481 = Gekko
+
+        var levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7481).ClassJobLevel;
+        var move = P.memory.LastComboMove;
+        return levelcheck && move.EqualsAny(7478u);
+    }
+    public static bool IsSamuraiAnticipatedFlank()
+    {   //7479 = Shifu   (Lvl 18+)
+        //Shifu is used to prime Kasha (Lvl 40) for flank positional
+        //7482 = Kasha
+        var levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(7482).ClassJobLevel;
+        var move = P.memory.LastComboMove;
+        return levelcheck && move.EqualsAny(7479u);
+    }
+
+    public static bool IsReaperAnticipatedRear()
+    {       //2589 = Enhanced Gallows
+        //2587 = Soul Reaver - Able to use Gibbet, Gallows, and Guillotine.
+        //2854 = Soul Reaver - Able to execute Guillotine.
+        //3858 = Executioner
+        //Idk why there are 2 soul reavers. The description is taken from garland tools
+
+        return Player.Status.Any(x => x.StatusId.EqualsAny(2589u))
+            && Player.Status.Any(x => x.StatusId.EqualsAny(2587u, 2854u, 3858u));
+    }
+    public static bool IsReaperAnticipatedFlank()
+    {   //2589 = Enhanced Gibbet
+        //2587 = Soul Reaver - Able to use Gibbet, Gallows, and Guillotine.
+        //2854 = Soul Reaver - Able to execute Guillotine.
+        //Idk why there are 2 soul reavers. The description is taken from garland tools
+        //3858 = Executioner
+
+        return Player.Status.Any(x => x.StatusId.EqualsAny(2588u, 2855u))
+            && Player.Status.Any(x => x.StatusId.EqualsAny(2587u, 2854u, 3858u));
     }
 }
