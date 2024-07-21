@@ -3450,6 +3450,38 @@ public enum ActionID : uint
     Temperance = 16536,
     #endregion
 
+    #region Viper
+    /// <summary>
+    /// 
+    /// </summary>
+    FlankstingStrike = 34610,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    FlanksbaneFang = 34611,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    HindstingStrike = 34612,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    HindsbaneFang = 34613,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    HuntersCoil = 34621,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    SwiftskinsCoil = 34622,
+    #endregion
+
     #region General
     /// <summary>
     /// 
