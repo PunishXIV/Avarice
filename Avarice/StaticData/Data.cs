@@ -24,6 +24,12 @@ namespace Avarice.StaticData
             {ActionID.Gallows, EnemyPositional.Rear },
             {ActionID.Gekko, EnemyPositional.Rear},
             {ActionID.Kasha, EnemyPositional.Flank },
+            {ActionID.FlankstingStrike, EnemyPositional.Flank },
+            {ActionID.FlanksbaneFang, EnemyPositional.Flank },
+            {ActionID.HindstingStrike, EnemyPositional.Rear },
+            {ActionID.HindsbaneFang, EnemyPositional.Rear },
+            {ActionID.HuntersCoil, EnemyPositional.Flank },
+            {ActionID.SwiftskinsCoil, EnemyPositional.Rear },
         };
     }
 }
