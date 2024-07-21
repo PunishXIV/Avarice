@@ -1,4 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using PunishLib.ImGuiMethods;
@@ -186,12 +186,38 @@ internal static unsafe class Util
 
     public static bool IsViperAnticipatedRear()
     {
-        return Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u));
+        //34609 = Swiftskin's Sting    (Lvl 30+)
+        //Swiftskin's Sting is used to prime Hindsting Strike/Hindsbane Fang (lvl 30) for rear positional
+        //34612 = Hindsting Strike     (Lvl 30+)
+        //34613 = Hindsbane Fang       (Lvl 30+)
+
+        //34620 = Dreadwinter          (Lvl 65+)
+        //Dreadwinter (lvl 65) is used to prime Swiftskin's Coil for rear positional
+        //34622 = Swiftskin's Coil     (Lvl 65+)
+
+        var levelcheckHindsting = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34612).ClassJobLevel;
+        var levelcheckHindsbane = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34613).ClassJobLevel;
+        //var levelcheckSwiftskin = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34622).ClassJobLevel;
+        var move = P.memory.LastComboMove;
+        return (levelcheckHindsting && move.EqualsAny(34609u)) || (levelcheckHindsbane && move.EqualsAny(34609u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u)); //|| (levelcheckSwiftskin && move.EqualsAny(34620u, 34637u));
     }
 
     public static bool IsViperAnticipatedFlank()
     {
-        return Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u));
+        //34608 = Hunters's Sting       (Lvl 30+)
+        //Hunters's Sting is used to prime Flanksting Strike/Flanksbane Fang (lvl 30) for flank positional
+        //34610 = Flanksting Strike     (Lvl 30+)
+        //34611 = Flanksbane Fang       (Lvl 30+)
+
+        //34620 = Dreadwinter           (Lvl 65+)
+        //Dreadwinter (lvl 65) is used to prime Hunters's Coil for flank positional
+        //34621 = Hunter's Coil         (Lvl 65+)
+
+        var levelcheckFlanksting = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34610).ClassJobLevel;
+        var levelcheckFlanksbane = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34611).ClassJobLevel;
+        //var levelcheckHuntersCoil = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34621).ClassJobLevel;
+        var move = P.memory.LastComboMove;
+        return (levelcheckFlanksting && move.EqualsAny(34608u)) || (levelcheckFlanksbane && move.EqualsAny(34608u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)); //|| (levelcheckHuntersCoil && move.EqualsAny(34620u, 34636u));
     }
 
     public static bool IsDragoonAnticipatedRear()
