@@ -1,6 +1,7 @@
 ﻿using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
+using FFXIVClientStructs.FFXIV.Client.Game;
 using PunishLib.ImGuiMethods;
 using System.IO;
 
@@ -186,11 +187,13 @@ internal static unsafe class Util
 
     public static bool IsViperAnticipatedRear()
     {
-        return Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u));
+        return Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u))
+            || ActionManager.Instance()->Combo.Action.EqualsAny(34609u);
     }
 
-    public static bool IsViperAnticipatedFront()
+    public static bool IsViperAnticipatedFlank()
     {
-        return Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u));
+        return Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u))
+            || ActionManager.Instance()->Combo.Action.EqualsAny(34608u);
     }
 }

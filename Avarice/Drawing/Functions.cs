@@ -92,7 +92,7 @@ internal unsafe static class Functions
         var drglvl = Svc.ClientState.LocalPlayer.Level >= 50;
         if (move.EqualsAny(7478u) // sam
             || Util.CanExecuteGallows()
-            || (move == 2242 && (Svc.Gauges.Get<NINGauge>().HutonTimer > P.currentProfile.NinHutinTh || Svc.Gauges.Get<NINGauge>().HutonTimer == 0) && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(2255).ClassJobLevel)
+            //|| (move == 2242 && (Svc.Gauges.Get<NINGauge>().HutonTimer > P.currentProfile.NinHutinTh || Svc.Gauges.Get<NINGauge>().HutonTimer == 0) && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(2255).ClassJobLevel)
             || NinRearTrickAttackAvailable()
             || (mnk && mnkRear)
             || Util.CanExecuteWheelingThrust() ||  (move.EqualsAny(87u) && drglvl)
@@ -103,10 +103,10 @@ internal unsafe static class Functions
         }
         else if (move.EqualsAny(7479u)
             || Util.CanExecuteGibbet()
-            || (move == 2242 && Svc.Gauges.Get<NINGauge>().HutonTimer <= P.currentProfile.NinHutinTh && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3563).ClassJobLevel)
+            //|| (move == 2242 && Svc.Gauges.Get<NINGauge>().HutonTimer <= P.currentProfile.NinHutinTh && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3563).ClassJobLevel)
             || (mnk && !mnkRear && move.EqualsAny(54u, 61u))
             || Util.CanExecuteFangAndClaw()
-            || Util.IsViperAnticipatedFront()
+            || Util.IsViperAnticipatedFlank()
             ) //sides/flank
         {
             DrawSides();
