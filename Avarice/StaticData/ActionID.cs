@@ -2596,6 +2596,31 @@ public enum ActionID : uint
     /// 
     /// </summary>
     ArcaneCrest = 24404,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    Sacrificium = 36969,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    ExecutionersGibbet = 36970,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    ExecutionersGallows = 36971,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    ExecutionersGuilotine = 36972,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    Perfectio = 36973,
     #endregion
 
     #region SAM
@@ -3480,6 +3505,11 @@ public enum ActionID : uint
     /// 
     /// </summary>
     SwiftskinsCoil = 34622,
+
+    /// <summary>
+    /// 
+    /// </summary>
+    Dreadwinter = 34620,
     #endregion
 
     #region General
