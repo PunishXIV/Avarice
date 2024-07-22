@@ -198,9 +198,9 @@ internal static unsafe class Util
 
         var levelcheckHindsting = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34612).ClassJobLevel;
         var levelcheckHindsbane = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34613).ClassJobLevel;
-        var levelcheckSwiftskin = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34622).ClassJobLevel;
+        //var levelcheckSwiftskin = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34622).ClassJobLevel;
         var move = P.memory.LastComboMove;
-        return (levelcheckHindsting && move.EqualsAny(34609u)) || (levelcheckHindsbane && move.EqualsAny(34609u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u)) || (levelcheckSwiftskin && move.EqualsAny(34620u, 34637u));
+        return (levelcheckHindsting && move.EqualsAny(34609u)) || (levelcheckHindsbane && move.EqualsAny(34609u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u)); //|| (levelcheckSwiftskin && move.EqualsAny(34620u, 34637u));
     }
     public static bool IsViperAnticipatedFlank()
     {
@@ -215,9 +215,9 @@ internal static unsafe class Util
 
         var levelcheckFlanksting = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34610).ClassJobLevel;
         var levelcheckFlanksbane = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34611).ClassJobLevel;
-        var levelcheckHuntersCoil = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34621).ClassJobLevel;
+        //var levelcheckHuntersCoil = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34621).ClassJobLevel;
         var move = P.memory.LastComboMove;
-        return (levelcheckFlanksting && move.EqualsAny(34608u)) || (levelcheckFlanksbane && move.EqualsAny(34608u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)) || (levelcheckHuntersCoil && move.EqualsAny(34620u, 34636u));
+        return (levelcheckFlanksting && move.EqualsAny(34608u)) || (levelcheckFlanksbane && move.EqualsAny(34608u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)); //|| (levelcheckHuntersCoil && move.EqualsAny(34620u, 34636u));
     }
 
     public static bool IsDragoonAnticipatedRear()
