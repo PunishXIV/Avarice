@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<Authors>Puni.sh</Authors>
-		<Version>2.0.4.5</Version>
+		<Version>2.0.4.7</Version>
 	</PropertyGroup>
 
 	<PropertyGroup>
@@ -42,7 +42,8 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="DalamudPackager" Version="2.1.12" />
+		<PackageReference Include="CsvHelper" Version="33.0.1" />
+		<PackageReference Include="DalamudPackager" Version="2.1.13" />
 		<Reference Include="Newtonsoft.Json">
 			<HintPath>$(DalamudLibPath)Newtonsoft.Json.dll</HintPath>
 			<Private>False</Private>
@@ -77,5 +78,9 @@
 	  <None Update="res\AutoDetectTankRadius.csv">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </None>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Data\" />
 	</ItemGroup>
 </Project>
