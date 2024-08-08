@@ -1,4 +1,5 @@
-﻿using Avarice.Structs;
+﻿using Avarice.Positional;
+using Avarice.Structs;
 using Dalamud.Game;
 using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
@@ -30,41 +31,13 @@ public unsafe class Avarice : IDalamudPlugin
     internal static uint[] PositionalJobs = new uint[] { 2, 4, 29, 30, 20, 34, 39, 22 };
     internal uint Job = 0;
     internal HashSet<uint> StaticAutoDetectRadiusData;
-
-    internal static readonly Dictionary<int, HashSet<int>> PositionalData = new()
-    {
-            {   56, [13] },					// Snap Punch
-		        {   66, [16] },					// Demolish
-		        {   88, [28, 61] },             // Chaos Thrust
-		        { 2255, [30, 63, 70] },			// Aeolian Edge
-		        { 2258, [25] },                 // Trick Attack
-		        { 3554, [28, 66] },             // Fang and Claw
-		        { 3556, [28, 66] },             // Wheeling Thrust
-		        { 3563, [30, 65] },				// Armor Crush
-		        { 7481, [29, 33, 68, 72] },     // Gekko (rear)
-		        { 7482, [29, 33, 68, 72] },     // Kasha (flank)
-		        {24382, [11, 13] },             // Gibbet (flank)
-		        {24383, [11, 13] },             // Gallows (rear)
-		        {25772, [28, 66] },             // Chaotic Spring
-		
-		        {34610, [52, 54, 66, 70] },				// Flanksting Strike 
-		        {34611, [52, 54, 66, 70] },				// Flanksbane Fang 
-		        {34612, [52, 54, 66, 70] },				// Hindsting Strike 
-		        {34613, [52, 54, 66, 70] },				// Hindsbane Fang 
-		
-		
-		        {34621, [9] },					// Hunter's Coil
-		        {34622, [9] },					// Swiftskin's Coil
-    };
-
-
-
+    internal PositionalManager PositionalManager;
     public Avarice(IDalamudPluginInterface pi)
     {
         P = this;
         ECommonsMain.Init(pi, this, Module.DalamudReflector, Module.ObjectFunctions);
         PunishLibMain.Init(pi, Svc.PluginInterface.InternalName, PunishOption.DefaultKoFi);
-        new TickScheduler(delegate
+        _ = new TickScheduler(delegate
         {
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();
             if(config.Profiles.Count == 0)
@@ -100,11 +73,8 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.Framework.Update += Tick;
             StaticAutoDetectRadiusData = Util.LoadStaticAutoDetectRadiusData();
             if(config.SplatoonUnsafePixel) TabSplatoon.WriteRequest();
+            PositionalManager = new();
         });
-        if (ProperOnLogin.PlayerPresent)
-        {
-            var x = Svc.ClientState.LocalPlayer!.Address;
-        }
     }
 
     private CardinalDirection GetCardinalDirectionForObject(IntPtr arg)

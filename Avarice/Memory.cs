@@ -30,7 +30,7 @@ namespace Avarice
                 if (set.Source?.Address == Svc.ClientState.LocalPlayer?.Address)
                 {
                     var positionalState = PositionalState.Ignore;
-                    if (Avarice.PositionalData.TryGetValue(set.Header.AnimationId, out var actionPosData))
+                    if (P.PositionalManager.IsPositional((int)set.Header.ActionID))
                     {
                         positionalState = PositionalState.Failure;
                         foreach (var effect in set.TargetEffects) 
@@ -38,7 +38,7 @@ namespace Avarice
                             effect.ForEach(entry =>
                             {
                                 if (entry.type == ActionEffectType.Damage)
-                                    if (actionPosData.Contains(entry.param2))
+                                    if(P.PositionalManager.IsPositionalHit((int)set.Header.ActionID, entry.param2))
                                         positionalState = PositionalState.Success;
                             });
                         }
