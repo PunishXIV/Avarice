@@ -1,5 +1,6 @@
 ﻿using Dalamud.Interface.GameFonts;
 using Dalamud.Interface.Style;
+using Lumina.Excel.GeneratedSheets;
 using System.IO;
 
 namespace Avarice.Configuration;
@@ -22,7 +23,7 @@ public class Profile
     public string GUID = Guid.NewGuid().ToString();
     public int NinHutinTh = 30000;
 
-    public ClassDisplayCondition EnableCurrentPie = ClassDisplayCondition.Display_on_all_jobs;
+    public bool EnableCurrentPie = true;
     public Brush CurrentPieSettings = new()
     {
         Color = Vector4.Zero,
@@ -35,7 +36,7 @@ public class Profile
         Fill = ImGui.ColorConvertU32ToFloat4(0x5051C8CF),
         Thickness = 0f
     };
-    public ClassDisplayCondition EnableAnticipatedPie = ClassDisplayCondition.Display_on_positional_jobs;
+    public bool EnableAnticipatedPie = true;
     public Brush AnticipatedPieSettings = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0xFF17F000),
@@ -50,7 +51,7 @@ public class Profile
     };
     public bool AnticipatedDisableTrueNorth = true;
 
-    public ClassDisplayCondition EnableMaxMeleeRing = ClassDisplayCondition.Display_on_all_jobs;
+    public bool EnableMaxMeleeRing = true;
     public Brush MaxMeleeSettingsN = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0x501400E6),
@@ -67,7 +68,7 @@ public class Profile
     public bool HLine = false;
     public bool VLine = false;
 
-    public ClassDisplayCondition EnablePlayerDot = ClassDisplayCondition.Display_on_all_jobs;
+    public bool EnablePlayerDot = true;
     public Brush PlayerDotSettings = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0xFFFFFFFF),
@@ -75,7 +76,7 @@ public class Profile
         Thickness = 2f
     };
     public DisplayCondition PlayerDotDisplayCondition = DisplayCondition.Always;
-    public ClassDisplayCondition EnablePlayerRing = ClassDisplayCondition.Do_not_display;
+    public bool EnablePlayerRing = false;
     public Brush PlayerRingSettings = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0x50000000),
@@ -102,7 +103,7 @@ public class Profile
         Thickness = 2f
     };
 
-    public ClassDisplayCondition EnableFrontSegment = ClassDisplayCondition.Display_on_all_jobs;
+    public bool EnableFrontSegment = true;
     public Brush FrontSegmentIndicator = new()
     {
         Color = Vector4.Zero,
@@ -120,10 +121,13 @@ public class Profile
     public bool DrgAnticipatedDisableRightEye = true;
 
     public DisplayCondition CompassCondition = DisplayCondition.Always;
-    public ClassDisplayCondition CompassEnable = ClassDisplayCondition.Do_not_display;
+    public bool CompassEnable = false;
     public Vector4 CompassColorN = ImGuiColors.DalamudRed;
     public Vector4 CompassColor = ImGuiColors.DalamudYellow;
     public float CompassDistance = 1f;
     public float CompassFontScale = 1f;
     public GameFontFamilyAndSize CompassFont = GameFontFamilyAndSize.MiedingerMid36;
+
+    public bool EnableTankMiddle = false;
+    public bool EnableDutyMiddle = false;
 }

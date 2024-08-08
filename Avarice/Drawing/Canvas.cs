@@ -41,7 +41,8 @@ internal unsafe class Canvas : Window
 
     public override void Draw()
     {
-        if (P.currentProfile.CompassEnable.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.CompassCondition))
+        DrawTankMiddle();
+        if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
         {
             static void DrawLetter(string l, Vector2 pos, Vector4? color = null)
             {
@@ -52,7 +53,7 @@ internal unsafe class Canvas : Window
 
             if(Prof.CompassFont != GameFontFamilyAndSize.Undefined)
             {
-                ImGui.PushFont(Svc.PluginInterface.UiBuilder.GetGameFontHandle(new(Prof.CompassFont)).ImFont);
+                //ImGui.PushFont(Svc.PluginInterface.UiBuilder.GetGameFontHandle(new(Prof.CompassFont)).ImFont);
             }
 
             ImGui.SetWindowFontScale(Prof.CompassFontScale);
@@ -83,30 +84,30 @@ internal unsafe class Canvas : Window
 						ImGui.SetWindowFontScale(1f);
 						if (Prof.CompassFont != GameFontFamilyAndSize.Undefined)
 						{
-                ImGui.PopFont();
+                //ImGui.PopFont();
 						}
 				}
 
-        if (P.currentProfile.EnableCurrentPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
+        if (P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     DrawCurrentPos(bnpc);
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     DrawCurrentPos(bnpc);
                 }
             }
         }
 
-        if (P.currentProfile.EnableMaxMeleeRing.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
+        if (P.currentProfile.EnableMaxMeleeRing && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     if (P.currentProfile.Radius3)
                     {
@@ -123,7 +124,7 @@ internal unsafe class Canvas : Window
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc
                     && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     if (P.currentProfile.Radius3)
@@ -147,56 +148,56 @@ internal unsafe class Canvas : Window
             && IsConditionMatching(P.config.MaxMeleeAttackSettings.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     CircleXZ(bnpc.Position, bnpc.HitboxRadius + 2.0f, P.config.MaxMeleeAttackSettings);
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     CircleXZ(bnpc.Position, bnpc.HitboxRadius + 2.0f, P.config.MaxMeleeAttackSettings);
                 }
             }
         }*/
 
-        if (P.currentProfile.EnablePlayerRing.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
+        if (P.currentProfile.EnablePlayerRing && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
         {
             CircleXZ(Svc.ClientState.LocalPlayer.Position, Svc.ClientState.LocalPlayer.HitboxRadius, P.currentProfile.PlayerRingSettings);
         }
 
-        if (P.currentProfile.EnableFrontSegment.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
+        if (P.currentProfile.EnableFrontSegment && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
         {
             DrawFrontalPosition(Svc.Targets.Target);
             if (Svc.Targets.Target?.Address != Svc.Targets.FocusTarget?.Address) DrawFrontalPosition(Svc.Targets.FocusTarget);
         }
 
-        if (P.currentProfile.EnableAnticipatedPie.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
+        if (P.currentProfile.EnableAnticipatedPie && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
              && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u)))
              && (!P.currentProfile.DrgAnticipatedDisableRightEye || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1910u)))
              && (!P.currentProfile.NinAnticipatedDisableMeikyoShisui || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1233u))))
         {
             {
-                if (Svc.Targets.Target is BattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
                 {
                     DrawAnticipatedPos(bnpc);
                 }
             }
             {
-                if (Svc.Targets.FocusTarget is BattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && bnpc.HasPositional())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && bnpc.HasPositional())
                 {
                     DrawAnticipatedPos(bnpc);
                 }
             }
         }
 
-        if (P.currentProfile.EnablePlayerDot.IsClassDisplayConditionMatching() && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
+        if (P.currentProfile.EnablePlayerDot && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
         {
             if (Svc.GameGui.WorldToScreen(Svc.ClientState.LocalPlayer.Position, out Vector2 pos))
                 ImGui.GetWindowDrawList().AddCircleFilled(
                 new Vector2(pos.X, pos.Y),
                 P.currentProfile.PlayerDotSettings.Thickness,
-                ImGui.ColorConvertFloat4ToU32(P.currentProfile.PlayerDotSettings.Color),
+                ImGui.ColorConvertFloat4ToU32(TabSplatoon.IsUnsafe()?P.config.SplatoonPixelCol:P.currentProfile.PlayerDotSettings.Color),
                 100);
         }
 
@@ -204,7 +205,7 @@ internal unsafe class Canvas : Window
         {
             foreach (var x in Svc.Party)
             {
-                if (x.GameObject is PlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
+                if (x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
                 {
                     if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out Vector2 pos))
                         ImGui.GetWindowDrawList().AddCircleFilled(
@@ -220,7 +221,7 @@ internal unsafe class Canvas : Window
         {
             foreach (var x in Svc.Objects)
             {
-                if (x is PlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
+                if (x is IPlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
                     && (!P.currentProfile.PartyDot || !Svc.Party.Any(x => x.Address == x.GameObject?.Address)))
                 {
                     if (Svc.GameGui.WorldToScreen(x.Position, out Vector2 pos))

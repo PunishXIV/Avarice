@@ -1,6 +1,10 @@
-﻿using Dalamud.Game.ClientState.JobGauge.Types;
+﻿using Avarice.StaticData;
+using Dalamud.Game.ClientState.JobGauge.Types;
+using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
+using Dalamud.Utility;
 using ECommons.GameFunctions;
+using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using static Avarice.Drawing.DrawFunctions;
@@ -10,9 +14,37 @@ namespace Avarice.Drawing;
 
 internal unsafe static class Functions
 {
-    internal static void DrawFrontalPosition(GameObject go) 
+    internal static void DrawTankMiddle()
     {
-        if (go is BattleNpc bnpc && bnpc.IsHostile() &&
+        if (!P.currentProfile.EnableTankMiddle && !P.currentProfile.EnableDutyMiddle) return; //get out early
+        if (Player.Available && Util.TryAutoDetectMiddleOfArena(out var mid))
+        {
+            var points = P.config.DutyMiddleExtras.Where(x => x.TerritoryType == Svc.ClientState.TerritoryType);
+            if (P.currentProfile.EnableTankMiddle && Svc.Targets.Target is IBattleNpc bnpc)
+            {
+                var distance = Vector3.Distance(mid, bnpc.Position);
+                foreach(var x in points)
+                {
+                    var addDistance = Vector3.Distance(x.Position, bnpc.Position);
+                    if(addDistance < distance) distance = addDistance;
+                }
+                var col = distance > P.config.DutyMidRadius ? P.config.UncenteredPixelColor : P.config.CenteredPixelColor;
+                Util.DrawDot(bnpc.Position, P.config.CenterPixelThickness, col);
+            }
+            if (P.currentProfile.EnableDutyMiddle)
+            {
+                Util.DrawDot(mid, P.config.CenterPixelThickness, P.config.DutyMidPixelCol);
+                foreach (var x in points)
+                {
+                    Util.DrawDot(x.Position, P.config.CenterPixelThickness, P.config.DutyMidPixelCol);
+                }
+            }
+        }
+    }
+
+    internal static void DrawFrontalPosition(IGameObject go) 
+    {
+        if (go is IBattleNpc bnpc && bnpc.IsHostile() &&
                 (!P.currentProfile.FrontStand || GetDirection(bnpc) == CardinalDirection.North))
         {
             if (P.currentProfile.VLine && P.currentProfile.FrontStand)
@@ -27,36 +59,70 @@ internal unsafe static class Functions
         }
     }
 
-    internal static void DrawAnticipatedPos(BattleNpc bnpc)
+    internal static void DrawAnticipatedPos(IBattleNpc bnpc)
     {
-        var move = *P.memory.LastComboMove;
-        var mnk = Svc.ClientState.LocalPlayer.ClassJob.Id == 20 && Svc.ClientState.LocalPlayer.Level >= 30;
-        var mnkRear = mnk && MnkIsRear(bnpc);
-        if (move == 16473 && P.currentProfile.MnkAoEDisable) return; //mnk Four-point Fury AoE
-        var drglvl = Svc.ClientState.LocalPlayer.Level >= 50;
-        if (move.EqualsAny(7478u) // sam
-            || Util.CanExecuteGallows()
-            || (move == 2242 && (Svc.Gauges.Get<NINGauge>().HutonTimer > P.currentProfile.NinHutinTh || Svc.Gauges.Get<NINGauge>().HutonTimer == 0) && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(2255).ClassJobLevel)
-            || NinRearTrickAttackAvailable()
-            || (mnk && mnkRear)
-            || Util.CanExecuteWheelingThrust() ||  (move.EqualsAny(87u) && drglvl)
-            ) //rear
+        if(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var overrideData) && overrideData[0] != 0)
         {
-            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);
+            if (Data.ActionPositional.TryGetValue((ActionID)overrideData[0], out var pos))
+            {
+                if(pos == EnemyPositional.Rear)
+                {
+                    DrawRear();
+                    return;
+                }
+                else if(pos == EnemyPositional.Flank)
+                {
+                    DrawSides();
+                    return;
+                }
+            }
+            return;
         }
-        else if (move.EqualsAny(7479u)
-            || Util.CanExecuteGibbet()
-            || (move == 2242 && Svc.Gauges.Get<NINGauge>().HutonTimer <= P.currentProfile.NinHutinTh && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3563).ClassJobLevel)
-            || (mnk && !mnkRear && move.EqualsAny(54u, 61u))
-            || Util.CanExecuteFangAndClaw()
-            ) //sides/flank
+
+        void DrawRear() => ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);
+        void DrawSides()
         {
             ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(270 - 45), Maths.Radians(270 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
             ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(90 - 45), Maths.Radians(90 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
         }
+        var move = P.memory.LastComboMove;
+        var mnk = Svc.ClientState.LocalPlayer.ClassJob.Id == 20 && Svc.ClientState.LocalPlayer.Level >= 30;
+        var mnkRear = mnk && MnkIsRear(bnpc);
+        if (move == 16473 && P.currentProfile.MnkAoEDisable) return; //mnk Four-point Fury AoE
+
+        if (
+            // Ninja is disabled because the Huton Timer gauge thing won't let me build otherwise. It's broken anyway
+
+            //|| (move == 2242 && (Svc.Gauges.Get<NINGauge>().HutonTimer > P.currentProfile.NinHutinTh || Svc.Gauges.Get<NINGauge>().HutonTimer == 0) && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(2255).ClassJobLevel)
+            //NinRearTrickAttackAvailable()
+
+            (mnk && mnkRear)
+
+            || Util.IsReaperAnticipatedRear()
+            || Util.IsSamuraiAnticipatedRear()
+            || Util.IsDragoonAnticipatedRear()
+            || Util.IsViperAnticipatedRear()
+            ) //rear
+        {
+            DrawRear();
+        }
+        else if (
+             //(move == 2242 && Svc.Gauges.Get<NINGauge>().HutonTimer <= P.currentProfile.NinHutinTh && Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(3563).ClassJobLevel)
+             (mnk && !mnkRear && move.EqualsAny(54u, 61u))
+
+            || Util.IsReaperAnticipatedFlank()
+            || Util.IsSamuraiAnticipatedFlank()
+            || Util.IsDragoonAnticipatedFlank()
+            || Util.IsViperAnticipatedFlank()
+            ) //sides/flank
+        {
+            DrawSides();
+        }
     }
 
-    private static bool MnkIsRear(BattleNpc bnpc)
+
+
+    private static bool MnkIsRear(IBattleNpc bnpc)
     {
         return Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(109u, 110u))
             && (!bnpc.StatusList.TryGetFirst(x => x.StatusId.EqualsAny(246u, 3001u), out var status) || status.RemainingTime < P.currentProfile.MnkDemolish);
@@ -71,7 +137,7 @@ internal unsafe static class Functions
             && Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(507u, 614u)); 
     }
 
-    internal static void DrawCurrentPos(BattleNpc bnpc)
+    internal static void DrawCurrentPos(IBattleNpc bnpc)
     {
         var angle = GetAngle(bnpc);
         var direction = MathHelper.GetCardinalDirection(angle);
@@ -93,7 +159,7 @@ internal unsafe static class Functions
         }
     }
 
-    internal static void DrawSegmentedCircle(BattleNpc bnpc, float addRadius, bool lines)
+    internal static void DrawSegmentedCircle(IBattleNpc bnpc, float addRadius, bool lines)
     {
         var radius = bnpc.HitboxRadius + addRadius;
 

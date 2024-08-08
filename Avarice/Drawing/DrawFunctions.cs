@@ -6,11 +6,11 @@ namespace Avarice.Drawing;
 internal static class DrawFunctions
 {
     // ----------- actor-aware draw methods --------------
-    internal static void ActorConeXZ(GameObject actor, float radius, float startRads, float endRads, Brush brush, bool lines = true)
+    internal static void ActorConeXZ(IGameObject actor, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
         ConeXZ(actor.Position, radius, startRads + actor.Rotation, endRads + actor.Rotation, brush, lines);
     }
-    internal static void ActorLineXZ(GameObject actor, float radius, float rotation, Brush brush)
+    internal static void ActorLineXZ(IGameObject actor, float radius, float rotation, Brush brush)
 {
         var shape = new ConvexShape(brush);
         shape.Point(actor.Position);
@@ -18,7 +18,7 @@ internal static class DrawFunctions
         shape.Done();
     }
 
-    internal static void ActorArrowXZ(GameObject actor, float radius, float angle, float scale, Brush brush)
+    internal static void ActorArrowXZ(IGameObject actor, float radius, float angle, float scale, Brush brush)
     {
         var direction = angle + actor.Rotation;
 
@@ -43,7 +43,7 @@ internal static class DrawFunctions
         shape.Done();
     }
 
-    internal static void ActorDonutSliceXZ(GameObject actor, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
+    internal static void ActorDonutSliceXZ(IGameObject actor, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
     {
         DonutSliceXZ(actor.Position, innerRadius, outerRadius, startRads + actor.Rotation, endRads + actor.Rotation, brush);
     }

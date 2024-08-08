@@ -1,4 +1,5 @@
 ﻿using Dalamud.Interface.Components;
+using PunishLib.ImGuiMethods;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,14 +12,19 @@ namespace Avarice.ConfigurationWindow.Player
 {
 		internal static class BoxCompass
 		{
-				internal static void Draw() => PunishLib.ImGuiMethods.InfoBox.DrawBox("Tactical Compass", DrawInternal);
+				internal static void Draw()
+				{
+						ImGuiGroup.BeginGroupBox("Tactical Compass");
+						DrawInternal();
+						ImGuiGroup.EndGroupBox();
+				}
 
 				static void DrawInternal()
 				{
 						ImGui.PushID("compass");
 						ImGui.SetNextItemWidth(SelectWidth);
-						ImGuiEx.EnumCombo("##compass", ref P.currentProfile.CompassEnable, ClassDisplayConditionNames);
-						if (P.currentProfile.CompassEnable.IsEnabled())
+            ImGui.Checkbox("Tactical Compass", ref P.currentProfile.CompassEnable);
+						//if (P.currentProfile.CompassEnable)
 						{
 								ImGui.SameLine();
 								ImGui.SetNextItemWidth(150f);

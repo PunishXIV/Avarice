@@ -6,10 +6,9 @@
   "Punchline": "Positional feedback with pixel perfect rear/flank tracking, range indicators, and more.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/PunishXIV/Avarice",
-  "DalamudApiLevel": 8,
   "IconUrl": "https://love.puni.sh/resources/avarice.png",
-  "Tags": [
-    "combat"
-  ],
-  "Changelog": "- DRG: option to disable drawing anticipated positional if user is under the effects of Right Eye"
+    "Tags": [
+        "combat"
+    ],
+    "DalamudApiLevel": 10
 }

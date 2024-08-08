@@ -20,11 +20,14 @@ global using ECommons.ImGuiMethods;
 global using Avarice.Configuration;
 global using Avarice.ConfigurationWindow;
 global using static Avarice.Global;
-using Dalamud.Game.ClientState.Objects.SubKinds;
+global using ECommons.DalamudServices.Legacy;
+global using Dalamud.Interface.Utility;
+global using Dalamud.Game.ClientState.Objects.SubKinds;
+using ECommons.GameHelpers;
 
 namespace Avarice;
 internal static class Global
 {
 		internal static Profile Prof => P.currentProfile;
-		internal static PlayerCharacter LP => Svc.ClientState.LocalPlayer;
+		internal static IPlayerCharacter LP => Player.Object;
 }

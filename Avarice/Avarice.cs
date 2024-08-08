@@ -29,32 +29,41 @@ public unsafe class Avarice : IDalamudPlugin
 
     internal static uint[] PositionalJobs = new uint[] { 2, 4, 29, 30, 20, 34, 39, 22 };
     internal uint Job = 0;
+    internal HashSet<uint> StaticAutoDetectRadiusData;
 
     internal static readonly Dictionary<int, HashSet<int>> PositionalData = new()
     {
-        {   56, new HashSet<int> {19, 21}},                 // Snap Punch
-        {   66, new HashSet<int> {46, 60}},                 // Demolish
-        // {   79, new HashSet<int> {}},                // Heavy Thrust
-        {   88, new HashSet<int> {28, 61}},             // Chaos Thrust
-        { 2255, new HashSet<int> {30, 37, 68, 75}},             // Aeolian Edge
-        { 2258, new HashSet<int> {25}},                 // Trick Attack
-        { 3554, new HashSet<int> {10, 13}},             // Fang and Claw
-        { 3556, new HashSet<int> {10, 13}},             // Wheeling Thrust
-        { 3563, new HashSet<int> {30, 37, 66, 73}},             // Armor Crush
-        { 7481, new HashSet<int> {29, 33, 68, 72}},     // Gekko (rear)
-        { 7482, new HashSet<int> {29, 33, 68, 72}},     // Kasha (flank)
-        {24382, new HashSet<int> {11, 13}},             // Gibbet (flank)
-        {24383, new HashSet<int> {11, 13}},             // Gallows (rear)
-        {25772, new HashSet<int> {28, 66}},             // Chaotic Spring
+            {   56, [13] },					// Snap Punch
+		        {   66, [16] },					// Demolish
+		        {   88, [28, 61] },             // Chaos Thrust
+		        { 2255, [30, 63, 70] },			// Aeolian Edge
+		        { 2258, [25] },                 // Trick Attack
+		        { 3554, [28, 66] },             // Fang and Claw
+		        { 3556, [28, 66] },             // Wheeling Thrust
+		        { 3563, [30, 65] },				// Armor Crush
+		        { 7481, [29, 33, 68, 72] },     // Gekko (rear)
+		        { 7482, [29, 33, 68, 72] },     // Kasha (flank)
+		        {24382, [11, 13] },             // Gibbet (flank)
+		        {24383, [11, 13] },             // Gallows (rear)
+		        {25772, [28, 66] },             // Chaotic Spring
+		
+		        {34610, [52, 54, 66, 70] },				// Flanksting Strike 
+		        {34611, [52, 54, 66, 70] },				// Flanksbane Fang 
+		        {34612, [52, 54, 66, 70] },				// Hindsting Strike 
+		        {34613, [52, 54, 66, 70] },				// Hindsbane Fang 
+		
+		
+		        {34621, [9] },					// Hunter's Coil
+		        {34622, [9] },					// Swiftskin's Coil
     };
 
 
 
-    public Avarice(DalamudPluginInterface pi)
+    public Avarice(IDalamudPluginInterface pi)
     {
         P = this;
         ECommonsMain.Init(pi, this, Module.DalamudReflector, Module.ObjectFunctions);
-        PunishLibMain.Init(pi, this, PunishOption.DefaultKoFi);
+        PunishLibMain.Init(pi, Svc.PluginInterface.InternalName, PunishOption.DefaultKoFi);
         new TickScheduler(delegate
         {
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();
@@ -73,13 +82,24 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
             Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configWindow.IsOpen = true; };
             Svc.Condition.ConditionChange += OnConditionChange;
-            Svc.Commands.AddHandler("/avarice", new CommandInfo(delegate
-            { configWindow.IsOpen = !configWindow.IsOpen; })
+            Svc.Commands.AddHandler("/avarice", new CommandInfo((string cmd, string args) =>
+            {
+                if (args == "debug")
+                {
+                    P.currentProfile.Debug = !P.currentProfile.Debug;
+                }
+                else
+                {
+                    configWindow.IsOpen = !configWindow.IsOpen;
+                }
+            })
             { HelpMessage = "Toggle configuration/stats window" });
             //LoadOpcode.Start();
             LuminaSheets.Init();
             Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
             Svc.Framework.Update += Tick;
+            StaticAutoDetectRadiusData = Util.LoadStaticAutoDetectRadiusData();
+            if(config.SplatoonUnsafePixel) TabSplatoon.WriteRequest();
         });
         if (ProperOnLogin.PlayerPresent)
         {
@@ -207,7 +227,7 @@ public unsafe class Avarice : IDalamudPlugin
         P = null;
     }
 
-    private void Tick(Framework framework)
+    private void Tick(object framework)
     {
         if (Svc.ClientState.LocalPlayer != null)
         {

@@ -12,7 +12,7 @@ internal static class LuminaSheets
         NonPositionalUnits = Svc.Data.GetExcelSheet<BNpcBase>()!.Where(x => x.Unknown10).Select(x => x.RowId).ToArray();
     }
 
-    public static bool HasPositional(this GameObject obj)
+    public static bool HasPositional(this IGameObject obj)
     {
         return !NonPositionalUnits.Contains(obj.DataId);
     }
