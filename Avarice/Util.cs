@@ -4,6 +4,8 @@ using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using PunishLib.ImGuiMethods;
 using System.IO;
+using Dalamud.Game.ClientState.JobGauge.Enums;
+using Dalamud.Game.ClientState.JobGauge.Types;
 
 namespace Avarice;
 
@@ -192,15 +194,15 @@ internal static unsafe class Util
         //34612 = Hindsting Strike     (Lvl 30+)
         //34613 = Hindsbane Fang       (Lvl 30+)
 
-        //34620 = Dreadwinter          (Lvl 65+)
-        //Dreadwinter (lvl 65) is used to prime Swiftskin's Coil for rear positional
-        //34622 = Swiftskin's Coil     (Lvl 65+)
+        //Anticipation for Swiftskin's Coil uses Dalamud's job gauge structs.
+        //Note that if dreadStage is HuntersCoil or SwiftskinsCoil, that means Hunter's/Swiftskin's Coil was used as the *first* coil in the combo --
+        //once the second coil is executed, the combo is over and DreadCombo returns 0.
 
         var levelcheckHindsting = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34612).ClassJobLevel;
         var levelcheckHindsbane = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34613).ClassJobLevel;
-        //var levelcheckSwiftskin = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34622).ClassJobLevel;
+        DreadCombo dreadStage = Svc.Gauges.Get<VPRGauge>().DreadCombo;
         var move = P.memory.LastComboMove;
-        return (levelcheckHindsting && move.EqualsAny(34609u)) || (levelcheckHindsbane && move.EqualsAny(34609u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u)); //|| (levelcheckSwiftskin && move.EqualsAny(34620u, 34637u));
+        return dreadStage == DreadCombo.HuntersCoil || (dreadStage != DreadCombo.SwiftskinsCoil && ((levelcheckHindsting && move.EqualsAny(34609u)) || (levelcheckHindsbane && move.EqualsAny(34609u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u))));
     }
     public static bool IsViperAnticipatedFlank()
     {
@@ -209,15 +211,15 @@ internal static unsafe class Util
         //34610 = Flanksting Strike     (Lvl 30+)
         //34611 = Flanksbane Fang       (Lvl 30+)
 
-        //34620 = Dreadwinter           (Lvl 65+)
-        //Dreadwinter (lvl 65) is used to prime Hunters's Coil for flank positional
-        //34621 = Hunter's Coil         (Lvl 65+)
+        //Anticipation for Hunter's Coil uses Dalamud's job gauge structs.
+        //Note that if dreadStage is HuntersCoil or SwiftskinsCoil, that means Hunter's/Swiftskin's Coil was used as the *first* coil in the combo --
+        //once the second coil is executed, the combo is over and DreadCombo returns 0.
 
         var levelcheckFlanksting = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34610).ClassJobLevel;
         var levelcheckFlanksbane = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34611).ClassJobLevel;
-        //var levelcheckHuntersCoil = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(34621).ClassJobLevel;
+        DreadCombo dreadStage = Svc.Gauges.Get<VPRGauge>().DreadCombo;
         var move = P.memory.LastComboMove;
-        return (levelcheckFlanksting && move.EqualsAny(34608u)) || (levelcheckFlanksbane && move.EqualsAny(34608u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)); //|| (levelcheckHuntersCoil && move.EqualsAny(34620u, 34636u));
+        return dreadStage == DreadCombo.SwiftskinsCoil || (dreadStage != DreadCombo.HuntersCoil && ((levelcheckFlanksting && move.EqualsAny(34608u)) || (levelcheckFlanksbane && move.EqualsAny(34608u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u))));
     }
 
     public static bool IsDragoonAnticipatedRear()
