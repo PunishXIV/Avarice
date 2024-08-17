@@ -3,10 +3,12 @@ using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.SubKinds;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Utility;
+using ECommons.EzSharedDataManager;
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using static Avarice.Drawing.DrawFunctions;
 using static Avarice.Util;
 
@@ -79,11 +81,19 @@ internal unsafe static class Functions
             return;
         }
 
-        void DrawRear() => ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);
+        void DrawRear()
+        {
+            ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(180 - 45), Maths.Radians(180 + 45), P.currentProfile.AnticipatedPieSettings);
+            P.PositionalStatus[0] = Framework.Instance()->FrameCounter;
+            P.PositionalStatus[1] = 1;
+        }
+
         void DrawSides()
         {
             ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(270 - 45), Maths.Radians(270 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
             ActorConeXZ(bnpc, bnpc.HitboxRadius + GetSkillRadius(), Maths.Radians(90 - 45), Maths.Radians(90 + 45), P.currentProfile.AnticipatedPieSettingsFlank);
+            P.PositionalStatus[0] = Framework.Instance()->FrameCounter;
+            P.PositionalStatus[1] = 2;
         }
         var move = P.memory.LastComboMove;
         var mnk = Svc.ClientState.LocalPlayer.ClassJob.Id == 20 && Svc.ClientState.LocalPlayer.Level >= 30;

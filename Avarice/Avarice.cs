@@ -7,9 +7,11 @@ using Dalamud.Game.Text.SeStringHandling;
 using Dalamud.Hooking;
 using Dalamud.Utility.Signatures;
 using ECommons.Events;
+using ECommons.EzSharedDataManager;
 using ECommons.MathHelpers;
 using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.Game.Character;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using PunishLib;
 using System;
 
@@ -32,6 +34,8 @@ public unsafe class Avarice : IDalamudPlugin
     internal uint Job = 0;
     internal HashSet<uint> StaticAutoDetectRadiusData;
     internal PositionalManager PositionalManager;
+    internal uint[] PositionalStatus;
+
     public Avarice(IDalamudPluginInterface pi)
     {
         P = this;
@@ -39,6 +43,7 @@ public unsafe class Avarice : IDalamudPlugin
         PunishLibMain.Init(pi, Svc.PluginInterface.InternalName, PunishOption.DefaultKoFi);
         _ = new TickScheduler(delegate
         {
+            PositionalStatus = EzSharedData.GetOrCreate<uint[]>("Avarice.PositionalStatus", [0, 0]);
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();
             if(config.Profiles.Count == 0)
             {
@@ -199,6 +204,10 @@ public unsafe class Avarice : IDalamudPlugin
 
     private void Tick(object framework)
     {
+        if(Framework.Instance()->FrameCounter - PositionalStatus[0] > 1)
+        {
+            PositionalStatus[1] = 0;
+        }
         if (Svc.ClientState.LocalPlayer != null)
         {
             var newJob = Svc.ClientState.LocalPlayer.ClassJob.Id;
