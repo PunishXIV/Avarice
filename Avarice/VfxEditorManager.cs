@@ -12,7 +12,7 @@ internal class VfxEditorManager
             var plugin = Get();
             plugin.CallStatic("VfxEditor.Spawn.VfxSpawn", "OnSelf", [success ? "vfx/lockon/eff/m0489trg_a0c.avfx" : "vfx/lockon/eff/m0489trg_b0c.avfx", false]);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             PluginLog.Error(e.Message);
             PluginLog.Error(e.StackTrace);
@@ -26,14 +26,14 @@ internal class VfxEditorManager
             var plugin = Get();
             plugin.CallStatic("VfxEditor.Spawn.VfxSpawn", "Remove", []);
         }
-        catch (Exception e)
+        catch(Exception e)
         {
             PluginLog.Error(e.Message);
             PluginLog.Error(e.StackTrace);
         }
     }
 
-    static IDalamudPlugin Get()
+    private static IDalamudPlugin Get()
     {
         DalamudReflector.TryGetDalamudPlugin("VFXEditor", out var instance);
         return instance;

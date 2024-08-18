@@ -84,7 +84,7 @@ public class Profile
         Thickness = 2f
     };
 
-    public Dictionary<uint, Stats> Stats = new();
+    public Dictionary<uint, Stats> Stats = [];
     public Stats CurrentEncounterStats = new();
 
     public bool PartyDot = false;
