@@ -6,4 +6,3 @@ public enum PositionalState
     Success,
     Failure
 }
-
