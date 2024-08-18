@@ -7,11 +7,16 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Avarice", "Avarice\Avarice.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "PunishLib", "PunishLib", "{6C896DCA-E1C1-4BE4-ACA7-BE2A12908D33}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PunishLib", "PunishLib\PunishLib\PunishLib.csproj", "{A60E763A-ED0C-437F-9EB8-009EADC8BD01}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PunishLib", "PunishLib\PunishLib\PunishLib.csproj", "{A60E763A-ED0C-437F-9EB8-009EADC8BD01}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ECommons", "ECommons", "{998C3DE0-B16D-4AB8-975A-42FB1156DEB8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ECommons", "ECommons\ECommons\ECommons.csproj", "{CFEA2201-7883-4FB1-97E6-C17DF59B4963}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ECommons", "ECommons\ECommons\ECommons.csproj", "{CFEA2201-7883-4FB1-97E6-C17DF59B4963}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2AC684E8-8092-4795-9722-BD37B963DE85}"
+	ProjectSection(SolutionItems) = preProject
+		..\.editorconfig = ..\.editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -49,11 +54,11 @@ Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {D3214138-DEAB-424B-B204-018DA8FE9D33}
-	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{A60E763A-ED0C-437F-9EB8-009EADC8BD01} = {6C896DCA-E1C1-4BE4-ACA7-BE2A12908D33}
 		{CFEA2201-7883-4FB1-97E6-C17DF59B4963} = {998C3DE0-B16D-4AB8-975A-42FB1156DEB8}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {D3214138-DEAB-424B-B204-018DA8FE9D33}
 	EndGlobalSection
 EndGlobal
