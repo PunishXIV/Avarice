@@ -4,7 +4,7 @@ namespace Avarice.ConfigurationWindow;
 
 internal static class TabStatistics
 {
-    private static InfoBox StatsGlobal = new()
+    static InfoBox StatsGlobal = new()
     {
         Label = "Total stats",
         ContentsAction = delegate
@@ -28,13 +28,13 @@ internal static class TabStatistics
             {
                 if(ImGui.GetIO().KeyShift && ImGui.GetIO().KeyCtrl)
                 {
-                    P.currentProfile.Stats = [];
+                    P.currentProfile.Stats = new();
                 }
             }
         }
     };
 
-    private static void DrawStatsRow(uint job, Stats x, string colName = null)
+    static void DrawStatsRow(uint job, Stats x, string colName = null)
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
@@ -49,14 +49,14 @@ internal static class TabStatistics
         ImGuiEx.Text(ImGuiEx.GetParsedColor(success), $"{success}%");
     }
 
-    private static InfoBox StatsCurrent = new()
+    static InfoBox StatsCurrent = new()
     {
         Label = "Current encounter",
         ContentsAction = delegate
         {
             var x = P.currentProfile.CurrentEncounterStats;
             var total = x.Hits + x.Missed;
-            if(total == 0)
+            if (total == 0)
             {
                 ImGuiEx.Text("No data");
             }
@@ -66,12 +66,12 @@ internal static class TabStatistics
                 ImGuiEx.Text($"Hits: {x.Hits} out of {total} - ");
                 ImGui.SameLine(0, 0);
                 ImGuiEx.Text(ImGuiEx.GetParsedColor(success), $"{success}%");
-                if(ImGui.SmallButton("Clear data"))
+                if (ImGui.SmallButton("Clear data"))
                 {
                     P.currentProfile.CurrentEncounterStats = new();
                 }
                 ImGui.SameLine();
-                if(P.currentProfile.CurrentEncounterStats.Finished)
+                if (P.currentProfile.CurrentEncounterStats.Finished)
                 {
                     StatsCurrent.Label = "Recent encounter";
                     ImGuiEx.Text(ImGuiColors.DalamudRed, "Stats will be reset on next positional cast");
@@ -79,7 +79,7 @@ internal static class TabStatistics
                 else
                 {
                     StatsCurrent.Label = "Current encounter";
-                    if(ImGui.SmallButton("Finalize"))
+                    if (ImGui.SmallButton("Finalize"))
                     {
                         P.currentProfile.CurrentEncounterStats.Finished = true;
                     }

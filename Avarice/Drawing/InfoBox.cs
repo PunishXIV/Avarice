@@ -22,19 +22,19 @@ internal class InfoBox
         StartPosition = ImGui.GetCursorScreenPos();
         StartPosition += Offset;
 
-        if(Debug)
+        if (Debug)
         {
             DrawList.AddCircleFilled(StartPosition, 2.0f, ImGui.GetColorU32(ImGuiColors.ParsedPurple));
         }
 
         DrawContents();
 
-        if(Size == Vector2.Zero)
+        if (Size == Vector2.Zero)
         {
             Size = ImGui.GetContentRegionAvail() with { Y = ImGui.GetItemRectMax().Y - ImGui.GetItemRectMin().Y + CurveRadius * 2.0f };
         }
 
-        if(AutoResize)
+        if (AutoResize)
         {
             Size = Size with { Y = ImGui.GetItemRectMax().Y - ImGui.GetItemRectMin().Y + CurveRadius * 2.0f };
         }
@@ -90,7 +90,7 @@ internal class InfoBox
         DrawList.PathArcTo(bottomRightCurveCenter, CurveRadius, DegreesToRadians(0), DegreesToRadians(90), SegmentResolution);
         DrawList.PathStroke(ColorU32, ImDrawFlags.None, BorderThickness);
 
-        if(Debug)
+        if (Debug)
         {
             DrawList.AddCircleFilled(topLeftCurveCenter, 2.0f, ImGui.GetColorU32(ImGuiColors.DalamudRed));
             DrawList.AddCircleFilled(topRightCurveCenter, 2.0f, ImGui.GetColorU32(ImGuiColors.ParsedGreen));
