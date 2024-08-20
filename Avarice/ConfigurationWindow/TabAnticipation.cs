@@ -98,7 +98,9 @@ internal static unsafe class TabAnticipation
 		Label = "Reaper",
 		ContentsAction = delegate
 		{
-
+			ImGui.Text("Rear or Flank anticipation first?");
+			_ = ImGui.RadioButton("Rear", ref P.currentProfile.Reaper, 0);
+			_ = ImGui.RadioButton("Flank", ref P.currentProfile.Reaper, 1);
 		}
 	};
 
@@ -119,7 +121,7 @@ internal static unsafe class TabAnticipation
 		//BoxDrg.DrawStretched();
 		BoxNin.DrawStretched();
 		BoxSam.DrawStretched();
-		//BoxRpr.DrawStretched();
+		BoxRpr.DrawStretched();
 		//BoxVpr.DrawStretched();
 	}
 }

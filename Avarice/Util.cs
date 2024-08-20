@@ -320,13 +320,15 @@ internal static unsafe class Util
 	{
 		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow((uint)ActionID.Gallows).ClassJobLevel;
 		return levelcheck && (Player.Status.Any(x => x.StatusId.EqualsAny(2587u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3858u)))
-			&& Player.Status.Any(x => x.StatusId.EqualsAny(2589u));
+			&& (Player.Status.Any(x => x.StatusId.EqualsAny(2589u))
+			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(2588u)) && !Player.Status.Any(x => x.StatusId.EqualsAny(2589u)) && P.currentProfile.Reaper == 0));
 	}
 	public static bool IsRPRAnticipatedFlank()
 	{
 		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow((uint)ActionID.Gibbet).ClassJobLevel;
 		return levelcheck && (Player.Status.Any(x => x.StatusId.EqualsAny(2587u)) || Player.Status.Any(x => x.StatusId.EqualsAny(3858u)))
-			&& Player.Status.Any(x => x.StatusId.EqualsAny(2588u));
+			&& (Player.Status.Any(x => x.StatusId.EqualsAny(2588u))
+			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(2588u)) && !Player.Status.Any(x => x.StatusId.EqualsAny(2589u)) && P.currentProfile.Reaper == 1));
 	}
 
 	public static bool IsVPRAnticipatedRear()
