@@ -87,9 +87,6 @@ internal static unsafe class Util
 
 	internal static void DrawStretched(this Drawing.InfoBox box)
 	{
-		/*box.Size = new(ImGui.GetContentRegionAvail().X, box.Size.Y);
-        box.Draw();
-        ImGuiHelpers.ScaledDummy(20f);*/
 		_ = ImGuiGroup.BeginGroupBox(box.Label);
 		box.ContentsAction();
 		ImGuiGroup.EndGroupBox();
