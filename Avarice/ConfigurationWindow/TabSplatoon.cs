@@ -30,7 +30,7 @@ namespace Avarice.ConfigurationWindow
         internal static bool IsUnsafe()
         {
             if(!P.config.SplatoonUnsafePixel) return false;
-            if (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out var data)) return data[0];
+            if(Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out var data)) return data[0];
             return false;
         }
     }
