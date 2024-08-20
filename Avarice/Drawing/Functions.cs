@@ -2,7 +2,6 @@
 using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using static Avarice.Drawing.DrawFunctions;
 using static Avarice.Util;
@@ -123,25 +122,6 @@ internal static unsafe class Functions
 			ActorLineXZ(bnpc, radius, Maths.Radians(270), wColor);
 			ActorLineXZ(bnpc, radius, Maths.Radians(90), eColor);
 		}
-	}
-
-	private static bool MnkIsRear(IBattleNpc bnpc)
-	{
-		return Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(109u, 110u))
-			&& (!bnpc.StatusList.TryGetFirst(x => x.StatusId.EqualsAny(246u, 3001u), out Dalamud.Game.ClientState.Statuses.Status status) || status.RemainingTime < P.currentProfile.MnkDemolish);
-	}
-
-	private static int? TrickAttackCDGroup = null;
-	private static bool NinRearTrickAttackAvailable()
-	{
-		if (!P.currentProfile.NinRearForTrickAttack)
-		{
-			return false;
-		}
-
-		TrickAttackCDGroup ??= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow(2258).CooldownGroup - 1;
-		return ActionManager.Instance()->GetRecastGroupDetail(TrickAttackCDGroup.Value)->IsActive == 0
-			&& Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(507u, 614u));
 	}
 
 	internal static void DrawAnticipatedPos(IBattleNpc bnpc)

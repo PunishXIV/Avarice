@@ -1,5 +1,4 @@
-﻿using Dalamud.Interface.Components;
-using static Avarice.ConfigurationWindow.ConfigWindow;
+﻿using static Avarice.ConfigurationWindow.ConfigWindow;
 
 namespace Avarice.ConfigurationWindow;
 
@@ -63,8 +62,7 @@ internal static unsafe class TabAnticipation
 		Label = "Monk",
 		ContentsAction = delegate
 		{
-			_ = ImGui.Checkbox("Disable Anticipation during AoE", ref P.currentProfile.MnkAoEDisable);
-			ImGuiComponents.HelpMarker("Disables highlighting positionals after a Four-Point Fury.");
+
 		}
 	};
 
@@ -82,9 +80,7 @@ internal static unsafe class TabAnticipation
 		Label = "Ninja",
 		ContentsAction = delegate
 		{
-			ImGuiEx.TextWrapped(ImGuiColors.DalamudRed, "Notice: NIN positional anticipation support is experimental.");
-			_ = ImGui.Checkbox("Enable Trick Attack rear indicator?", ref P.currentProfile.NinRearForTrickAttack);
-			ImGuiComponents.HelpMarker("If Trick Attack is off cooldown and you are under the effects of Hidden/Suiton, light up the rear slice.");
+			_ = ImGui.Checkbox("Show anticipation for rear when Trick Attack is off cooldown", ref P.currentProfile.TrickAttack);
 		}
 	};
 
@@ -93,7 +89,7 @@ internal static unsafe class TabAnticipation
 		Label = "Samurai",
 		ContentsAction = delegate
 		{
-			_ = ImGui.Checkbox("Disable when under the effect of Meikyo Shisui", ref P.currentProfile.NinAnticipatedDisableMeikyoShisui);
+			_ = ImGui.Checkbox("Disable anticipation when you have the Meikyo Shisui buff", ref P.currentProfile.Meikyo);
 		}
 	};
 
@@ -119,7 +115,7 @@ internal static unsafe class TabAnticipation
 	{
 		ImGuiHelpers.ScaledDummy(5f);
 		BoxAnticipated.DrawStretched();
-		BoxMnk.DrawStretched();
+		//BoxMnk.DrawStretched();
 		//BoxDrg.DrawStretched();
 		BoxNin.DrawStretched();
 		BoxSam.DrawStretched();

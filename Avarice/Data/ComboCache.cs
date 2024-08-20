@@ -12,6 +12,7 @@ namespace Avarice.Data
 		private const uint InvalidObjectID = 0xE000_0000;
 
 		private readonly ConcurrentDictionary<(uint StatusID, ulong? TargetID, ulong? SourceID), DalamudStatus.Status?> statusCache = new();
+		private readonly ConcurrentDictionary<uint, CooldownData?> cooldownCache = new();
 
 		private readonly ConcurrentDictionary<Type, JobGaugeBase> jobGaugeCache = new();
 
@@ -64,6 +65,21 @@ namespace Avarice.Data
 			}
 
 			return statusCache[key] = null;
+		}
+
+		internal unsafe CooldownData GetCooldown(uint actionID)
+		{
+			if (cooldownCache.TryGetValue(actionID, out CooldownData? found))
+			{
+				return found!;
+			}
+
+			CooldownData data = new()
+			{
+				ActionID = actionID,
+			};
+
+			return cooldownCache[actionID] = data;
 		}
 
 		internal static ComboCache ComboCacheInstance { get; set; } = null!;
