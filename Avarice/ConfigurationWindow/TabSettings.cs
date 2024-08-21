@@ -13,7 +13,7 @@ internal static class TabSettings
         { ClassDisplayCondition.Display_on_all_jobs, "DoW/DoM/DoH/DoL" },
     };*/
 
-    private static InfoBox BoxGeneral = new()
+    static InfoBox BoxGeneral = new()
     {
         ContentsAction = delegate
         {
@@ -28,7 +28,8 @@ internal static class TabSettings
         },
         Label = "General settings"
     };
-    private static InfoBox BoxCurrentSegment = new()
+
+    static InfoBox BoxCurrentSegment = new()
     {
         Label = "Current Slice Highlight Settings",
         ContentsAction = delegate
@@ -53,7 +54,8 @@ internal static class TabSettings
             }
         }
     };
-    private static InfoBox BoxFront = new()
+
+    static InfoBox BoxFront = new()
     {
         Label = "Front Slice Indicator",
         ContentsAction = delegate
@@ -71,7 +73,8 @@ internal static class TabSettings
             }
         }
     };
-    private static InfoBox BoxMeleeRing = new()
+
+    static InfoBox BoxMeleeRing = new()
     {
         Label = "Target Ring Settings",
         ContentsAction = delegate
@@ -83,7 +86,7 @@ internal static class TabSettings
                 DrawUnfilledMultiSettings("b", ref P.currentProfile.MaxMeleeSettingsN,
                     ref P.currentProfile.MaxMeleeSettingsS,
                     ref P.currentProfile.MaxMeleeSettingsE,
-                    ref P.currentProfile.MaxMeleeSettingsW,
+                    ref P.currentProfile.MaxMeleeSettingsW, 
                     ref P.currentProfile.DrawLines,
                     ref P.currentProfile.SameColor);
             }
@@ -92,7 +95,8 @@ internal static class TabSettings
             ImGui.Checkbox("Enable vertical split?", ref P.currentProfile.VLine);
         }
     };
-    private static InfoBox BoxHitboxSettings = new()
+
+    static InfoBox BoxHitboxSettings = new()
     {
         Label = "Melee Range Options",
         ContentsAction = delegate
@@ -109,7 +113,8 @@ internal static class TabSettings
             ImGui.Checkbox("Include hitbox##2", ref P.currentProfile.MeleeAutoIncludeHitbox);
         }
     };
-    private static InfoBox BoxPlayerDot = new()
+
+    static InfoBox BoxPlayerDot = new()
     {
         Label = "Player Damage Pixel",
         ContentsAction = delegate
@@ -125,24 +130,26 @@ internal static class TabSettings
             }
         }
     };
-    private static InfoBox BoxPlayerDotOthers = new()
+
+    static InfoBox BoxPlayerDotOthers = new()
     {
         Label = "Entity Damage Pixels",
         ContentsAction = delegate
         {
             ImGui.Checkbox("Party Members", ref P.currentProfile.PartyDot);
-            if(P.currentProfile.PartyDot)
+            if (P.currentProfile.PartyDot)
             {
                 DrawUnfilledSettings("dotp", ref P.currentProfile.PartyDotSettings);
             }
             ImGui.Checkbox("All Players", ref P.currentProfile.AllDot);
-            if(P.currentProfile.AllDot)
+            if (P.currentProfile.AllDot)
             {
                 DrawUnfilledSettings("dota", ref P.currentProfile.AllDotSettings);
             }
         }
     };
-    private static InfoBox BoxPlayerHitbox = new()
+
+    static InfoBox BoxPlayerHitbox = new()
     {
         Label = "Player Reach Outline",
         ContentsAction = delegate
@@ -159,7 +166,7 @@ internal static class TabSettings
 
     internal static void Draw()
     {
-        ImGuiEx.EzTabBar("settingsbar2",
+        ImGuiEx.EzTabBar("settingsbar2", 
             ("Player", delegate
             {
                 ImGuiHelpers.ScaledDummy(5f);
@@ -180,8 +187,8 @@ internal static class TabSettings
                 BoxHitboxSettings.DrawStretched();
             }, null, true),
             ("Duty Centralisation", TabTank.Draw, null, true),
-            (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out _) ? "Splatoon" : null, TabSplatoon.Draw, null, true)
+            (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out _)?"Splatoon":null, TabSplatoon.Draw, null, true)
         );
-
+        
     }
 }

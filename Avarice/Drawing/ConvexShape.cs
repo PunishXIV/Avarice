@@ -18,9 +18,9 @@ internal class ConvexShape
         // TODO: implement proper clipping. everything goes crazy when
         // drawing lines outside the clip window and behind the camera
         // point
-        var visible = Svc.GameGui.WorldToScreen(worldPos, out var pos);
+        var visible = Svc.GameGui.WorldToScreen(worldPos, out Vector2 pos);
         DrawList.PathLineTo(pos);
-        if(visible) { cullObject = false; }
+        if (visible) { cullObject = false; }
     }
 
     internal void PointRadial(Vector3 center, float radius, float radians)
@@ -34,10 +34,10 @@ internal class ConvexShape
 
     internal void Arc(Vector3 center, float radius, float startRads, float endRads)
     {
-        var segments = Maths.ArcSegments(startRads, endRads);
+        int segments = Maths.ArcSegments(startRads, endRads);
         var deltaRads = (endRads - startRads) / segments;
 
-        for(var i = 0; i < segments + 1; i++)
+        for (var i = 0; i < segments + 1; i++)
         {
             PointRadial(center, radius, startRads + (deltaRads * i));
         }
@@ -45,17 +45,17 @@ internal class ConvexShape
 
     internal void Done()
     {
-        if(cullObject)
+        if (cullObject)
         {
             DrawList.PathClear();
             return;
         }
 
-        if(Brush.HasFill())
+        if (Brush.HasFill())
         {
             DrawList.PathFillConvex(ImGui.GetColorU32(Brush.Fill));
         }
-        else if(Brush.Thickness != 0)
+        else if (Brush.Thickness != 0)
         {
             DrawList.PathStroke(ImGui.GetColorU32(Brush.Color), ImDrawFlags.None, Brush.Thickness);
         }

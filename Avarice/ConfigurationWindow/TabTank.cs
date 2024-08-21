@@ -13,7 +13,7 @@ namespace Avarice.ConfigurationWindow
 {
     internal static class TabTank
     {
-        private static string Filter = "";
+        static string Filter = "";
         internal static void Draw()
         {
             var cur = ImGui.GetCursorPos();
@@ -49,11 +49,11 @@ namespace Avarice.ConfigurationWindow
                 ImGui.InputTextWithHint("##fltr", "Filter", ref Filter, 100);
                 foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
                 {
-                    if(P.config.DutyMiddleOverrides.ContainsKey(x.RowId)) continue;
+                    if (P.config.DutyMiddleOverrides.ContainsKey(x.RowId)) continue;
                     var cfc = x.ContentFinderCondition.Value?.Name?.ToString();
                     if(cfc != null && cfc != "" && (Filter == "" || cfc.Contains(Filter, StringComparison.OrdinalIgnoreCase)))
                     {
-                        if(ImGui.Selectable($"{(P.StaticAutoDetectRadiusData.Contains(x.RowId) ? "*" : "")}{cfc}##{x.RowId}"))
+                        if (ImGui.Selectable($"{(P.StaticAutoDetectRadiusData.Contains(x.RowId)?"*":"")}{cfc}##{x.RowId}"))
                         {
                             P.config.DutyMiddleOverrides[x.RowId] = null;
                         }
@@ -67,7 +67,7 @@ namespace Avarice.ConfigurationWindow
                 ImGui.TableSetupColumn("Middle point override");
                 ImGui.TableSetupColumn(" ");
                 ImGui.TableHeadersRow();
-                foreach(var x in P.config.DutyMiddleOverrides.ToArray())
+                foreach (var x in P.config.DutyMiddleOverrides.ToArray())
                 {
                     ImGui.PushID((int)x.Key);
                     ImGui.TableNextRow();
@@ -77,7 +77,7 @@ namespace Avarice.ConfigurationWindow
                     var isAuto = x.Value == null;
                     if(ImGui.Checkbox("Auto", ref isAuto))
                     {
-                        if(isAuto)
+                        if (isAuto)
                         {
                             P.config.DutyMiddleOverrides[x.Key] = null;
                         }
@@ -86,30 +86,30 @@ namespace Avarice.ConfigurationWindow
                             P.config.DutyMiddleOverrides[x.Key] = Vector3.Zero;
                         }
                     }
-                    if(!isAuto && x.Value != null)
+                    if (!isAuto && x.Value != null)
                     {
                         var vector = x.Value.Value;
                         ImGui.SetNextItemWidth(200f);
                         ImGui.SameLine();
-                        if(ImGui.DragFloat3("##input", ref vector, 0.1f))
+                        if (ImGui.DragFloat3("##input", ref vector, 0.1f))
                         {
                             P.config.DutyMiddleOverrides[x.Key] = vector;
                         }
                     }
                     ImGui.SameLine();
-                    if(ImGui.Button("+"))
+                    if (ImGui.Button("+"))
                     {
                         P.config.DutyMiddleExtras.Add(new() { TerritoryType = x.Key });
                     }
-                    for(var i = 0; i < P.config.DutyMiddleExtras.Count; i++)
+                    for (int i = 0; i < P.config.DutyMiddleExtras.Count; i++)
                     {
                         var point = P.config.DutyMiddleExtras[i];
-                        if(point.TerritoryType != x.Key) continue;
+                        if (point.TerritoryType != x.Key) continue;
                         ImGui.PushID(i);
                         ImGui.SetNextItemWidth(200f);
                         ImGui.DragFloat3("##input", ref point.Position, 0.1f);
                         ImGui.SameLine();
-                        if(ImGuiEx.IconButton(FontAwesomeIcon.Trash))
+                        if (ImGuiEx.IconButton(FontAwesomeIcon.Trash))
                         {
                             var rem = i;
                             new TickScheduler(() => P.config.DutyMiddleExtras.RemoveAt(rem));
@@ -117,7 +117,7 @@ namespace Avarice.ConfigurationWindow
                         ImGui.PopID();
                     }
                     ImGui.TableNextColumn();
-                    if(ImGuiEx.IconButton(FontAwesomeIcon.Trash))
+                    if (ImGuiEx.IconButton(FontAwesomeIcon.Trash))
                     {
                         P.config.DutyMiddleOverrides.Remove(x.Key);
                     }

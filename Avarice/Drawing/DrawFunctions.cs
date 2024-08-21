@@ -11,7 +11,7 @@ internal static class DrawFunctions
         ConeXZ(actor.Position, radius, startRads + actor.Rotation, endRads + actor.Rotation, brush, lines);
     }
     internal static void ActorLineXZ(IGameObject actor, float radius, float rotation, Brush brush)
-    {
+{
         var shape = new ConvexShape(brush);
         shape.Point(actor.Position);
         shape.Point(MathHelper.RotateWorldPoint(actor.Position, rotation - actor.Rotation + Maths.Radians(90), actor.Position + new Vector3(radius, 0, 0)));
@@ -35,11 +35,11 @@ internal static class DrawFunctions
         // edge case: when == 1 and there is a thickness, the arrow pokes out the sides.
         var drawBottom = scale != 1f;
         var shape = new ConvexShape(brush);
-        if(drawBottom) shape.Point(pos);
+        if (drawBottom) shape.Point(pos);
         shape.PointRadial(pos, arrowSize, direction + Maths.Radians(90));
         shape.PointRadial(pos, arrowSize, direction + Maths.Radians(0));
         shape.PointRadial(pos, arrowSize, direction + Maths.Radians(-90));
-        if(drawBottom) shape.Point(pos);
+        if (drawBottom) shape.Point(pos);
         shape.Done();
     }
 
@@ -57,15 +57,15 @@ internal static class DrawFunctions
     internal static void ConeXZ(Vector3 center, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
         var shape = new ConvexShape(brush);
-        if(lines) shape.Point(center);
+        if (lines) shape.Point(center);
         shape.Arc(center, radius, startRads, endRads);
-        if(lines) shape.Point(center);
+        if (lines) shape.Point(center);
         shape.Done();
     }
 
     internal static void DonutSliceXZ(Vector3 center, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
     {
-        if(innerRadius == 0 && endRads - startRads <= (Maths.PI + Maths.Epsilon))
+        if (innerRadius == 0 && endRads - startRads <= (Maths.PI + Maths.Epsilon))
         {
             // special case: a cone, which is a convex polygon
             ConeXZ(center, outerRadius, startRads, endRads, brush);
@@ -86,10 +86,10 @@ internal static class DrawFunctions
         outline.Done();
 
         // fill
-        if(brush.HasFill())
+        if (brush.HasFill())
         {
             var sliceBrush = brush with { Thickness = 0f };
-            for(var i = 0; i < segments; i++)
+            for (var i = 0; i < segments; i++)
             {
                 var start = startRads + i * radsPerSegment;
                 var end = startRads + (i + 1) * radsPerSegment;
