@@ -99,8 +99,8 @@ internal static unsafe class TabAnticipation
 		ContentsAction = delegate
 		{
 			ImGui.Text("Rear or Flank anticipation first?");
-			_ = ImGui.RadioButton("Rear", ref P.currentProfile.Reaper, 0);
-			_ = ImGui.RadioButton("Flank", ref P.currentProfile.Reaper, 1);
+			_ = ImGui.RadioButton("RPR Rear", ref P.currentProfile.Reaper, 0);
+			_ = ImGui.RadioButton("RPR Flank", ref P.currentProfile.Reaper, 1);
 		}
 	};
 
@@ -109,7 +109,9 @@ internal static unsafe class TabAnticipation
 		Label = "Viper",
 		ContentsAction = delegate
 		{
-
+			ImGui.Text("Rear or Flank first for Vicewinder?");
+			_ = ImGui.RadioButton("VPR Rear", ref P.currentProfile.Viper, 0);
+			_ = ImGui.RadioButton("VPR Flank", ref P.currentProfile.Viper, 1);
 		}
 	};
 
@@ -122,6 +124,6 @@ internal static unsafe class TabAnticipation
 		BoxNin.DrawStretched();
 		BoxSam.DrawStretched();
 		BoxRpr.DrawStretched();
-		//BoxVpr.DrawStretched();
+		BoxVpr.DrawStretched();
 	}
 }

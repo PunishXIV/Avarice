@@ -108,9 +108,10 @@ public class Profile
 	};
 	public bool FrontStand = false;
 
-	public bool TrickAttack = false;
-	public bool Meikyo = false;
-	public int Reaper = 0;
+	public bool TrickAttack;
+	public bool Meikyo;
+	public int Reaper;
+	public int Viper;
 
 	public DisplayCondition CompassCondition = DisplayCondition.Always;
 	public bool CompassEnable = false;
