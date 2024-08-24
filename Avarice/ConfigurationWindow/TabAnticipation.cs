@@ -109,7 +109,7 @@ internal static unsafe class TabAnticipation
 		Label = "Viper",
 		ContentsAction = delegate
 		{
-			ImGui.Text("Rear or Flank anticipation first?");
+			ImGui.Text("Rear or Flank first for Vicewinder?");
 			_ = ImGui.RadioButton("VPR Rear", ref P.currentProfile.Viper, 0);
 			_ = ImGui.RadioButton("VPR Flank", ref P.currentProfile.Viper, 1);
 		}
