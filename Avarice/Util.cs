@@ -337,8 +337,8 @@ internal static unsafe class Util
 			&& (Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u))
 			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u, 3647u, 3648u)))))
 			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder
-			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.Swiftscaled, Svc.ClientState.LocalPlayer, Svc.ClientState.LocalPlayer.GameObjectId).RemainingTime <=
-			   ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.HuntersInstinct, Svc.ClientState.LocalPlayer, Svc.ClientState.LocalPlayer.GameObjectId).RemainingTime)
+			&& CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.Swiftscaled) <=
+			   CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.HuntersInstinct))
 			|| (ActionWatching.LastWeaponskill == (uint)ActionID.HuntersCoil && VPRGauge.DreadCombo != 0)));
 	}
 	public static bool IsVPRAnticipatedFlank()
@@ -349,8 +349,8 @@ internal static unsafe class Util
 		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
 			&& Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)))
 			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder
-			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.HuntersInstinct, Svc.ClientState.LocalPlayer, Svc.ClientState.LocalPlayer.GameObjectId).RemainingTime <=
-			   ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.Swiftscaled, Svc.ClientState.LocalPlayer, Svc.ClientState.LocalPlayer.GameObjectId).RemainingTime)
+			&& CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.HuntersInstinct) <
+			   CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.Swiftscaled))
 			|| (ActionWatching.LastWeaponskill == (uint)ActionID.SwiftskinsCoil && VPRGauge.DreadCombo != 0)));
 	}
 }
