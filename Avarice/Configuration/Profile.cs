@@ -111,7 +111,6 @@ public class Profile
 	public bool TrickAttack;
 	public bool Meikyo;
 	public int Reaper;
-	public int Viper;
 
 	public DisplayCondition CompassCondition = DisplayCondition.Always;
 	public bool CompassEnable = false;

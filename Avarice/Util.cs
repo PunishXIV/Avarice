@@ -335,9 +335,11 @@ internal static unsafe class Util
 		uint move = P.memory.LastComboMove;
 		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
 			&& (Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u))
-			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u, 3647u, 3648u)) && P.currentProfile.Viper == 0)))
-			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder && P.currentProfile.Viper == 0)
-			|| ((ActionWatching.LastWeaponskill == (uint)ActionID.HuntersCoil) && P.currentProfile.Viper == 1)));
+			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u, 3647u, 3648u)))))
+			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder
+			&& CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.Swiftscaled) <=
+			   CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.HuntersInstinct))
+			|| (ActionWatching.LastWeaponskill == (uint)ActionID.HuntersCoil && VPRGauge.DreadCombo != 0)));
 	}
 	public static bool IsVPRAnticipatedFlank()
 	{
@@ -345,9 +347,10 @@ internal static unsafe class Util
 		bool levelcheckVice = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
-			&& (Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u))
-			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u, 3647u, 3648u)) && P.currentProfile.Viper == 1)))
-			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder && P.currentProfile.Viper == 1)
-			|| ((ActionWatching.LastWeaponskill == (uint)ActionID.SwiftskinsCoil) && P.currentProfile.Viper == 0)));
+			&& Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)))
+			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder
+			&& CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.HuntersInstinct) <
+			   CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.Swiftscaled))
+			|| (ActionWatching.LastWeaponskill == (uint)ActionID.SwiftskinsCoil && VPRGauge.DreadCombo != 0)));
 	}
 }

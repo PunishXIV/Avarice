@@ -79,6 +79,8 @@ public enum ActionID : uint
 	#region VPR
 
 	//Setup skills
+	HuntersInstinct = 3668,
+	Swiftscaled = 3669,
 	HuntersSting = 34608,
 	SwiftskinsSting = 34609,
 	Vicewinder = 34620,
