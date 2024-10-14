@@ -36,6 +36,7 @@ public unsafe class Avarice : IDalamudPlugin
     internal HashSet<uint> StaticAutoDetectRadiusData;
     internal PositionalManager PositionalManager;
     internal uint[] PositionalStatus;
+    internal RotationSolverWatcher RotationSolverWatcher;
 
     public Avarice(IDalamudPluginInterface pi)
     {
@@ -52,6 +53,7 @@ public unsafe class Avarice : IDalamudPlugin
             }
             currentProfile = config.Profiles.FirstOr0(x => x.IsDefault);
             //Svc.GameNetwork.NetworkMessage += OnNetworkMessage;
+            RotationSolverWatcher = new();
             memory = new();
             windowSystem = new();
             configWindow = new();

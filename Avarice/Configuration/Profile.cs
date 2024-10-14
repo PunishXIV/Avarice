@@ -122,4 +122,6 @@ public class Profile
 
 	public bool EnableTankMiddle = false;
 	public bool EnableDutyMiddle = false;
+
+	public bool UseRotationSolver = false;
 }

@@ -113,6 +113,14 @@ internal static unsafe class TabAnticipation
 		}
 	};
 
+	private static readonly InfoBox BoxRotationSolver = new() {
+		Label = "Rotation Solver Integration",
+		ContentsAction = delegate
+		{
+			_ = ImGui.Checkbox("Use Rotation Solver to anticipate positionals", ref P.currentProfile.UseRotationSolver);
+		}
+	};
+
 	internal static void Draw()
 	{
 		ImGuiHelpers.ScaledDummy(5f);
@@ -123,5 +131,10 @@ internal static unsafe class TabAnticipation
 		BoxSam.DrawStretched();
 		BoxRpr.DrawStretched();
 		//BoxVpr.DrawStretched();
+
+		if (P.currentProfile.UseRotationSolver || P.RotationSolverWatcher.Available)
+		{
+			BoxRotationSolver.DrawStretched();
+		}
 	}
 }
