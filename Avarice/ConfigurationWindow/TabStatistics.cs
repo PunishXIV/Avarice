@@ -1,4 +1,4 @@
-﻿using Lumina.Excel.GeneratedSheets;
+﻿using Lumina.Excel.Sheets;
 
 namespace Avarice.ConfigurationWindow;
 
@@ -38,7 +38,7 @@ internal static class TabStatistics
     {
         ImGui.TableNextRow();
         ImGui.TableNextColumn();
-        ImGuiEx.Text(colName ?? Svc.Data.GetExcelSheet<ClassJob>().GetRow(job).NameEnglish);
+        ImGuiEx.Text(colName ?? Svc.Data.GetExcelSheet<ClassJob>().GetRowOrDefault(job)?.NameEnglish.ToString());
         ImGui.TableNextColumn();
         ImGuiEx.Text($"{x.Hits}");
         ImGui.TableNextColumn();

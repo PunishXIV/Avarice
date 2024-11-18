@@ -59,7 +59,7 @@ internal unsafe partial class ConfigWindow : Window
             ImGuiEx.Text($"Combo: {P.memory.LastComboMove}");
             foreach(var x in Svc.ClientState.LocalPlayer?.StatusList)
             {
-                ImGuiEx.TextCopy($"{x.GameData.Name}: id={x.StatusId}, time={x.RemainingTime}");
+                ImGuiEx.TextCopy($"{x.GameData.ValueNullable?.Name}: id={x.StatusId}, time={x.RemainingTime}");
             }
 
             ImGuiEx.Text("N. S. ");

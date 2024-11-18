@@ -1,6 +1,6 @@
 ﻿using Dalamud.Interface.Components;
 using ECommons.Schedulers;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 using PunishLib.ImGuiMethods;
 using System;
 using System.Collections.Generic;
@@ -50,7 +50,7 @@ namespace Avarice.ConfigurationWindow
                 foreach(var x in Svc.Data.GetExcelSheet<TerritoryType>())
                 {
                     if (P.config.DutyMiddleOverrides.ContainsKey(x.RowId)) continue;
-                    var cfc = x.ContentFinderCondition.Value?.Name?.ToString();
+                    var cfc = x.ContentFinderCondition.ValueNullable?.Name.ToString();
                     if(cfc != null && cfc != "" && (Filter == "" || cfc.Contains(Filter, StringComparison.OrdinalIgnoreCase)))
                     {
                         if (ImGui.Selectable($"{(P.StaticAutoDetectRadiusData.Contains(x.RowId)?"*":"")}{cfc}##{x.RowId}"))

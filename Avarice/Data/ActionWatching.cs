@@ -3,21 +3,21 @@ using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
 using ECommons.GameFunctions;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.GeneratedSheets;
+using Lumina.Excel.Sheets;
 
 namespace Avarice.Data
 {
 	public static class ActionWatching
 	{
-		internal static Dictionary<uint, Lumina.Excel.GeneratedSheets.Action> ActionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Action>()!
+		internal static Dictionary<uint, Lumina.Excel.Sheets.Action> ActionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>()!
 			.Where(i => i.RowId is not 7)
 			.ToDictionary(i => i.RowId, i => i);
 
-		internal static Dictionary<uint, Lumina.Excel.GeneratedSheets.Status> StatusSheet = Svc.Data.GetExcelSheet<Lumina.Excel.GeneratedSheets.Status>()!
+		internal static Dictionary<uint, Lumina.Excel.Sheets.Status> StatusSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Status>()!
 			.ToDictionary(i => i.RowId, i => i);
 
 		internal static Dictionary<uint, Trait> TraitSheet = Svc.Data.GetExcelSheet<Trait>()!
-			.Where(i => i.ClassJobCategory is not null) //All player traits are assigned to a category. Chocobo and other garbage lacks this, thus excluded.
+			.Where(i => i.ClassJobCategory.ValueNullable != null) //All player traits are assigned to a category. Chocobo and other garbage lacks this, thus excluded.
 			.ToDictionary(i => i.RowId, i => i);
 
 		internal static Dictionary<uint, BNpcBase> BNpcSheet = Svc.Data.GetExcelSheet<BNpcBase>()!
@@ -58,8 +58,7 @@ namespace Avarice.Data
 
 				LastAction = header.ActionId;
 
-				_ = ActionSheet.TryGetValue(header.ActionId, out Lumina.Excel.GeneratedSheets.Action sheet);
-				if (sheet != null)
+				if (ActionSheet.TryGetValue(header.ActionId, out Lumina.Excel.Sheets.Action sheet))
 				{
 					switch (sheet.ActionCategory.Value.RowId)
 					{
@@ -236,22 +235,22 @@ namespace Avarice.Data
 
 		public static int GetLevel(uint id)
 		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Action action) && action.ClassJobCategory is not null ? action.ClassJobLevel : 255;
+			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) && action.ClassJobCategory.ValueNullable != null ? action.ClassJobLevel : 255;
 		}
 
 		public static float GetActionCastTime(uint id)
 		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Action action) ? action.Cast100ms / (float)10 : 0;
+			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? action.Cast100ms / (float)10 : 0;
 		}
 
 		public static int GetActionRange(uint id)
 		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Action action) ? action.Range : -2; // 0 & -1 are valid numbers. -2 is our failure code for InActionRange
+			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? action.Range : -2; // 0 & -1 are valid numbers. -2 is our failure code for InActionRange
 		}
 
 		public static int GetActionEffectRange(uint id)
 		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Action action) ? action.EffectRange : -1;
+			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? action.EffectRange : -1;
 		}
 
 		public static int GetTraitLevel(uint id)
@@ -261,19 +260,19 @@ namespace Avarice.Data
 
 		public static string GetActionName(uint id)
 		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Action action) ? (string)action.Name : "UNKNOWN ABILITY";
+			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? (string)action.Name.ToString() : "UNKNOWN ABILITY";
 		}
 
 		public static string GetBLUIndex(uint id)
 		{
-			uint aozKey = Svc.Data.GetExcelSheet<AozAction>()!.First(x => x.Action.Row == id).RowId;
+			uint aozKey = Svc.Data.GetExcelSheet<AozAction>()!.First(x => x.Action.RowId == id).RowId;
 			byte index = Svc.Data.GetExcelSheet<AozActionTransient>().GetRow(aozKey).Number;
 
 			return $"#{index} ";
 		}
 		public static string GetStatusName(uint id)
 		{
-			return StatusSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Status status) ? (string)status.Name : "Unknown Status";
+			return StatusSheet.TryGetValue(id, out Lumina.Excel.Sheets.Status status) ? (string)status.Name.ToString() : "Unknown Status";
 		}
 
 		public static List<uint> GetStatusesByName(string status)
@@ -287,9 +286,9 @@ namespace Avarice.Data
 
 		public static ActionAttackType GetAttackType(uint id)
 		{
-			return !ActionSheet.TryGetValue(id, out Lumina.Excel.GeneratedSheets.Action action)
+			return !ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action)
 				? ActionAttackType.Unknown
-				: action.ActionCategory.Row switch
+				: action.ActionCategory.RowId switch
 				{
 					2 => ActionAttackType.Spell,
 					3 => ActionAttackType.Weaponskill,

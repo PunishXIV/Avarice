@@ -4,6 +4,7 @@ using Dalamud.Game.ClientState.Conditions;
 using Dalamud.Game.Command;
 using Dalamud.Game.Text.SeStringHandling;
 using ECommons.EzSharedDataManager;
+using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
@@ -166,18 +167,18 @@ public unsafe class Avarice : IDalamudPlugin
         {
             currentProfile.CurrentEncounterStats = new();
         }
-        if(!currentProfile.Stats.ContainsKey(Svc.ClientState.LocalPlayer.ClassJob.Id))
+        if(!currentProfile.Stats.ContainsKey((uint)Player.Job))
         {
-            currentProfile.Stats[Svc.ClientState.LocalPlayer.ClassJob.Id] = new();
+            currentProfile.Stats[(uint)Player.Job] = new();
         }
         if(isMiss)
         {
-            currentProfile.Stats[Svc.ClientState.LocalPlayer.ClassJob.Id].Missed++;
+            currentProfile.Stats[(uint)Player.Job].Missed++;
             currentProfile.CurrentEncounterStats.Missed++;
         }
         else
         {
-            currentProfile.Stats[Svc.ClientState.LocalPlayer.ClassJob.Id].Hits++;
+            currentProfile.Stats[(uint)Player.Job].Hits++;
             currentProfile.CurrentEncounterStats.Hits++;
         }
     }
@@ -222,7 +223,7 @@ public unsafe class Avarice : IDalamudPlugin
         }
         if(Svc.ClientState.LocalPlayer != null)
         {
-            var newJob = Svc.ClientState.LocalPlayer.ClassJob.Id;
+            var newJob = (uint)Player.Job;
             if(newJob != Job)
             {
                 PluginLog.Debug($"Job changed from {Job} to {newJob}");
