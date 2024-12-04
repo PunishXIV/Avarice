@@ -1,15 +1,7 @@
 ﻿using Avarice.Structs;
-using Dalamud.Hooking;
-using Dalamud.Utility.Signatures;
 using ECommons.Hooks;
 using ECommons.Hooks.ActionEffectTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Character;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Avarice
 {
@@ -30,29 +22,32 @@ namespace Avarice
                 if (set.Source?.Address == Svc.ClientState.LocalPlayer?.Address)
                 {
                     var positionalState = PositionalState.Ignore;
-                    if (P.PositionalManager.IsPositional((int)set.Header.ActionID))
+                    if (P.PositionalManager?.IsPositional((int)set.Header.ActionID) == true)
                     {
                         positionalState = PositionalState.Failure;
-                        foreach (var effect in set.TargetEffects) 
+                        if (set.TargetEffects != null)
                         {
-                            effect.ForEach(entry =>
+                            foreach (var effect in set.TargetEffects)
                             {
-                                if (entry.type == ActionEffectType.Damage)
-                                    if(P.PositionalManager.IsPositionalHit((int)set.Header.ActionID, entry.param2))
-                                        positionalState = PositionalState.Success;
-                            });
+                                effect.ForEach(entry =>
+                                {
+                                    if (entry.type == ActionEffectType.Damage)
+                                        if (P.PositionalManager?.IsPositionalHit((int)set.Header.ActionID, entry.param2) == true)
+                                            positionalState = PositionalState.Success;
+                                });
+                            }
                         }
                     }
                     if (positionalState == PositionalState.Success)
                     {
-                        if (P.currentProfile.EnableChatMessagesSuccess) Svc.Chat.Print("Positional HIT!");
-                        if (P.currentProfile.EnableVFXSuccess) VfxEditorManager.DisplayVfx(true);
+                        if (P.currentProfile?.EnableChatMessagesSuccess == true) Svc.Chat?.Print("Positional HIT!");
+                        if (P.currentProfile?.EnableVFXSuccess == true) VfxEditorManager.DisplayVfx(true);
                         P.RecordStat(false);
                     }
                     else if (positionalState == PositionalState.Failure)
                     {
-                        if (P.currentProfile.EnableChatMessagesFailure) Svc.Chat.Print("Positional MISS!");
-                        if (P.currentProfile.EnableVFXFailure) VfxEditorManager.DisplayVfx(false);
+                        if (P.currentProfile?.EnableChatMessagesFailure == true) Svc.Chat?.Print("Positional MISS!");
+                        if (P.currentProfile?.EnableVFXFailure == true) VfxEditorManager.DisplayVfx(false);
                         P.RecordStat(true);
                     }
                     PluginLog.Debug($"Positional state: {positionalState}");
@@ -62,7 +57,6 @@ namespace Avarice
             {
                 e.Log();
             }
-
         }
 
         public void Dispose()

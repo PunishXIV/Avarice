@@ -81,7 +81,7 @@ public class PositionalManager
 		return parameters.IsHit;
 	}
 
-	public PositionalParameters? GetPositionalParameters(int actionId, int percent)
+	public PositionalParameters GetPositionalParameters(int actionId, int percent)
 	{
 		if (!_actionStore.TryGetValue(actionId, out PositionalAction action))
 		{

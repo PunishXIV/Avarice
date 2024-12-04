@@ -11,8 +11,8 @@ namespace Avarice.Data
 	{
 		private const uint InvalidObjectID = 0xE000_0000;
 
-		private readonly ConcurrentDictionary<(uint StatusID, ulong? TargetID, ulong? SourceID), DalamudStatus.Status?> statusCache = new();
-		private readonly ConcurrentDictionary<uint, CooldownData?> cooldownCache = new();
+		private readonly ConcurrentDictionary<(uint StatusID, ulong? TargetID, ulong? SourceID), DalamudStatus.Status> statusCache = new();
+		private readonly ConcurrentDictionary<uint, CooldownData> cooldownCache = new();
 
 		private readonly ConcurrentDictionary<Type, JobGaugeBase> jobGaugeCache = new();
 
@@ -30,7 +30,7 @@ namespace Avarice.Data
 
 		internal T GetJobGauge<T>() where T : JobGaugeBase
 		{
-			if (!jobGaugeCache.TryGetValue(typeof(T), out JobGaugeBase? gauge))
+			if (!jobGaugeCache.TryGetValue(typeof(T), out JobGaugeBase gauge))
 			{
 				gauge = jobGaugeCache[typeof(T)] = Svc.Gauges.Get<T>();
 			}
@@ -69,7 +69,7 @@ namespace Avarice.Data
 
 		internal unsafe CooldownData GetCooldown(uint actionID)
 		{
-			if (cooldownCache.TryGetValue(actionID, out CooldownData? found))
+			if (cooldownCache.TryGetValue(actionID, out CooldownData found))
 			{
 				return found!;
 			}

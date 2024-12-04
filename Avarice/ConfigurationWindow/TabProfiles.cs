@@ -45,7 +45,7 @@ internal static class TabProfiles
             }
         });
         ImGui.Separator();
-        ImGuiEx.ImGuiLineCentered("defaultprofile", delegate
+        ImGuiEx.LineCentered("defaultprofile", delegate
         {
             if (P.currentProfile.IsDefault)
             {
