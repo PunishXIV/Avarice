@@ -38,8 +38,11 @@ internal unsafe class Canvas : Window
 
     public override void Draw()
     {
+        // Early return if drawing is disabled
+        if (!P.currentProfile.DrawingEnabled) return;
+
         DrawTankMiddle();
-        if(P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
+        if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
         {
             static void DrawLetter(string l, Vector2 pos, Vector4? color = null)
             {
@@ -48,91 +51,91 @@ internal unsafe class Canvas : Window
                 ImGuiEx.Text(color ?? Prof.CompassColor, l);
             }
 
-            if(Prof.CompassFont != GameFontFamilyAndSize.Undefined)
+            if (Prof.CompassFont != GameFontFamilyAndSize.Undefined)
             {
                 //ImGui.PushFont(Svc.PluginInterface.UiBuilder.GetGameFontHandle(new(Prof.CompassFont)).ImFont);
             }
 
             ImGui.SetWindowFontScale(Prof.CompassFontScale);
             {
-                if(Svc.GameGui.WorldToScreen(LP.Position with { Z = LP.Position.Z - Prof.CompassDistance }, out var pos))
+                if (Svc.GameGui.WorldToScreen(LP.Position with { Z = LP.Position.Z - Prof.CompassDistance }, out var pos))
                 {
                     DrawLetter("N", pos, Prof.CompassColorN);
                 }
             }
             {
-                if(Svc.GameGui.WorldToScreen(LP.Position with { Z = LP.Position.Z + Prof.CompassDistance }, out var pos))
+                if (Svc.GameGui.WorldToScreen(LP.Position with { Z = LP.Position.Z + Prof.CompassDistance }, out var pos))
                 {
                     DrawLetter("S", pos, Prof.CompassColor);
                 }
             }
             {
-                if(Svc.GameGui.WorldToScreen(LP.Position with { X = LP.Position.X - Prof.CompassDistance }, out var pos))
+                if (Svc.GameGui.WorldToScreen(LP.Position with { X = LP.Position.X - Prof.CompassDistance }, out var pos))
                 {
                     DrawLetter("W", pos, Prof.CompassColor);
                 }
             }
             {
-                if(Svc.GameGui.WorldToScreen(LP.Position with { X = LP.Position.X + Prof.CompassDistance }, out var pos))
+                if (Svc.GameGui.WorldToScreen(LP.Position with { X = LP.Position.X + Prof.CompassDistance }, out var pos))
                 {
                     DrawLetter("E", pos, Prof.CompassColor);
                 }
             }
             ImGui.SetWindowFontScale(1f);
-            if(Prof.CompassFont != GameFontFamilyAndSize.Undefined)
+            if (Prof.CompassFont != GameFontFamilyAndSize.Undefined)
             {
                 //ImGui.PopFont();
             }
         }
 
-        if(P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
+        if (P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
         {
             {
-                if(Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
                     DrawCurrentPos(bnpc);
                 }
             }
             {
-                if(Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
                     DrawCurrentPos(bnpc);
                 }
             }
         }
 
-        if(P.currentProfile.EnableMaxMeleeRing && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
+        if (P.currentProfile.EnableMaxMeleeRing && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
         {
             {
-                if(Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
-                    if(P.currentProfile.Radius3)
+                    if (P.currentProfile.Radius3)
                     {
                         DrawSegmentedCircle(bnpc, GetSkillRadius(), P.currentProfile.DrawLines);
-                        if(P.currentProfile.Radius2)
+                        if (P.currentProfile.Radius2)
                         {
                             DrawSegmentedCircle(bnpc, GetAttackRadius(), false);
                         }
                     }
-                    else if(P.currentProfile.Radius2)
+                    else if (P.currentProfile.Radius2)
                     {
                         DrawSegmentedCircle(bnpc, GetAttackRadius(), P.currentProfile.DrawLines);
                     }
                 }
             }
             {
-                if(Svc.Targets.FocusTarget is IBattleNpc bnpc
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc
                   && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
-                    if(P.currentProfile.Radius3)
+                    if (P.currentProfile.Radius3)
                     {
                         DrawSegmentedCircle(bnpc, GetSkillRadius(), P.currentProfile.DrawLines);
-                        if(P.currentProfile.Radius2)
+                        if (P.currentProfile.Radius2)
                         {
                             DrawSegmentedCircle(bnpc, GetAttackRadius(), false);
                         }
                     }
-                    else if(P.currentProfile.Radius2)
+                    else if (P.currentProfile.Radius2)
                     {
                         DrawSegmentedCircle(bnpc, GetAttackRadius(), P.currentProfile.DrawLines);
                     }
@@ -158,40 +161,40 @@ internal unsafe class Canvas : Window
                 }
             }*/
 
-        if(P.currentProfile.EnablePlayerRing && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
+        if (P.currentProfile.EnablePlayerRing && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
         {
             CircleXZ(Svc.ClientState.LocalPlayer.Position, Svc.ClientState.LocalPlayer.HitboxRadius, P.currentProfile.PlayerRingSettings);
         }
 
-        if(P.currentProfile.EnableFrontSegment && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
+        if (P.currentProfile.EnableFrontSegment && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
         {
             DrawFrontalPosition(Svc.Targets.Target);
-            if(Svc.Targets.Target?.Address != Svc.Targets.FocusTarget?.Address)
+            if (Svc.Targets.Target?.Address != Svc.Targets.FocusTarget?.Address)
             {
                 DrawFrontalPosition(Svc.Targets.FocusTarget);
             }
         }
 
-        if(P.currentProfile.EnableAnticipatedPie && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
+        if (P.currentProfile.EnableAnticipatedPie && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
            && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u))))
         {
             {
-                if(Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
                 {
                     DrawAnticipatedPos(bnpc);
                 }
             }
             {
-                if(Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && bnpc.HasPositional())
+                if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && bnpc.HasPositional())
                 {
                     DrawAnticipatedPos(bnpc);
                 }
             }
         }
 
-        if(P.currentProfile.EnablePlayerDot && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
+        if (P.currentProfile.EnablePlayerDot && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
         {
-            if(Svc.GameGui.WorldToScreen(Svc.ClientState.LocalPlayer.Position, out var pos))
+            if (Svc.GameGui.WorldToScreen(Svc.ClientState.LocalPlayer.Position, out var pos))
             {
                 ImGui.GetWindowDrawList().AddCircleFilled(
                 new Vector2(pos.X, pos.Y),
@@ -201,13 +204,13 @@ internal unsafe class Canvas : Window
             }
         }
 
-        if(P.currentProfile.PartyDot && IsConditionMatching(P.currentProfile.PartyDotSettings.DisplayCondition))
+        if (P.currentProfile.PartyDot && IsConditionMatching(P.currentProfile.PartyDotSettings.DisplayCondition))
         {
-            foreach(var x in Svc.Party)
+            foreach (var x in Svc.Party)
             {
-                if(x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
+                if (x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
                 {
-                    if(Svc.GameGui.WorldToScreen(x.GameObject.Position, out var pos))
+                    if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out var pos))
                     {
                         ImGui.GetWindowDrawList().AddCircleFilled(
                         new Vector2(pos.X, pos.Y),
@@ -219,14 +222,14 @@ internal unsafe class Canvas : Window
             }
         }
 
-        if(P.currentProfile.AllDot && IsConditionMatching(P.currentProfile.AllDotSettings.DisplayCondition))
+        if (P.currentProfile.AllDot && IsConditionMatching(P.currentProfile.AllDotSettings.DisplayCondition))
         {
-            foreach(var x in Svc.Objects)
+            foreach (var x in Svc.Objects)
             {
-                if(x is IPlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
+                if (x is IPlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
                   && (!P.currentProfile.PartyDot || !Svc.Party.Any(x => x.Address == x.GameObject?.Address)))
                 {
-                    if(Svc.GameGui.WorldToScreen(x.Position, out var pos))
+                    if (Svc.GameGui.WorldToScreen(x.Position, out var pos))
                     {
                         ImGui.GetWindowDrawList().AddCircleFilled(
                         new Vector2(pos.X, pos.Y),

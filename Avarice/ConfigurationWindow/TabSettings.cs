@@ -13,6 +13,19 @@ internal static class TabSettings
         { ClassDisplayCondition.Display_on_all_jobs, "DoW/DoM/DoH/DoL" },
     };*/
 
+    // New InfoBox for drawing toggle
+    static InfoBox BoxDrawing = new()
+    {
+        ContentsAction = delegate
+        {
+            ImGui.Checkbox("Enable Drawing", ref P.currentProfile.DrawingEnabled);
+            ImGui.SameLine();
+            ImGuiEx.Text(ImGuiColors.DalamudGrey3, "(/avarice draw)");
+            ImGuiComponents.HelpMarker("Toggle all visual elements of Avarice. You can also use the '/avarice draw' command in chat.");
+        },
+        Label = "Visual Display"
+    };
+
     static InfoBox BoxGeneral = new()
     {
         ContentsAction = delegate
@@ -86,7 +99,7 @@ internal static class TabSettings
                 DrawUnfilledMultiSettings("b", ref P.currentProfile.MaxMeleeSettingsN,
                     ref P.currentProfile.MaxMeleeSettingsS,
                     ref P.currentProfile.MaxMeleeSettingsE,
-                    ref P.currentProfile.MaxMeleeSettingsW, 
+                    ref P.currentProfile.MaxMeleeSettingsW,
                     ref P.currentProfile.DrawLines,
                     ref P.currentProfile.SameColor);
             }
@@ -166,10 +179,11 @@ internal static class TabSettings
 
     internal static void Draw()
     {
-        ImGuiEx.EzTabBar("settingsbar2", 
+        ImGuiEx.EzTabBar("settingsbar2",
             ("Player", delegate
             {
                 ImGuiHelpers.ScaledDummy(5f);
+                BoxDrawing.DrawStretched(); // Add the drawing toggle at the top
                 BoxGeneral.DrawStretched();
                 BoxPlayerDot.DrawStretched();
                 BoxCompass.Draw();
@@ -187,8 +201,8 @@ internal static class TabSettings
                 BoxHitboxSettings.DrawStretched();
             }, null, true),
             ("Duty Centralisation", TabTank.Draw, null, true),
-            (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out _)?"Splatoon":null, TabSplatoon.Draw, null, true)
+            (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out _) ? "Splatoon" : null, TabSplatoon.Draw, null, true)
         );
-        
+
     }
 }
