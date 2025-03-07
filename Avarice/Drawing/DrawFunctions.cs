@@ -5,13 +5,22 @@ namespace Avarice.Drawing;
 
 internal static class DrawFunctions
 {
+    // Helper method to check if drawing is enabled
+    private static bool ShouldDraw()
+    {
+        return Avarice.P?.currentProfile?.DrawingEnabled ?? false;
+    }
+
     // ----------- actor-aware draw methods --------------
     internal static void ActorConeXZ(IGameObject actor, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
+        if (!ShouldDraw()) return;
         ConeXZ(actor.Position, radius, startRads + actor.Rotation, endRads + actor.Rotation, brush, lines);
     }
+
     internal static void ActorLineXZ(IGameObject actor, float radius, float rotation, Brush brush)
-{
+    {
+        if (!ShouldDraw()) return;
         var shape = new ConvexShape(brush);
         shape.Point(actor.Position);
         shape.Point(MathHelper.RotateWorldPoint(actor.Position, rotation - actor.Rotation + Maths.Radians(90), actor.Position + new Vector3(radius, 0, 0)));
@@ -20,6 +29,7 @@ internal static class DrawFunctions
 
     internal static void ActorArrowXZ(IGameObject actor, float radius, float angle, float scale, Brush brush)
     {
+        if (!ShouldDraw()) return;
         var direction = angle + actor.Rotation;
 
         // scale the drawing by shifting the "circle center" up the radial
@@ -45,17 +55,20 @@ internal static class DrawFunctions
 
     internal static void ActorDonutSliceXZ(IGameObject actor, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
     {
+        if (!ShouldDraw()) return;
         DonutSliceXZ(actor.Position, innerRadius, outerRadius, startRads + actor.Rotation, endRads + actor.Rotation, brush);
     }
 
     internal static void CircleXZ(Vector3 position, float radius, Brush brush)
     {
+        if (!ShouldDraw()) return;
         CircleArcXZ(position, radius, 0f, Maths.TAU, brush);
     }
 
     // ----------- position-based draw methods --------------
     internal static void ConeXZ(Vector3 center, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
+        if (!ShouldDraw()) return;
         var shape = new ConvexShape(brush);
         if (lines) shape.Point(center);
         shape.Arc(center, radius, startRads, endRads);
@@ -65,6 +78,7 @@ internal static class DrawFunctions
 
     internal static void DonutSliceXZ(Vector3 center, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
     {
+        if (!ShouldDraw()) return;
         if (innerRadius == 0 && endRads - startRads <= (Maths.PI + Maths.Epsilon))
         {
             // special case: a cone, which is a convex polygon
@@ -105,6 +119,7 @@ internal static class DrawFunctions
 
     internal static void ConeCenteredXZ(Vector3 center, float radius, float directionRads, float angleRads, Brush brush)
     {
+        if (!ShouldDraw()) return;
         var startRads = directionRads - (angleRads / 2);
         var endRads = directionRads + (angleRads / 2);
 
@@ -113,6 +128,7 @@ internal static class DrawFunctions
 
     internal static void CircleArcXZ(Vector3 gamePos, float radius, float startRads, float endRads, Brush brush)
     {
+        if (!ShouldDraw()) return;
         var shape = new ConvexShape(brush);
         shape.Arc(gamePos, radius, startRads, endRads);
         shape.Done();
@@ -120,6 +136,7 @@ internal static class DrawFunctions
 
     internal static void Segment(Vector3 startPos, Vector3 endPos, Brush brush)
     {
+        if (!ShouldDraw()) return;
         var shape = new ConvexShape(brush);
         shape.Point(startPos);
         shape.Point(endPos);

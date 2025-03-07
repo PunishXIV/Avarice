@@ -48,7 +48,7 @@ public unsafe class Avarice : IDalamudPlugin
         {
             PositionalStatus = EzSharedData.GetOrCreate<uint[]>("Avarice.PositionalStatus", [0, 0]);
             config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();
-            if(config.Profiles.Count == 0)
+            if (config.Profiles.Count == 0)
             {
                 config.Profiles.Add(new() { Name = "Default profile", IsDefault = true });
             }
@@ -65,23 +65,29 @@ public unsafe class Avarice : IDalamudPlugin
             Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configWindow.IsOpen = true; };
             Svc.Condition.ConditionChange += OnConditionChange;
             _ = Svc.Commands.AddHandler("/avarice", new CommandInfo((string cmd, string args) =>
-        {
-            if(args == "debug")
             {
-                P.currentProfile.Debug = !P.currentProfile.Debug;
-            }
-            else
-            {
-                configWindow.IsOpen = !configWindow.IsOpen;
-            }
-        })
-            { HelpMessage = "Toggle configuration/stats window" });
+                if (args == "debug")
+                {
+                    P.currentProfile.Debug = !P.currentProfile.Debug;
+                    Svc.Chat.Print($"Debug mode {(P.currentProfile.Debug ? "enabled" : "disabled")}");
+                }
+                else if (args == "draw") // Added new command for toggling drawing
+                {
+                    P.currentProfile.DrawingEnabled = !P.currentProfile.DrawingEnabled;
+                    Svc.Chat.Print($"Drawing {(P.currentProfile.DrawingEnabled ? "enabled" : "disabled")}");
+                }
+                else
+                {
+                    configWindow.IsOpen = !configWindow.IsOpen;
+                }
+            })
+            { HelpMessage = "Toggle configuration window. Use '/avarice draw' to toggle drawing, '/avarice debug' for debug mode." });
             //LoadOpcode.Start();
             LuminaSheets.Init();
             Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
             Svc.Framework.Update += Tick;
             StaticAutoDetectRadiusData = Util.LoadStaticAutoDetectRadiusData();
-            if(config.SplatoonUnsafePixel)
+            if (config.SplatoonUnsafePixel)
             {
                 TabSplatoon.WriteRequest();
             }
@@ -96,7 +102,7 @@ public unsafe class Avarice : IDalamudPlugin
     private CardinalDirection GetCardinalDirectionForObject(IntPtr arg)
     {
         var obj = Svc.Objects.CreateObjectReference(arg);
-        if(obj != null && Svc.ClientState.LocalPlayer != null)
+        if (obj != null && Svc.ClientState.LocalPlayer != null)
         {
             return MathHelper.GetCardinalDirection((MathHelper.GetRelativeAngle(Svc.ClientState.LocalPlayer.Position, obj.Position) + obj.Rotation.RadToDeg()) % 360);
         }
@@ -109,11 +115,11 @@ public unsafe class Avarice : IDalamudPlugin
     private void OnConditionChange(ConditionFlag flag, bool value)
     {
 
-        if(flag == ConditionFlag.InCombat)
+        if (flag == ConditionFlag.InCombat)
         {
             Safe(delegate
             {
-                if(value)
+                if (value)
                 {
                     PluginLog.Debug("Entered combat");
                 }
@@ -121,7 +127,7 @@ public unsafe class Avarice : IDalamudPlugin
                 {
                     PluginLog.Debug("Exited combat");
                     Svc.PluginInterface.SavePluginConfig(config);
-                    if(currentProfile.Announce && !currentProfile.CurrentEncounterStats.Finished &&
+                    if (currentProfile.Announce && !currentProfile.CurrentEncounterStats.Finished &&
               (currentProfile.CurrentEncounterStats.Hits > 0 || currentProfile.CurrentEncounterStats.Missed > 0))
                     {
                         var total = currentProfile.CurrentEncounterStats.Hits + currentProfile.CurrentEncounterStats.Missed;
@@ -139,19 +145,19 @@ public unsafe class Avarice : IDalamudPlugin
 
     internal static bool IsConditionMatching(DisplayCondition c)
     {
-        if(c == DisplayCondition.Only_in_combat)
+        if (c == DisplayCondition.Only_in_combat)
         {
             return Svc.Condition[ConditionFlag.InCombat];
         }
-        else if(c == DisplayCondition.Only_in_duty)
+        else if (c == DisplayCondition.Only_in_duty)
         {
             return Svc.Condition[ConditionFlag.BoundByDuty56];
         }
-        else if(c == DisplayCondition.In_duty_or_combat)
+        else if (c == DisplayCondition.In_duty_or_combat)
         {
             return Svc.Condition[ConditionFlag.InCombat] || Svc.Condition[ConditionFlag.BoundByDuty56];
         }
-        else if(c == DisplayCondition.In_duty_and_combat)
+        else if (c == DisplayCondition.In_duty_and_combat)
         {
             return Svc.Condition[ConditionFlag.InCombat] && Svc.Condition[ConditionFlag.BoundByDuty56];
         }
@@ -163,15 +169,15 @@ public unsafe class Avarice : IDalamudPlugin
 
     internal void RecordStat(bool isMiss)
     {
-        if(currentProfile.CurrentEncounterStats.Finished)
+        if (currentProfile.CurrentEncounterStats.Finished)
         {
             currentProfile.CurrentEncounterStats = new();
         }
-        if(!currentProfile.Stats.ContainsKey((uint)Player.Job))
+        if (!currentProfile.Stats.ContainsKey((uint)Player.Job))
         {
             currentProfile.Stats[(uint)Player.Job] = new();
         }
-        if(isMiss)
+        if (isMiss)
         {
             currentProfile.Stats[(uint)Player.Job].Missed++;
             currentProfile.CurrentEncounterStats.Missed++;
@@ -185,9 +191,9 @@ public unsafe class Avarice : IDalamudPlugin
 
     internal Profile GetProfileForJob(uint job)
     {
-        if(P.config.JobProfiles.TryGetValue(job, out var guid))
+        if (P.config.JobProfiles.TryGetValue(job, out var guid))
         {
-            if(P.config.Profiles.TryGetFirst(x => x.GUID == guid, out var profile))
+            if (P.config.Profiles.TryGetFirst(x => x.GUID == guid, out var profile))
             {
                 return profile;
             }
@@ -217,25 +223,25 @@ public unsafe class Avarice : IDalamudPlugin
 
     private void Tick(object framework)
     {
-        if(Framework.Instance()->FrameCounter - PositionalStatus[0] > 1)
+        if (Framework.Instance()->FrameCounter - PositionalStatus[0] > 1)
         {
             PositionalStatus[1] = 0;
         }
-        if(Svc.ClientState.LocalPlayer != null)
+        if (Svc.ClientState.LocalPlayer != null)
         {
             var newJob = (uint)Player.Job;
-            if(newJob != Job)
+            if (newJob != Job)
             {
                 PluginLog.Debug($"Job changed from {Job} to {newJob}");
                 var newJobProfile = GetProfileForJob(newJob);
-                if(newJobProfile != null)
+                if (newJobProfile != null)
                 {
                     currentProfile = newJobProfile;
                     PluginLog.Debug($"Switched profile to job profile {newJobProfile.Name}");
                 }
                 else
                 {
-                    if(GetProfileForJob(Job) != null)
+                    if (GetProfileForJob(Job) != null)
                     {
                         currentProfile = P.config.Profiles.FirstOr0(x => x.IsDefault);
                         PluginLog.Debug($"Switched profile to default {currentProfile.Name}");
