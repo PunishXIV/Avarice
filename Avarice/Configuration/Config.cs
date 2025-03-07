@@ -1,4 +1,7 @@
 ﻿using Dalamud.Configuration;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
 
 namespace Avarice.Configuration;
 
@@ -22,4 +25,9 @@ internal class Config : IPluginConfiguration
     public List<ExtraPoint> DutyMiddleExtras = new();
     public bool SplatoonUnsafePixel = false;
     public Vector4 SplatoonPixelCol = EColor.RedBright;
+
+    /// <summary>
+    /// When true, overlays are only drawn if the current target has positional vulnerabilities.
+    /// </summary>
+    public bool OnlyDrawIfPositional = false;
 }
