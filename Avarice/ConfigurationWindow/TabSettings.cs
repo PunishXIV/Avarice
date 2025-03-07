@@ -13,23 +13,34 @@ internal static class TabSettings
         { ClassDisplayCondition.Display_on_all_jobs, "DoW/DoM/DoH/DoL" },
     };*/
 
-    // New InfoBox for drawing toggle
-    static InfoBox BoxDrawing = new()
-    {
-        ContentsAction = delegate
-        {
-            ImGui.Checkbox("Enable Drawing", ref P.currentProfile.DrawingEnabled);
-            ImGui.SameLine();
-            ImGuiEx.Text(ImGuiColors.DalamudGrey3, "(/avarice draw)");
-            ImGuiComponents.HelpMarker("Toggle all visual elements of Avarice. You can also use the '/avarice draw' command in chat.");
-        },
-        Label = "Visual Display"
-    };
-
     static InfoBox BoxGeneral = new()
     {
         ContentsAction = delegate
         {
+            // Drawing controls section
+            ImGui.Text("Drawing Controls:");
+
+            // Profile-specific drawing toggle with styled command hint
+            ImGui.Checkbox("Enable Drawing", ref P.currentProfile.DrawingEnabled);
+            ImGui.SameLine();
+            // Add a little spacing
+            ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 5);
+            // Show command in a softer color as a shortcut hint
+            ImGuiEx.Text(new Vector4(0.7f, 0.7f, 1.0f, 1.0f), "(/avarice draw)");
+            ImGuiComponents.HelpMarker("Toggle all overlay drawing features. Can also be toggled with /avarice draw command");
+
+            // New option to only draw for positional targets
+            bool prevOnlyPositional = P.config.OnlyDrawIfPositional;
+            if (ImGui.Checkbox("Only show for positional targets", ref P.config.OnlyDrawIfPositional) && prevOnlyPositional != P.config.OnlyDrawIfPositional)
+            {
+                // Save change to config
+                Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+            }
+            ImGuiComponents.HelpMarker("When enabled, overlays will only be shown when targeting an enemy that requires positional attacks");
+
+            ImGui.Separator();
+
+            // Original options
             ImGui.Checkbox("Enable positional feedback VFX on failed positionals", ref P.currentProfile.EnableVFXFailure);
             ImGuiComponents.HelpMarker("Displays either a checkmark or cross above the player's head when they hit or miss a positional. This feature requires VFXEditor to be installed in order to function.");
             ImGui.Checkbox("Also enable VFX on successful positionals", ref P.currentProfile.EnableVFXSuccess);
@@ -183,7 +194,6 @@ internal static class TabSettings
             ("Player", delegate
             {
                 ImGuiHelpers.ScaledDummy(5f);
-                BoxDrawing.DrawStretched(); // Add the drawing toggle at the top
                 BoxGeneral.DrawStretched();
                 BoxPlayerDot.DrawStretched();
                 BoxCompass.Draw();
@@ -203,6 +213,5 @@ internal static class TabSettings
             ("Duty Centralisation", TabTank.Draw, null, true),
             (Svc.PluginInterface.TryGetData<bool[]>("Splatoon.IsInUnsafeZone", out _) ? "Splatoon" : null, TabSplatoon.Draw, null, true)
         );
-
     }
 }

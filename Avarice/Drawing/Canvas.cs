@@ -33,13 +33,32 @@ internal unsafe class Canvas : Window
 
     public override bool DrawConditions()
     {
-        return Svc.ClientState.LocalPlayer != null;
+        // Basic check - player exists
+        if (Svc.ClientState.LocalPlayer == null)
+            return false;
+
+        // Check if drawing is enabled in profile
+        if (!P.currentProfile.DrawingEnabled)
+            return false;
+
+        // Check for positional requirements if enabled
+        if (P.config.OnlyDrawIfPositional)
+        {
+            // Make sure we have a valid target with positional requirements
+            if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
+                return bnpc.HasPositional();
+
+            // No valid target with positionals
+            return false;
+        }
+
+        // All conditions passed
+        return true;
     }
 
     public override void Draw()
     {
-        // Early return if drawing is disabled
-        if (!P.currentProfile.DrawingEnabled) return;
+        // Drawing is already checked in DrawConditions() so no need for early return here
 
         DrawTankMiddle();
         if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
@@ -143,24 +162,6 @@ internal unsafe class Canvas : Window
             }
         }
 
-
-        /*if (P.config.EnableMaxMeleeAttackRing.IsClassDisplayConditionMatching() 
-                && IsConditionMatching(P.config.MaxMeleeAttackSettings.DisplayCondition))
-            {
-                {
-                    if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
-                    {
-                        CircleXZ(bnpc.Position, bnpc.HitboxRadius + 2.0f, P.config.MaxMeleeAttackSettings);
-                    }
-                }
-                {
-                    if (Svc.Targets.FocusTarget is IBattleNpc bnpc && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
-                    {
-                        CircleXZ(bnpc.Position, bnpc.HitboxRadius + 2.0f, P.config.MaxMeleeAttackSettings);
-                    }
-                }
-            }*/
-
         if (P.currentProfile.EnablePlayerRing && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
         {
             CircleXZ(Svc.ClientState.LocalPlayer.Position, Svc.ClientState.LocalPlayer.HitboxRadius, P.currentProfile.PlayerRingSettings);
@@ -241,9 +242,6 @@ internal unsafe class Canvas : Window
             }
         }
     }
-
-
-
 
     public override void PostDraw()
     {
