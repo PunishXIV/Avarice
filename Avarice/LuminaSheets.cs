@@ -51,6 +51,11 @@ namespace Avarice
 
         public static bool HasPositional(this IGameObject obj)
         {
+            // If the "Only show for positional targets" configuration is disabled,
+            // ignore BNpcBase filtering and treat all targets as positional.
+            if (!P.config.OnlyDrawIfPositional)
+                return true;
+
             if (obj is not IBattleNpc bnpc)
                 return false;
 
