@@ -2,12 +2,15 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Hooking;
 using ECommons.GameFunctions;
+using ECommons.Hooks;
+using ECommons.Hooks.ActionEffectTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.Character;
 using Lumina.Excel.Sheets;
 
 namespace Avarice.Data
 {
-	public static class ActionWatching
+	public unsafe static class ActionWatching
 	{
 		internal static Dictionary<uint, Lumina.Excel.Sheets.Action> ActionSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>()!
 			.Where(i => i.RowId is not 7)
@@ -27,18 +30,17 @@ namespace Avarice.Data
 
 		internal static readonly List<uint> CombatActions = [];
 
-		private delegate void ReceiveActionEffectDelegate(ulong sourceObjectId, nint sourceActor, nint position, nint effectHeader, nint effectArray, nint effectTrail);
-		private static readonly Hook<ReceiveActionEffectDelegate> ReceiveActionEffectHook;
+		private static readonly Hook<ActionEffect.ProcessActionEffect> ReceiveActionEffectHook;
 
-		private static void ReceiveActionEffectDetour(ulong sourceObjectId, nint sourceActor, nint position, nint effectHeader, nint effectArray, nint effectTrail)
+		private static void ReceiveActionEffectDetour(uint sourceId, Character* sourceCharacter, Vector3* pos, EffectHeader* effectHeader, EffectEntry* effectArray, ulong* effectTail)
 		{
 			if (!Svc.Condition[ConditionFlag.InCombat])
 			{
 				CombatActions.Clear();
 			}
 
-			ReceiveActionEffectHook!.Original(sourceObjectId, sourceActor, position, effectHeader, effectArray, effectTrail);
-			ActionEffectHeader header = Marshal.PtrToStructure<ActionEffectHeader>(effectHeader);
+			ReceiveActionEffectHook!.Original(sourceId, sourceCharacter, pos, effectHeader, effectArray, effectTail);
+			ActionEffectHeader header = Marshal.PtrToStructure<ActionEffectHeader>((nint)effectHeader);
 
 			if (ActionType is 13 or 2)
 			{
@@ -47,7 +49,7 @@ namespace Avarice.Data
 
 			if (header.ActionId != 7 &&
 				header.ActionId != 8 &&
-				sourceObjectId == Svc.ClientState.LocalPlayer.GameObjectId)
+        sourceId == Svc.ClientState.LocalPlayer.EntityId)
 			{
 				TimeLastActionUsed = DateTime.Now;
 				LastActionUseCount++;
@@ -202,7 +204,7 @@ namespace Avarice.Data
 
 		static unsafe ActionWatching()
 		{
-			ReceiveActionEffectHook ??= Svc.Hook.HookFromSignature<ReceiveActionEffectDelegate>("40 55 56 57 41 54 41 55 41 56 48 8D AC 24", ReceiveActionEffectDetour);
+      ReceiveActionEffectHook ??= Svc.Hook.HookFromSignature<ActionEffect.ProcessActionEffect>(ActionEffect.Sig, ReceiveActionEffectDetour);
 			SendActionHook ??= Svc.Hook.HookFromSignature<SendActionDelegate>("48 89 5C 24 ?? 48 89 6C 24 ?? 48 89 74 24 ?? 57 48 81 EC ?? ?? ?? ?? 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 8B E9 41 0F B7 D9", SendActionDetour);
 		}
 
