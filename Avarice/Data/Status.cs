@@ -10,10 +10,10 @@ namespace Avarice.Data
 			return FindEffect(effectID) is not null;
 		}
 
-		public static byte GetBuffStacks(ushort effectId)
+		public static ushort GetBuffStacks(ushort effectId)
 		{
 			Status eff = FindEffect(effectId);
-			return eff?.StackCount ?? 0;
+			return eff?.Param ?? 0;
 		}
 
 		public static float GetBuffRemainingTime(ushort effectId)

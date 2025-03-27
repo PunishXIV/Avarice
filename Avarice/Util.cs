@@ -301,7 +301,7 @@ internal static unsafe class Util
 		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gekko).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && (move.EqualsAny((uint)ActionID.Jinpu)
-			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.GETSU) && SAMGauge.Sen.HasFlag(Sen.KA)
+			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.Getsu) && SAMGauge.Sen.HasFlag(Sen.Ka)
 			&& !P.currentProfile.Meikyo));
 	}
 	public static bool IsSAMAnticipatedFlank()
@@ -309,7 +309,7 @@ internal static unsafe class Util
 		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Kasha).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && (move.EqualsAny((uint)ActionID.Shifu)
-			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.KA)
+			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.Ka)
 			&& !P.currentProfile.Meikyo));
 	}
 
