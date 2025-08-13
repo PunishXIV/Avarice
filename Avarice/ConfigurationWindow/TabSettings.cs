@@ -43,9 +43,9 @@ internal static class TabSettings
             // Visual Feedback Settings
             ImGui.Text("Visual Feedback Settings:");
             
-            ImGui.Checkbox("Enable visual feedback on failed positionals", ref P.currentProfile.EnableVFXFailure);
+            ImGui.Checkbox("Show feedback on missed positionals", ref P.currentProfile.EnableVFXFailure);
             ImGuiComponents.HelpMarker("Displays a red X above your character when you miss a positional attack.");
-            ImGui.Checkbox("Also enable visual feedback on successful positionals", ref P.currentProfile.EnableVFXSuccess);
+            ImGui.Checkbox("Show feedback on hit positionals", ref P.currentProfile.EnableVFXSuccess);
             ImGuiComponents.HelpMarker("Displays a green checkmark above your character when you successfully hit a positional attack.");
             
             // Visual feedback customization
@@ -68,32 +68,47 @@ internal static class TabSettings
                 
                 ImGui.Text("Colors:");
                 
-                ImGui.AlignTextToFramePadding();
-                ImGui.Text("Hit:");
-                ImGui.SameLine();
-                var successColor = settings.SuccessColor;
-                if (ImGui.ColorEdit4("##successColor", ref successColor, ImGuiColorEditFlags.NoInputs))
+                // Only show Hit color if hits are enabled
+                if (P.currentProfile.EnableVFXSuccess)
                 {
-                    settings.SuccessColor = successColor;
-                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    ImGui.AlignTextToFramePadding();
+                    ImGui.Text("Hit:");
+                    ImGui.SameLine();
+                    var successColor = settings.SuccessColor;
+                    if (ImGui.ColorEdit4("##successColor", ref successColor, ImGuiColorEditFlags.NoInputs))
+                    {
+                        settings.SuccessColor = successColor;
+                        Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    }
                 }
                 
-                ImGui.AlignTextToFramePadding();
-                ImGui.Text("Miss:");
-                ImGui.SameLine();
-                var failureColor = settings.FailureColor;
-                if (ImGui.ColorEdit4("##failureColor", ref failureColor, ImGuiColorEditFlags.NoInputs))
+                // Only show Miss color if misses are enabled
+                if (P.currentProfile.EnableVFXFailure)
                 {
-                    settings.FailureColor = failureColor;
-                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    ImGui.AlignTextToFramePadding();
+                    ImGui.Text("Miss:");
+                    ImGui.SameLine();
+                    var failureColor = settings.FailureColor;
+                    if (ImGui.ColorEdit4("##failureColor", ref failureColor, ImGuiColorEditFlags.NoInputs))
+                    {
+                        settings.FailureColor = failureColor;
+                        Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    }
                 }
                 
-                // Test buttons
-                if (ImGui.Button("Test Hit"))
-                    VisualFeedbackManager.TestFeedback(true);
-                ImGui.SameLine();
-                if (ImGui.Button("Test Miss"))
-                    VisualFeedbackManager.TestFeedback(false);
+                // Test buttons - only show for enabled types
+                if (P.currentProfile.EnableVFXSuccess)
+                {
+                    if (ImGui.Button("Test Hit"))
+                        VisualFeedbackManager.TestFeedback(true);
+                    if (P.currentProfile.EnableVFXFailure)
+                        ImGui.SameLine();
+                }
+                if (P.currentProfile.EnableVFXFailure)
+                {
+                    if (ImGui.Button("Test Miss"))
+                        VisualFeedbackManager.TestFeedback(false);
+                }
                 
                 ImGui.Unindent();
             }
