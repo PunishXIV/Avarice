@@ -43,12 +43,6 @@ internal unsafe partial class ConfigWindow : Window
         }
         {
             ImGui.TextColored(ImGuiColors.DalamudYellow, "Visual Feedback System:");
-            if(ImGui.Button("Configure Position/Size"))
-            {
-                VisualFeedbackManager.ConfigureMode(true);
-            }
-            ImGuiComponents.HelpMarker("Opens a window where you can drag to position, resize, and customize the visual feedback display.");
-            
             ImGui.Text("Test Feedback:");
             if(ImGui.Button("Show Success"))
             {

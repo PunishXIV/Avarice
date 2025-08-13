@@ -2,322 +2,180 @@ using System;
 using System.Numerics;
 using Dalamud.Interface;
 using Dalamud.Interface.Windowing;
-using Dalamud.Interface.Components;
-using ECommons.ImGuiMethods;
+using ECommons.GameHelpers;
 
 namespace Avarice;
 
 internal class VisualFeedbackManager
 {
-    private static VisualFeedbackWindow feedbackWindow = null;
+    private static VisualFeedbackOverlay feedbackOverlay = null;
     
     internal static void DisplayFeedback(bool success, float duration = 2.0f)
     {
-        if (feedbackWindow == null)
+        if (feedbackOverlay == null)
         {
-            feedbackWindow = new VisualFeedbackWindow();
-            P.windowSystem.AddWindow(feedbackWindow);
+            feedbackOverlay = new VisualFeedbackOverlay();
+            P.windowSystem.AddWindow(feedbackOverlay);
         }
         
-        feedbackWindow.ShowFeedback(success, duration);
+        feedbackOverlay.ShowFeedback(success, duration);
     }
     
     internal static void RemoveFeedback()
     {
-        if (feedbackWindow != null && !feedbackWindow.IsConfiguring)
+        if (feedbackOverlay != null)
         {
-            feedbackWindow.IsOpen = false;
+            feedbackOverlay.HideFeedback();
         }
     }
     
-    internal static void ConfigureMode(bool enable)
+    internal static void TestFeedback(bool success)
     {
-        if (feedbackWindow == null)
-        {
-            feedbackWindow = new VisualFeedbackWindow();
-            P.windowSystem.AddWindow(feedbackWindow);
-        }
-        
-        feedbackWindow.IsConfiguring = enable;
-        feedbackWindow.IsOpen = enable;
-        if (enable)
-        {
-            feedbackWindow.IsSuccess = true;
-        }
+        DisplayFeedback(success, 2.0f);
     }
     
     internal static void Dispose()
     {
-        if (feedbackWindow != null)
+        if (feedbackOverlay != null)
         {
-            feedbackWindow.SaveSettings();
-            P.windowSystem.RemoveWindow(feedbackWindow);
-            feedbackWindow = null;
+            P.windowSystem.RemoveWindow(feedbackOverlay);
+            feedbackOverlay = null;
         }
     }
 }
 
-internal class VisualFeedbackWindow : Window
+internal class VisualFeedbackOverlay : Window
 {
     public bool IsSuccess { get; set; }
-    public bool IsConfiguring { get; set; }
+    public bool IsShowingFeedback { get; set; }
     
     private DateTime displayEndTime;
-    private float fadeAlpha = 1.0f;
+    private const float DEFAULT_HEIGHT_OFFSET = 2.0f; // Fixed height above player
     
-    private bool showBackground = true;
-    private float backgroundAlpha = 0.7f;
-    private float iconSize = 40f;
-    private bool enableFadeOut = true;
-    private Vector4 successColor = new Vector4(0.2f, 0.9f, 0.2f, 1f);
-    private Vector4 failureColor = new Vector4(0.9f, 0.2f, 0.2f, 1f);
-    
-    public VisualFeedbackWindow() : base("##VisualFeedback")
+    public VisualFeedbackOverlay() : base("##VisualFeedbackOverlay",
+        ImGuiWindowFlags.NoInputs
+        | ImGuiWindowFlags.NoTitleBar
+        | ImGuiWindowFlags.NoScrollbar
+        | ImGuiWindowFlags.NoBackground
+        | ImGuiWindowFlags.AlwaysUseWindowPadding
+        | ImGuiWindowFlags.NoSavedSettings
+        | ImGuiWindowFlags.NoFocusOnAppearing
+        | ImGuiWindowFlags.NoDocking)
     {
-        LoadSettings();
-        UpdateWindowFlags();
+        IsOpen = true;
+        RespectCloseHotkey = false;
     }
     
     public void ShowFeedback(bool success, float duration)
     {
         IsSuccess = success;
-        IsOpen = true;
-        IsConfiguring = false;
+        IsShowingFeedback = true;
         displayEndTime = DateTime.Now.AddSeconds(duration);
-        fadeAlpha = 1.0f;
         
         Task.Delay(TimeSpan.FromSeconds(duration)).ContinueWith(_ =>
         {
-            if (!IsConfiguring)
-            {
-                IsOpen = false;
-            }
+            HideFeedback();
         });
     }
     
-    private void UpdateWindowFlags()
+    public void HideFeedback()
     {
-        if (IsConfiguring)
-        {
-            Flags = ImGuiWindowFlags.NoTitleBar | 
-                   ImGuiWindowFlags.NoScrollbar |
-                   ImGuiWindowFlags.NoDocking;
-            Size = new Vector2(200, 300);
-            SizeCondition = ImGuiCond.FirstUseEver;
-        }
-        else
-        {
-            Flags = ImGuiWindowFlags.NoTitleBar | 
-                   ImGuiWindowFlags.NoResize | 
-                   ImGuiWindowFlags.NoMove | 
-                   ImGuiWindowFlags.NoScrollbar | 
-                   ImGuiWindowFlags.NoBackground | 
-                   ImGuiWindowFlags.NoInputs |
-                   ImGuiWindowFlags.NoFocusOnAppearing |
-                   ImGuiWindowFlags.NoNav |
-                   ImGuiWindowFlags.NoDocking;
-        }
+        IsShowingFeedback = false;
     }
     
     public override void PreDraw()
     {
-        UpdateWindowFlags();
+        ImGui.PushStyleVar(ImGuiStyleVar.WindowPadding, new Vector2(0, 0));
+        ImGuiHelpers.SetNextWindowPosRelativeMainViewport(Vector2.Zero);
+        ImGui.SetNextWindowSize(ImGuiHelpers.MainViewport.Size);
+    }
+    
+    public override bool DrawConditions()
+    {
+        return IsShowingFeedback && Svc.ClientState.LocalPlayer != null;
     }
     
     public override void Draw()
     {
-        if (!IsConfiguring && enableFadeOut)
-        {
-            var timeLeft = (displayEndTime - DateTime.Now).TotalSeconds;
-            fadeAlpha = timeLeft < 0.5 && timeLeft > 0 ? (float)(timeLeft / 0.5) : timeLeft <= 0 ? 0 : 1.0f;
-        }
+        var settings = P.config.VisualFeedbackSettings ?? new VisualFeedbackSettings();
         
-        if (IsConfiguring)
-        {
-            DrawConfigurationUI();
-        }
+        // Get position above player's head
+        var playerPos = Svc.ClientState.LocalPlayer.Position;
+        var worldPos = playerPos with { Y = playerPos.Y + DEFAULT_HEIGHT_OFFSET };
         
-        DrawFeedback();
-    }
-    
-    private void DrawConfigurationUI()
-    {
-        ImGui.Text("Visual Feedback Config");
-        ImGui.Separator();
+        // Convert world position to screen position
+        if (!Svc.GameGui.WorldToScreen(worldPos, out var screenPos)) return;
         
-        ImGui.Text("Drag to move, resize corner");
-        var pos = ImGui.GetWindowPos();
-        ImGui.Text($"Position: X: {pos.X:F0}, Y: {pos.Y:F0}");
-        
-        ImGui.Separator();
-        
-        if (ImGui.Checkbox("Show Background", ref showBackground))
-            SaveSettings();
-        
-        if (showBackground && ImGui.SliderFloat("BG Alpha", ref backgroundAlpha, 0f, 1f))
-            SaveSettings();
-        
-        if (ImGui.SliderFloat("Icon Size", ref iconSize, 20f, 100f))
-            SaveSettings();
-        
-        if (ImGui.Checkbox("Fade Out", ref enableFadeOut))
-            SaveSettings();
-        
-        ImGui.Separator();
-        
-        if (ImGui.ColorEdit4("Success Color", ref successColor, ImGuiColorEditFlags.NoInputs))
-            SaveSettings();
-        
-        if (ImGui.ColorEdit4("Failure Color", ref failureColor, ImGuiColorEditFlags.NoInputs))
-            SaveSettings();
-        
-        ImGui.Separator();
-        
-        if (ImGui.Button("Test Success"))
-            IsSuccess = true;
-        ImGui.SameLine();
-        if (ImGui.Button("Test Failure"))
-            IsSuccess = false;
-        
-        ImGui.Separator();
-        
-        if (ImGui.Button("Save & Close"))
-        {
-            SaveSettings();
-            IsConfiguring = false;
-            IsOpen = false;
-        }
-    }
-    
-    private void DrawFeedback()
-    {
         var drawList = ImGui.GetWindowDrawList();
-        var pos = ImGui.GetWindowPos();
-        var size = ImGui.GetWindowSize();
-        var center = IsConfiguring ? 
-            pos + new Vector2(size.X / 2, size.Y - iconSize - 10) :
-            pos + size / 2;
         
-        if (showBackground)
-        {
-            var bgAlpha = IsConfiguring ? backgroundAlpha : backgroundAlpha * fadeAlpha;
-            var bgColor = ImGui.GetColorU32(new Vector4(0, 0, 0, bgAlpha));
-            
-            if (!IsConfiguring)
-            {
-                drawList.AddRectFilled(pos, pos + size, bgColor, 10f);
-            }
-            else
-            {
-                var previewHeight = iconSize * 2.5f;
-                var bgStart = new Vector2(pos.X, pos.Y + size.Y - previewHeight);
-                drawList.AddRectFilled(bgStart, new Vector2(pos.X + size.X, pos.Y + size.Y), bgColor, 10f);
-                
-                drawList.AddLine(
-                    new Vector2(pos.X, pos.Y + size.Y - previewHeight - 5),
-                    new Vector2(pos.X + size.X, pos.Y + size.Y - previewHeight - 5),
-                    ImGui.GetColorU32(ImGuiCol.Separator)
-                );
-            }
-        }
+        // Draw a subtle dark circle behind the icon for visibility
+        var bgColor = ImGui.GetColorU32(new Vector4(0, 0, 0, 0.3f));
+        drawList.AddCircleFilled(screenPos, settings.IconSize * 1.2f, bgColor);
         
+        // Draw the feedback icon
         if (IsSuccess)
-            DrawCheckmark(drawList, center, iconSize);
+            DrawCheckmark(drawList, screenPos, settings);
         else
-            DrawX(drawList, center, iconSize);
+            DrawX(drawList, screenPos, settings);
     }
     
-    private void DrawCheckmark(ImDrawListPtr drawList, Vector2 center, float size)
+    public override void PostDraw()
     {
-        var alpha = IsConfiguring ? 1f : fadeAlpha;
-        var color = ImGui.GetColorU32(new Vector4(successColor.X, successColor.Y, successColor.Z, successColor.W * alpha));
-        var thickness = Math.Max(2f, size / 8f);
-        
-        drawList.AddLine(center + new Vector2(-size * 0.5f, 0), center + new Vector2(-size * 0.1f, size * 0.4f), color, thickness);
-        drawList.AddLine(center + new Vector2(-size * 0.1f, size * 0.4f), center + new Vector2(size * 0.5f, -size * 0.4f), color, thickness);
-        drawList.AddCircle(center, size, color, 0, thickness);
+        ImGui.PopStyleVar();
     }
     
-    private void DrawX(ImDrawListPtr drawList, Vector2 center, float size)
+    private void DrawCheckmark(ImDrawListPtr drawList, Vector2 center, VisualFeedbackSettings settings)
     {
-        var alpha = IsConfiguring ? 1f : fadeAlpha;
-        var color = ImGui.GetColorU32(new Vector4(failureColor.X, failureColor.Y, failureColor.Z, failureColor.W * alpha));
-        var thickness = Math.Max(2f, size / 8f);
-        var offset = size * 0.5f;
+        var color = ImGui.GetColorU32(settings.SuccessColor);
+        var thickness = Math.Max(2f, settings.IconSize / 8f);
         
-        drawList.AddLine(center + new Vector2(-offset, -offset), center + new Vector2(offset, offset), color, thickness);
-        drawList.AddLine(center + new Vector2(-offset, offset), center + new Vector2(offset, -offset), color, thickness);
-        drawList.AddCircle(center, size, color, 0, thickness);
+        // Draw checkmark
+        drawList.AddLine(
+            center + new Vector2(-settings.IconSize * 0.5f, 0), 
+            center + new Vector2(-settings.IconSize * 0.1f, settings.IconSize * 0.4f), 
+            color, thickness);
+        drawList.AddLine(
+            center + new Vector2(-settings.IconSize * 0.1f, settings.IconSize * 0.4f), 
+            center + new Vector2(settings.IconSize * 0.5f, -settings.IconSize * 0.4f), 
+            color, thickness);
+        
+        // Draw circle outline
+        drawList.AddCircle(center, settings.IconSize, color, 0, thickness);
     }
     
-    public override void OnClose()
+    private void DrawX(ImDrawListPtr drawList, Vector2 center, VisualFeedbackSettings settings)
     {
-        if (IsConfiguring)
-        {
-            SaveSettings();
-            IsConfiguring = false;
-        }
-    }
-    
-    public void SaveSettings()
-    {
-        var config = P.config;
+        var color = ImGui.GetColorU32(settings.FailureColor);
+        var thickness = Math.Max(2f, settings.IconSize / 8f);
+        var offset = settings.IconSize * 0.5f;
         
-        if (config.VisualFeedbackSettings == null)
-            config.VisualFeedbackSettings = new VisualFeedbackSettings();
+        // Draw X
+        drawList.AddLine(
+            center + new Vector2(-offset, -offset), 
+            center + new Vector2(offset, offset), 
+            color, thickness);
+        drawList.AddLine(
+            center + new Vector2(-offset, offset), 
+            center + new Vector2(offset, -offset), 
+            color, thickness);
         
-        if (IsConfiguring || !IsOpen)
-        {
-            config.VisualFeedbackSettings.Position = Position ?? config.VisualFeedbackSettings.Position;
-            config.VisualFeedbackSettings.Size = Size ?? config.VisualFeedbackSettings.Size;
-        }
-        
-        config.VisualFeedbackSettings.ShowBackground = showBackground;
-        config.VisualFeedbackSettings.BackgroundAlpha = backgroundAlpha;
-        config.VisualFeedbackSettings.IconSize = iconSize;
-        config.VisualFeedbackSettings.EnableFadeOut = enableFadeOut;
-        config.VisualFeedbackSettings.SuccessColor = successColor;
-        config.VisualFeedbackSettings.FailureColor = failureColor;
-        
-        Svc.PluginInterface.SavePluginConfig(config);
-    }
-    
-    private void LoadSettings()
-    {
-        var settings = P.config.VisualFeedbackSettings;
-        if (settings != null)
-        {
-            Position = settings.Position;
-            PositionCondition = ImGuiCond.FirstUseEver;
-            Size = settings.Size;
-            SizeCondition = ImGuiCond.FirstUseEver;
-            showBackground = settings.ShowBackground;
-            backgroundAlpha = settings.BackgroundAlpha;
-            iconSize = settings.IconSize;
-            enableFadeOut = settings.EnableFadeOut;
-            successColor = settings.SuccessColor;
-            failureColor = settings.FailureColor;
-        }
-        else
-        {
-            var screenSize = ImGui.GetMainViewport().Size;
-            Position = new Vector2(screenSize.X / 2 - 60, screenSize.Y / 2 - 60);
-            PositionCondition = ImGuiCond.FirstUseEver;
-            Size = new Vector2(120, 120);
-            SizeCondition = ImGuiCond.FirstUseEver;
-        }
+        // Draw circle outline
+        drawList.AddCircle(center, settings.IconSize, color, 0, thickness);
     }
 }
 
 [Serializable]
 public class VisualFeedbackSettings
 {
-    public Vector2 Position { get; set; } = new Vector2(960, 540);
-    public Vector2 Size { get; set; } = new Vector2(120, 120);
-    public bool ShowBackground { get; set; } = true;
-    public float BackgroundAlpha { get; set; } = 0.7f;
     public float IconSize { get; set; } = 40f;
-    public bool EnableFadeOut { get; set; } = true;
     public Vector4 SuccessColor { get; set; } = new Vector4(0.2f, 0.9f, 0.2f, 1f);
     public Vector4 FailureColor { get; set; } = new Vector4(0.9f, 0.2f, 0.2f, 1f);
+    
+    // Keep old properties for backward compatibility but mark obsolete
+    [Obsolete] public bool EnableFadeOut { get; set; }
+    [Obsolete] public float VerticalOffset { get; set; }
+    [Obsolete] public Vector2 Position { get; set; }
+    [Obsolete] public Vector2 Size { get; set; }
+    [Obsolete] public bool ShowBackground { get; set; }
+    [Obsolete] public float BackgroundAlpha { get; set; }
 }

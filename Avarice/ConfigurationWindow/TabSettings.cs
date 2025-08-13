@@ -43,16 +43,60 @@ internal static class TabSettings
             // Visual Feedback Settings
             ImGui.Text("Visual Feedback Settings:");
             
-            if (ImGui.Button("Configure Visual Feedback Position/Style"))
-            {
-                VisualFeedbackManager.ConfigureMode(true);
-            }
-            ImGuiComponents.HelpMarker("Opens a window where you can:\n- Drag to reposition\n- Resize the window\n- Adjust transparency\n- Change colors\n- Test the feedback display");
-            
             ImGui.Checkbox("Enable visual feedback on failed positionals", ref P.currentProfile.EnableVFXFailure);
-            ImGuiComponents.HelpMarker("Displays a red X when you miss a positional attack.");
+            ImGuiComponents.HelpMarker("Displays a red X above your character when you miss a positional attack.");
             ImGui.Checkbox("Also enable visual feedback on successful positionals", ref P.currentProfile.EnableVFXSuccess);
-            ImGuiComponents.HelpMarker("Displays a green checkmark when you successfully hit a positional attack.");
+            ImGuiComponents.HelpMarker("Displays a green checkmark above your character when you successfully hit a positional attack.");
+            
+            // Visual feedback customization
+            if (P.currentProfile.EnableVFXFailure || P.currentProfile.EnableVFXSuccess)
+            {
+                ImGui.Indent();
+                
+                if (P.config.VisualFeedbackSettings == null)
+                    P.config.VisualFeedbackSettings = new VisualFeedbackSettings();
+                
+                var settings = P.config.VisualFeedbackSettings;
+                
+                // Icon size
+                var iconSize = settings.IconSize;
+                if (ImGui.SliderFloat("Icon Size", ref iconSize, 20f, 100f))
+                {
+                    settings.IconSize = iconSize;
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+                
+                ImGui.Text("Colors:");
+                
+                ImGui.AlignTextToFramePadding();
+                ImGui.Text("Hit:");
+                ImGui.SameLine();
+                var successColor = settings.SuccessColor;
+                if (ImGui.ColorEdit4("##successColor", ref successColor, ImGuiColorEditFlags.NoInputs))
+                {
+                    settings.SuccessColor = successColor;
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+                
+                ImGui.AlignTextToFramePadding();
+                ImGui.Text("Miss:");
+                ImGui.SameLine();
+                var failureColor = settings.FailureColor;
+                if (ImGui.ColorEdit4("##failureColor", ref failureColor, ImGuiColorEditFlags.NoInputs))
+                {
+                    settings.FailureColor = failureColor;
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+                
+                // Test buttons
+                if (ImGui.Button("Test Hit"))
+                    VisualFeedbackManager.TestFeedback(true);
+                ImGui.SameLine();
+                if (ImGui.Button("Test Miss"))
+                    VisualFeedbackManager.TestFeedback(false);
+                
+                ImGui.Unindent();
+            }
             
             ImGui.Separator();
             ImGui.Checkbox("Output positional feedback to chat on failed positional", ref P.currentProfile.EnableChatMessagesFailure);
@@ -99,37 +143,73 @@ internal static class TabSettings
             ImGui.Checkbox("Front Slice Indicator", ref P.currentProfile.EnableFrontSegment);
             //if (P.currentProfile.EnableFrontSegment)
             {
-                ImGuiEx.Spacing(20f, true);
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(150f);
+                ImGuiEx.EnumCombo($"##cb2", ref P.currentProfile.FrontSegmentIndicator.DisplayCondition);
+                ImGuiEx.InvisibleButton(3);
+                ImGui.SameLine();
                 ImGuiEx.Text("Colour:");
                 ImGui.SameLine();
-                ImGui.ColorEdit4("##Frontal segment highlight1", ref P.currentProfile.FrontSegmentIndicator.Fill, (ImGuiColorEditFlags)32);
-                ImGuiEx.Spacing(20f, true);
-                ImGui.Checkbox("Colour fill only under player presence?", ref P.currentProfile.FrontStand);
+                ImGui.ColorEdit4($"##ca2", ref P.currentProfile.FrontSegmentIndicator.Fill, ImGuiColorEditFlags.NoInputs);
             }
         }
     };
 
     static InfoBox BoxMeleeRing = new()
     {
-        Label = "Target Ring Settings",
+        Label = "Enemy Distance Indicator",
         ContentsAction = delegate
         {
             ImGui.SetNextItemWidth(SelectWidth);
-            ImGui.Checkbox("Target Ring Settings", ref P.currentProfile.EnableMaxMeleeRing);
+            ImGui.Checkbox("Enemy Distance Indicator", ref P.currentProfile.EnableMaxMeleeRing);
             //if (P.currentProfile.EnableMaxMeleeRing)
             {
-                DrawUnfilledMultiSettings("b", ref P.currentProfile.MaxMeleeSettingsN,
-                    ref P.currentProfile.MaxMeleeSettingsS,
-                    ref P.currentProfile.MaxMeleeSettingsE,
-                    ref P.currentProfile.MaxMeleeSettingsW,
-                    ref P.currentProfile.DrawLines,
-                    ref P.currentProfile.SameColor);
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(150f);
+                ImGuiEx.EnumCombo($"##mrd", ref P.currentProfile.MaxMeleeSettingsN.DisplayCondition);
+                ImGuiEx.InvisibleButton(3);
+                ImGui.SameLine();
+                ImGuiEx.Text("Radius 3y:");
+                ImGui.SameLine();
+                ImGui.Checkbox("##r3", ref P.currentProfile.Radius3);
+                ImGui.SameLine();
+                ImGuiEx.Text("Radius 2y:");
+                ImGui.SameLine();
+                ImGui.Checkbox("##r2", ref P.currentProfile.Radius2);
+                ImGuiEx.InvisibleButton(3);
+                ImGui.SameLine();
+                ImGuiEx.Text("Lines:");
+                ImGui.SameLine();
+                ImGui.Checkbox("##lines", ref P.currentProfile.DrawLines);
+                DrawUnfilledSettings("mr", ref P.currentProfile.MaxMeleeSettingsN, true);
             }
-
-            ImGui.Checkbox("Enable horizontal split?", ref P.currentProfile.HLine);
-            ImGui.Checkbox("Enable vertical split?", ref P.currentProfile.VLine);
         }
     };
+
+    static InfoBox BoxAnticipation = new()
+    {
+        Label = "Positional Anticipation Settings",
+        ContentsAction = delegate
+        {
+            ImGui.SetNextItemWidth(SelectWidth);
+            ImGui.Checkbox("Positional Anticipation Settings", ref P.currentProfile.EnableAnticipatedPie);
+            //if(P.currentProfile.EnableAnticipatedPie)
+            {
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(150f);
+                ImGuiEx.EnumCombo($"##adt", ref P.currentProfile.AnticipatedPieSettings.DisplayCondition);
+                ImGuiEx.InvisibleButton(3);
+                ImGui.SameLine();
+                ImGuiEx.Text("Color:");
+                ImGui.SameLine();
+                ImGui.ColorEdit4($"##ca3", ref P.currentProfile.AnticipatedPieSettings.Fill, ImGuiColorEditFlags.NoInputs);
+                ImGuiEx.InvisibleButton(3);
+                ImGui.SameLine();
+                ImGui.Checkbox("Disable on True North", ref P.currentProfile.AnticipatedDisableTrueNorth);
+            }
+        }
+    };
+
 
     static InfoBox BoxHitboxSettings = new()
     {
