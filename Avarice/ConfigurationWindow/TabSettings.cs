@@ -40,10 +40,21 @@ internal static class TabSettings
 
             ImGui.Separator();
 
-            // Original options
-            ImGui.Checkbox("Enable positional feedback VFX on failed positionals", ref P.currentProfile.EnableVFXFailure);
-            ImGuiComponents.HelpMarker("Displays either a checkmark or cross above the player's head when they hit or miss a positional. This feature requires VFXEditor to be installed in order to function.");
-            ImGui.Checkbox("Also enable VFX on successful positionals", ref P.currentProfile.EnableVFXSuccess);
+            // Visual Feedback Settings
+            ImGui.Text("Visual Feedback Settings:");
+            
+            if (ImGui.Button("Configure Visual Feedback Position/Style"))
+            {
+                VisualFeedbackManager.ConfigureMode(true);
+            }
+            ImGuiComponents.HelpMarker("Opens a window where you can:\n- Drag to reposition\n- Resize the window\n- Adjust transparency\n- Change colors\n- Test the feedback display");
+            
+            ImGui.Checkbox("Enable visual feedback on failed positionals", ref P.currentProfile.EnableVFXFailure);
+            ImGuiComponents.HelpMarker("Displays a red X when you miss a positional attack.");
+            ImGui.Checkbox("Also enable visual feedback on successful positionals", ref P.currentProfile.EnableVFXSuccess);
+            ImGuiComponents.HelpMarker("Displays a green checkmark when you successfully hit a positional attack.");
+            
+            ImGui.Separator();
             ImGui.Checkbox("Output positional feedback to chat on failed positional", ref P.currentProfile.EnableChatMessagesFailure);
             ImGuiComponents.HelpMarker("Prints either a success or failure message in the chat when you hit or miss a positional.");
             ImGui.Checkbox("Also print feedback to chat on successful positionals", ref P.currentProfile.EnableChatMessagesSuccess);

@@ -42,13 +42,27 @@ internal unsafe partial class ConfigWindow : Window
             ImGuiEx.Text(P.StaticAutoDetectRadiusData.Select(x => x.ToString()).Join("\n"));
         }
         {
-            if(ImGui.Button("vfx yes"))
+            ImGui.TextColored(ImGuiColors.DalamudYellow, "Visual Feedback System:");
+            if(ImGui.Button("Configure Position/Size"))
             {
-                VfxEditorManager.DisplayVfx(true);
+                VisualFeedbackManager.ConfigureMode(true);
             }
-            if(ImGui.Button("vfx no"))
+            ImGuiComponents.HelpMarker("Opens a window where you can drag to position, resize, and customize the visual feedback display.");
+            
+            ImGui.Text("Test Feedback:");
+            if(ImGui.Button("Show Success"))
             {
-                VfxEditorManager.DisplayVfx(false);
+                VisualFeedbackManager.DisplayFeedback(true);
+            }
+            ImGui.SameLine();
+            if(ImGui.Button("Show Failure"))
+            {
+                VisualFeedbackManager.DisplayFeedback(false);
+            }
+            ImGui.SameLine();
+            if(ImGui.Button("Hide"))
+            {
+                VisualFeedbackManager.RemoveFeedback();
             }
             ImGui.InputInt("Action override test", ref ActionOverride);
             if(ImGui.Button("set action override"))

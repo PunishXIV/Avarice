@@ -30,4 +30,9 @@ internal class Config : IPluginConfiguration
     /// When true, overlays are only drawn if the current target has positional vulnerabilities.
     /// </summary>
     public bool OnlyDrawIfPositional = false;
+    
+    /// <summary>
+    /// Settings for the visual feedback system (checkmark/X display)
+    /// </summary>
+    public VisualFeedbackSettings VisualFeedbackSettings { get; set; }
 }

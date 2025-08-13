@@ -41,13 +41,13 @@ namespace Avarice
                     if (positionalState == PositionalState.Success)
                     {
                         if (P.currentProfile?.EnableChatMessagesSuccess == true) Svc.Chat?.Print("Positional HIT!");
-                        if (P.currentProfile?.EnableVFXSuccess == true) VfxEditorManager.DisplayVfx(true);
+                        if (P.currentProfile?.EnableVFXSuccess == true) VisualFeedbackManager.DisplayFeedback(true);
                         P.RecordStat(false);
                     }
                     else if (positionalState == PositionalState.Failure)
                     {
                         if (P.currentProfile?.EnableChatMessagesFailure == true) Svc.Chat?.Print("Positional MISS!");
-                        if (P.currentProfile?.EnableVFXFailure == true) VfxEditorManager.DisplayVfx(false);
+                        if (P.currentProfile?.EnableVFXFailure == true) VisualFeedbackManager.DisplayFeedback(false);
                         P.RecordStat(true);
                     }
                     PluginLog.Debug($"Positional state: {positionalState}");
