@@ -27,7 +27,7 @@ public unsafe class Avarice : IDalamudPlugin
     internal Config config;
     internal Profile currentProfile;
     internal static Avarice P;
-    private WindowSystem windowSystem;
+    internal WindowSystem windowSystem;
     internal ConfigWindow configWindow;
     private Canvas canvas;
     internal Memory memory;
@@ -216,6 +216,7 @@ public unsafe class Avarice : IDalamudPlugin
         memory.Dispose();
         ActionWatching.Dispose();
         ComboCache.ComboCacheInstance.Dispose();
+        VisualFeedbackManager.Dispose();
         PunishLibMain.Dispose();
         ECommonsMain.Dispose();
         P = null;
