@@ -80,7 +80,7 @@ internal static unsafe class Util
 		}
 		catch (Exception e)
 		{
-			e.Log();
+			e.LogDebug();
 		}
 		return ret;
 	}
