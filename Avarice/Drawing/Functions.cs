@@ -142,10 +142,10 @@ internal static unsafe class Functions
             P.PositionalStatus[1] = 2;
         }
 
-        if (P.currentProfile.UseRotationSolver && P.RotationSolverWatcher.Available && P.RotationSolverWatcher.TryGetNextGCDActionId(out var rsActionId)) 
+        if (P.currentProfile.UseRotationSolver && P.RotationSolverWatcher.Available && P.RotationSolverWatcher.TryGetNextGCDActionId(out var rsActionId))
         {
             if (!StaticData.Data.ActionPositional.TryGetValue(rsActionId, out var positional)) return;
-            switch (positional) 
+            switch (positional)
             {
                 case EnemyPositional.Flank:
                     DrawSides();
@@ -158,7 +158,7 @@ internal static unsafe class Functions
                 default: return;
             }
         }
-        
+
         if(IsMNKAnticipatedRear() || IsDRGAnticipatedRear() || IsNINAnticipatedRear()
           || IsSAMAnticipatedRear() || IsRPRAnticipatedRear() || IsVPRAnticipatedRear())
         {

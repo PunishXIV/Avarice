@@ -17,58 +17,56 @@ internal static class TabSettings
     {
         ContentsAction = delegate
         {
-            // Drawing controls section
             ImGui.Text("Drawing Controls:");
 
-            // Profile-specific drawing toggle with styled command hint
             ImGui.Checkbox("Enable Drawing", ref P.currentProfile.DrawingEnabled);
             ImGui.SameLine();
-            // Add a little spacing
             ImGui.SetCursorPosX(ImGui.GetCursorPosX() + 5);
-            // Show command in a softer color as a shortcut hint
             ImGuiEx.Text(new Vector4(0.7f, 0.7f, 1.0f, 1.0f), "(/avarice draw)");
             ImGuiComponents.HelpMarker("Toggle all overlay drawing features. Can also be toggled with /avarice draw command");
 
-            // New option to only draw for positional targets
             bool prevOnlyPositional = P.config.OnlyDrawIfPositional;
             if (ImGui.Checkbox("Only show for positional targets", ref P.config.OnlyDrawIfPositional) && prevOnlyPositional != P.config.OnlyDrawIfPositional)
             {
-                // Save change to config
                 Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
             }
             ImGuiComponents.HelpMarker("When enabled, overlays will only be shown when targeting an enemy that requires positional attacks");
 
+            if (P.config.OnlyDrawIfPositional)
+            {
+                ImGui.Indent();
+                ImGui.Checkbox("Still show distance indicator for non-positional targets", ref P.currentProfile.MaxMeleeIgnorePositionalCheck);
+                ImGuiComponents.HelpMarker("When enabled, the Enemy Distance Indicator will still show even when targeting enemies without positionals (like omnidirectional bosses)");
+                ImGui.Unindent();
+            }
+
             ImGui.Separator();
 
-            // Visual Feedback Settings
             ImGui.Text("Visual Feedback Settings:");
             
             ImGui.Checkbox("Show feedback on missed positionals", ref P.currentProfile.EnableVFXFailure);
             ImGuiComponents.HelpMarker("Displays a red X above your character when you miss a positional attack.");
             ImGui.Checkbox("Show feedback on hit positionals", ref P.currentProfile.EnableVFXSuccess);
             ImGuiComponents.HelpMarker("Displays a green checkmark above your character when you successfully hit a positional attack.");
-            
-            // Visual feedback customization
+
             if (P.currentProfile.EnableVFXFailure || P.currentProfile.EnableVFXSuccess)
             {
                 ImGui.Indent();
-                
+
                 if (P.config.VisualFeedbackSettings == null)
                     P.config.VisualFeedbackSettings = new VisualFeedbackSettings();
-                
+
                 var settings = P.config.VisualFeedbackSettings;
-                
-                // Icon size
+
                 var iconSize = settings.IconSize;
                 if (ImGui.SliderFloat("Icon Size", ref iconSize, 20f, 100f))
                 {
                     settings.IconSize = iconSize;
                     Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
                 }
-                
+
                 ImGui.Text("Colors:");
-                
-                // Only show Hit color if hits are enabled
+
                 if (P.currentProfile.EnableVFXSuccess)
                 {
                     ImGui.AlignTextToFramePadding();
@@ -81,8 +79,7 @@ internal static class TabSettings
                         Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
                     }
                 }
-                
-                // Only show Miss color if misses are enabled
+
                 if (P.currentProfile.EnableVFXFailure)
                 {
                     ImGui.AlignTextToFramePadding();
@@ -95,8 +92,7 @@ internal static class TabSettings
                         Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
                     }
                 }
-                
-                // Test buttons - only show for enabled types
+
                 if (P.currentProfile.EnableVFXSuccess)
                 {
                     if (ImGui.Button("Test Hit"))

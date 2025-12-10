@@ -49,6 +49,7 @@ public class Profile
     public bool AnticipatedDisableTrueNorth = true;
 
     public bool EnableMaxMeleeRing = true;
+    public bool MaxMeleeIgnorePositionalCheck = false;
     public Brush MaxMeleeSettingsN = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0x501400E6),
@@ -72,7 +73,6 @@ public class Profile
         Fill = Vector4.Zero,
         Thickness = 2f
     };
-    public DisplayCondition PlayerDotDisplayCondition = DisplayCondition.Always;
     public bool EnablePlayerRing = false;
     public Brush PlayerRingSettings = new()
     {

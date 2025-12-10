@@ -21,12 +21,6 @@ public class PositionalManager
 		Load();
 	}
 
-	public void Reset()
-	{
-		Get();
-		Load();
-	}
-
 	private void Get()
 	{
 		string text = _client.GetAsync(SheetUrl).Result.Content.ReadAsStringAsync().Result;

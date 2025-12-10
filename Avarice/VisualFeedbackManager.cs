@@ -92,7 +92,7 @@ internal class VisualFeedbackOverlay : Window
     
     public override bool DrawConditions()
     {
-        return IsShowingFeedback && Svc.ClientState.LocalPlayer != null;
+        return IsShowingFeedback && Svc.Objects.LocalPlayer != null;
     }
     
     public override void Draw()
@@ -100,7 +100,7 @@ internal class VisualFeedbackOverlay : Window
         var settings = P.config.VisualFeedbackSettings ?? new VisualFeedbackSettings();
         
         // Get position above player's head
-        var playerPos = Svc.ClientState.LocalPlayer.Position;
+        var playerPos = Svc.Objects.LocalPlayer.Position;
         var worldPos = playerPos with { Y = playerPos.Y + DEFAULT_HEIGHT_OFFSET };
         
         // Convert world position to screen position
@@ -170,12 +170,4 @@ public class VisualFeedbackSettings
     public float IconSize { get; set; } = 40f;
     public Vector4 SuccessColor { get; set; } = new Vector4(0.2f, 0.9f, 0.2f, 1f);
     public Vector4 FailureColor { get; set; } = new Vector4(0.9f, 0.2f, 0.2f, 1f);
-    
-    // Keep old properties for backward compatibility but mark obsolete
-    [Obsolete] public bool EnableFadeOut { get; set; }
-    [Obsolete] public float VerticalOffset { get; set; }
-    [Obsolete] public Vector2 Position { get; set; }
-    [Obsolete] public Vector2 Size { get; set; }
-    [Obsolete] public bool ShowBackground { get; set; }
-    [Obsolete] public float BackgroundAlpha { get; set; }
 }

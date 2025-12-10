@@ -19,10 +19,6 @@ namespace Avarice.Data
 		internal static Dictionary<uint, Lumina.Excel.Sheets.Status> StatusSheet = Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Status>()!
 			.ToDictionary(i => i.RowId, i => i);
 
-		internal static Dictionary<uint, Trait> TraitSheet = Svc.Data.GetExcelSheet<Trait>()!
-			.Where(i => i.ClassJobCategory.ValueNullable != null) //All player traits are assigned to a category. Chocobo and other garbage lacks this, thus excluded.
-			.ToDictionary(i => i.RowId, i => i);
-
 		internal static Dictionary<uint, BNpcBase> BNpcSheet = Svc.Data.GetExcelSheet<BNpcBase>()!
 			.ToDictionary(i => i.RowId, i => i);
 
@@ -49,7 +45,7 @@ namespace Avarice.Data
 
 			if (header.ActionId != 7 &&
 				header.ActionId != 8 &&
-        sourceId == Svc.ClientState.LocalPlayer.EntityId)
+        sourceId == Svc.Objects.LocalPlayer.EntityId)
 			{
 				TimeLastActionUsed = DateTime.Now;
 				LastActionUseCount++;
@@ -97,86 +93,6 @@ namespace Avarice.Data
 				Svc.Log.Error(ex, "SendActionDetour");
 				SendActionHook!.Original(targetObjectId, actionType, actionId, sequence, a5, a6, a7, a8, a9);
 			}
-		}
-
-		public static unsafe bool OutOfRange(uint actionId, IGameObject source, IGameObject target)
-		{
-			return ActionManager.GetActionInRangeOrLoS(actionId, source.Struct(), target.Struct()) is 566;
-		}
-
-		public static uint WhichOfTheseActionsWasLast(params uint[] actions)
-		{
-			if (CombatActions.Count == 0)
-			{
-				return 0;
-			}
-
-			int currentLastIndex = 0;
-			foreach (uint action in actions)
-			{
-				if (CombatActions.Any(x => x == action))
-				{
-					int index = CombatActions.LastIndexOf(action);
-
-					if (index > currentLastIndex)
-					{
-						currentLastIndex = index;
-					}
-				}
-			}
-
-			return CombatActions[currentLastIndex];
-		}
-
-		public static int HowManyTimesUsedAfterAnotherAction(uint lastUsedIDToCheck, uint idToCheckAgainst)
-		{
-			if (CombatActions.Count < 2)
-			{
-				return 0;
-			}
-
-			if (WhichOfTheseActionsWasLast(lastUsedIDToCheck, idToCheckAgainst) != lastUsedIDToCheck)
-			{
-				return 0;
-			}
-
-			int startingIndex = CombatActions.LastIndexOf(idToCheckAgainst);
-			if (startingIndex == -1)
-			{
-				return 0;
-			}
-
-			int count = 0;
-			for (int i = startingIndex + 1; i < CombatActions.Count; i++)
-			{
-				if (CombatActions[i] == lastUsedIDToCheck)
-				{
-					count++;
-				}
-			}
-
-			return count;
-		}
-
-		public static int NumberOfGcdsUsed
-		{
-			get
-			{
-				return CombatActions.Count(x => GetAttackType(x) is ActionAttackType.Weaponskill or ActionAttackType.Spell);
-			}
-		}
-
-		public static bool HasDoubleWeaved()
-		{
-			if (CombatActions.Count < 2)
-			{
-				return false;
-			}
-
-			uint lastAction = CombatActions.Last();
-			uint secondLastAction = CombatActions[^2];
-
-			return GetAttackType(lastAction) == GetAttackType(secondLastAction) && GetAttackType(lastAction) == ActionAttackType.Ability;
 		}
 
 		public static uint LastAction { get; set; } = 0;
@@ -228,50 +144,6 @@ namespace Avarice.Data
 			}
 		}
 
-		public static void Disable()
-		{
-			ReceiveActionEffectHook.Disable();
-			SendActionHook?.Disable();
-			Svc.Condition.ConditionChange -= ResetActions;
-		}
-
-		public static int GetLevel(uint id)
-		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) && action.ClassJobCategory.ValueNullable != null ? action.ClassJobLevel : 255;
-		}
-
-		public static float GetActionCastTime(uint id)
-		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? action.Cast100ms / (float)10 : 0;
-		}
-
-		public static int GetActionRange(uint id)
-		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? action.Range : -2; // 0 & -1 are valid numbers. -2 is our failure code for InActionRange
-		}
-
-		public static int GetActionEffectRange(uint id)
-		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? action.EffectRange : -1;
-		}
-
-		public static int GetTraitLevel(uint id)
-		{
-			return TraitSheet.TryGetValue(id, out Trait trait) ? trait.Level : 255;
-		}
-
-		public static string GetActionName(uint id)
-		{
-			return ActionSheet.TryGetValue(id, out Lumina.Excel.Sheets.Action action) ? (string)action.Name.ToString() : "UNKNOWN ABILITY";
-		}
-
-		public static string GetBLUIndex(uint id)
-		{
-			uint aozKey = Svc.Data.GetExcelSheet<AozAction>()!.First(x => x.Action.RowId == id).RowId;
-			byte index = Svc.Data.GetExcelSheet<AozActionTransient>().GetRow(aozKey).Number;
-
-			return $"#{index} ";
-		}
 		public static string GetStatusName(uint id)
 		{
 			return StatusSheet.TryGetValue(id, out Lumina.Excel.Sheets.Status status) ? (string)status.Name.ToString() : "Unknown Status";
@@ -305,56 +177,6 @@ namespace Avarice.Data
 			Spell,
 			Weaponskill,
 			Unknown
-		}
-	}
-
-	internal static unsafe class ActionManagerHelper
-	{
-		private static readonly nint actionMgrPtr;
-
-		public static ushort CurrentSeq
-		{
-			get
-			{
-				return actionMgrPtr != nint.Zero ? (ushort)Marshal.ReadInt16(actionMgrPtr + 0x110) : (ushort)0;
-			}
-		}
-
-		public static ushort LastRecievedSeq
-		{
-			get
-			{
-				return actionMgrPtr != nint.Zero ? (ushort)Marshal.ReadInt16(actionMgrPtr + 0x112) : (ushort)0;
-			}
-		}
-
-		public static bool IsCasting
-		{
-			get
-			{
-				return actionMgrPtr != nint.Zero && Marshal.ReadByte(actionMgrPtr + 0x28) != 0;
-			}
-		}
-
-		public static uint CastingActionId
-		{
-			get
-			{
-				return actionMgrPtr != nint.Zero ? (uint)Marshal.ReadInt32(actionMgrPtr + 0x24) : 0u;
-			}
-		}
-
-		public static uint CastTargetObjectId
-		{
-			get
-			{
-				return actionMgrPtr != nint.Zero ? (uint)Marshal.ReadInt32(actionMgrPtr + 0x38) : 0u;
-			}
-		}
-
-		static ActionManagerHelper()
-		{
-			actionMgrPtr = (nint)ActionManager.Instance();
 		}
 	}
 

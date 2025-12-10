@@ -59,7 +59,7 @@ namespace Avarice
             if (obj is not IBattleNpc bnpc)
                 return false;
 
-            uint dataId = bnpc.DataId;
+            uint dataId = bnpc.BaseId;
             if (PositionalStatusCache.TryGetValue(dataId, out bool hasPositional))
                 return hasPositional;
 
@@ -73,20 +73,15 @@ namespace Avarice
 
         public static bool HasTrueNorthEffect()
         {
-            if (Svc.ClientState.LocalPlayer == null)
+            if (Svc.Objects.LocalPlayer == null)
                 return false;
 
-            foreach (var status in Svc.ClientState.LocalPlayer.StatusList)
+            foreach (var status in Svc.Objects.LocalPlayer.StatusList)
             {
                 if (TrueNorthEffects.Contains(status.StatusId))
                     return true;
             }
             return false;
-        }
-
-        public static void ClearCaches()
-        {
-            PositionalStatusCache.Clear();
         }
     }
 }
