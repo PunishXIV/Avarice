@@ -49,6 +49,7 @@ public class Profile
     public bool AnticipatedDisableTrueNorth = true;
 
     public bool EnableMaxMeleeRing = true;
+    public bool MaxMeleeIgnorePositionalCheck = false;
     public Brush MaxMeleeSettingsN = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0x501400E6),

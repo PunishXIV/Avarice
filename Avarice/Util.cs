@@ -12,6 +12,46 @@ namespace Avarice;
 
 internal static unsafe class Util
 {
+	internal static Vector4 GetParsedColor(int percent)
+	{
+		if (percent < 25)
+			return ImGuiColors.ParsedGrey;
+		else if (percent < 50)
+			return ImGuiColors.ParsedGreen;
+		else if (percent < 75)
+			return ImGuiColors.ParsedBlue;
+		else if (percent < 95)
+			return ImGuiColors.ParsedPurple;
+		else if (percent < 99)
+			return ImGuiColors.ParsedOrange;
+		else if (percent == 99)
+			return ImGuiColors.ParsedPink;
+		else if (percent == 100)
+			return ImGuiColors.ParsedGold;
+		else
+			return ImGuiColors.DalamudRed;
+	}
+
+	internal static ushort GetParsedSeStringColor(int percent)
+	{
+		if (percent < 25)
+			return 3;
+		else if (percent < 50)
+			return 45;
+		else if (percent < 75)
+			return 37;
+		else if (percent < 95)
+			return 541;
+		else if (percent < 99)
+			return 500;
+		else if (percent == 99)
+			return 561;
+		else if (percent == 100)
+			return 573;
+		else
+			return 518;
+	}
+
 	internal static void DrawDot(Vector3 where, float thickness, Vector4 col)
 	{
 		DrawDot(where, thickness, col.ToUint());
@@ -174,12 +214,12 @@ internal static unsafe class Util
 
 	internal static float GetSkillRadius()
 	{
-		return P.currentProfile.MeleeSkillAtk + (P.currentProfile.MeleeSkillIncludeHitbox ? Svc.ClientState.LocalPlayer.HitboxRadius : 0);
+		return P.currentProfile.MeleeSkillAtk + (P.currentProfile.MeleeSkillIncludeHitbox ? Svc.Objects.LocalPlayer.HitboxRadius : 0);
 	}
 
 	internal static float GetAttackRadius()
 	{
-		return P.currentProfile.MeleeAutoAtk + (P.currentProfile.MeleeAutoIncludeHitbox ? Svc.ClientState.LocalPlayer.HitboxRadius : 0);
+		return P.currentProfile.MeleeAutoAtk + (P.currentProfile.MeleeAutoIncludeHitbox ? Svc.Objects.LocalPlayer.HitboxRadius : 0);
 	}
 
 	internal static CardinalDirection GetDirection(IGameObject bnpc)
@@ -189,12 +229,12 @@ internal static unsafe class Util
 
 	internal static float GetAngle(IGameObject bnpc)
 	{
-		return (MathHelper.GetRelativeAngle(Svc.ClientState.LocalPlayer.Position, bnpc.Position) + bnpc.Rotation.RadToDeg()) % 360;
+		return (MathHelper.GetRelativeAngle(Svc.Objects.LocalPlayer.Position, bnpc.Position) + bnpc.Rotation.RadToDeg()) % 360;
 	}
 
 	internal static bool IsPositionalJob()
 	{
-		return Svc.ClientState.LocalPlayer?.ClassJob.RowId.EqualsAny(PositionalJobs) == true;
+		return Svc.Objects.LocalPlayer?.ClassJob.RowId.EqualsAny(PositionalJobs) == true;
 	}
 
 	private static MNKGauge MNKGauge
@@ -247,14 +287,14 @@ internal static unsafe class Util
 
 	public static bool IsMNKAnticipatedRear()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Demolish).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Demolish).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && MNKGauge.CoeurlFury == 0
 			&& (move.EqualsAny((uint)ActionID.TwinSnakes) || move.EqualsAny((uint)ActionID.TrueStrike) || move.EqualsAny((uint)ActionID.RisingRaptor));
 	}
 	public static bool IsMNKAnticipatedFlank()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.SnapPunch).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.SnapPunch).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && MNKGauge.CoeurlFury > 0
 			&& (move.EqualsAny((uint)ActionID.TwinSnakes) || move.EqualsAny((uint)ActionID.TrueStrike) || move.EqualsAny((uint)ActionID.RisingRaptor));
@@ -262,8 +302,8 @@ internal static unsafe class Util
 
 	public static bool IsDRGAnticipatedRear()
 	{
-		bool levelcheckChaos = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ChaosThrust).ClassJobLevel;
-		bool levelcheckWheeling = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.WheelingThrust).ClassJobLevel;
+		bool levelcheckChaos = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ChaosThrust).ClassJobLevel;
+		bool levelcheckWheeling = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.WheelingThrust).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheckChaos
 			&& (move.EqualsAny((uint)ActionID.Disembowel) || move.EqualsAny((uint)ActionID.SpiralBlow)
@@ -271,7 +311,7 @@ internal static unsafe class Util
 	}
 	public static bool IsDRGAnticipatedFlank()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.FangandClaw).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.FangandClaw).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck
 			&& (move.EqualsAny((uint)ActionID.FullThrust) || move.EqualsAny((uint)ActionID.HeavensThrust));
@@ -279,26 +319,26 @@ internal static unsafe class Util
 
 	public static bool IsNINAnticipatedRear()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.AeolianEdge).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.AeolianEdge).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && ((move.EqualsAny((uint)ActionID.GustSlash) && (NINGauge.Kazematoi > 3 || (NINGauge.Kazematoi > 0
-			&& ((ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.ClientState.LocalPlayer.GameObjectId) != null)
-			|| (ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.ClientState.LocalPlayer.GameObjectId) != null)))))
+			&& ((ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null)
+			|| (ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null)))))
 			|| (P.currentProfile.TrickAttack && !ComboCache.ComboCacheInstance.GetCooldown((uint)ActionID.TrickAttack).IsCooldown
 			&& (uint)Player.Job == 30));
 	}
 	public static bool IsNINAnticipatedFlank()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ArmorCrush).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ArmorCrush).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && move.EqualsAny((uint)ActionID.GustSlash) && NINGauge.Kazematoi <= 3
-			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.ClientState.LocalPlayer.GameObjectId) == null
-			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.ClientState.LocalPlayer.GameObjectId) == null;
+			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) == null
+			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) == null;
 	}
 
 	public static bool IsSAMAnticipatedRear()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gekko).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gekko).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && (move.EqualsAny((uint)ActionID.Jinpu)
 			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.Getsu) && SAMGauge.Sen.HasFlag(Sen.Ka)
@@ -306,7 +346,7 @@ internal static unsafe class Util
 	}
 	public static bool IsSAMAnticipatedFlank()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Kasha).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Kasha).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return levelcheck && (move.EqualsAny((uint)ActionID.Shifu)
 			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.Ka)
@@ -315,14 +355,14 @@ internal static unsafe class Util
 
 	public static bool IsRPRAnticipatedRear()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gallows).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gallows).ClassJobLevel;
 		return levelcheck && Player.Status.Any(x => x.StatusId.EqualsAny(2587u, 3858u))
 			&& (Player.Status.Any(x => x.StatusId.EqualsAny(2589u))
 			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(2588u)) && !Player.Status.Any(x => x.StatusId.EqualsAny(2589u)) && P.currentProfile.Reaper == 0));
 	}
 	public static bool IsRPRAnticipatedFlank()
 	{
-		bool levelcheck = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gibbet).ClassJobLevel;
+		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gibbet).ClassJobLevel;
 		return levelcheck && Player.Status.Any(x => x.StatusId.EqualsAny(2587u, 3858u))
 			&& (Player.Status.Any(x => x.StatusId.EqualsAny(2588u))
 			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(2588u)) && !Player.Status.Any(x => x.StatusId.EqualsAny(2589u)) && P.currentProfile.Reaper == 1));
@@ -330,8 +370,8 @@ internal static unsafe class Util
 
 	public static bool IsVPRAnticipatedRear()
 	{
-		bool levelcheckMain = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.HindstingStrike).ClassJobLevel;
-		bool levelcheckVice = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
+		bool levelcheckMain = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.HindstingStrike).ClassJobLevel;
+		bool levelcheckVice = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
 			&& (Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u))
@@ -343,8 +383,8 @@ internal static unsafe class Util
 	}
 	public static bool IsVPRAnticipatedFlank()
 	{
-		bool levelcheckMain = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.FlankstingStrike).ClassJobLevel;
-		bool levelcheckVice = Svc.ClientState.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
+		bool levelcheckMain = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.FlankstingStrike).ClassJobLevel;
+		bool levelcheckVice = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
 		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
 			&& Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)))
