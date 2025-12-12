@@ -1,6 +1,5 @@
 ﻿using Dalamud.Interface.Components;
 using ECommons.MathHelpers;
-using System.Windows.Forms.Design.Behavior;
 
 namespace Avarice.ConfigurationWindow;
 
