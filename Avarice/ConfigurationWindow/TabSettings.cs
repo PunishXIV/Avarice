@@ -38,6 +38,14 @@ internal static class TabSettings
             }
             ImGuiComponents.HelpMarker("When enabled, overlays will only be shown when targeting an enemy that requires positional attacks");
 
+            if (P.config.OnlyDrawIfPositional)
+            {
+                ImGui.Indent();
+                ImGui.Checkbox("Still show distance indicator for non-positional targets", ref P.currentProfile.MaxMeleeIgnorePositionalCheck);
+                ImGuiComponents.HelpMarker("When enabled, the Enemy Distance Indicator will still show even when targeting enemies without positionals (like omnidirectional bosses)");
+                ImGui.Unindent();
+            }
+
             ImGui.Separator();
 
             // Visual Feedback Settings

@@ -46,7 +46,7 @@ internal static class TabStatistics
         ImGuiEx.Text($"{total}");
         ImGui.TableNextColumn();
         var success = (int)(100f * (float)x.Hits / (float)total);
-        ImGuiEx.Text(ImGuiEx.GetParsedColor(success), $"{success}%");
+        ImGuiEx.Text(Util.GetParsedColor(success), $"{success}%");
     }
 
     static InfoBox StatsCurrent = new()
@@ -65,7 +65,7 @@ internal static class TabStatistics
                 var success = (int)(100f * (float)x.Hits / (float)total);
                 ImGuiEx.Text($"Hits: {x.Hits} out of {total} - ");
                 ImGui.SameLine(0, 0);
-                ImGuiEx.Text(ImGuiEx.GetParsedColor(success), $"{success}%");
+                ImGuiEx.Text(Util.GetParsedColor(success), $"{success}%");
                 if (ImGui.SmallButton("Clear data"))
                 {
                     P.currentProfile.CurrentEncounterStats = new();

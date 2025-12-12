@@ -92,7 +92,7 @@ internal class VisualFeedbackOverlay : Window
     
     public override bool DrawConditions()
     {
-        return IsShowingFeedback && Svc.ClientState.LocalPlayer != null;
+        return IsShowingFeedback && Svc.Objects.LocalPlayer != null;
     }
     
     public override void Draw()
@@ -100,7 +100,7 @@ internal class VisualFeedbackOverlay : Window
         var settings = P.config.VisualFeedbackSettings ?? new VisualFeedbackSettings();
         
         // Get position above player's head
-        var playerPos = Svc.ClientState.LocalPlayer.Position;
+        var playerPos = Svc.Objects.LocalPlayer.Position;
         var worldPos = playerPos with { Y = playerPos.Y + DEFAULT_HEIGHT_OFFSET };
         
         // Convert world position to screen position

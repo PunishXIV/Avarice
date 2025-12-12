@@ -102,9 +102,9 @@ public unsafe class Avarice : IDalamudPlugin
     private CardinalDirection GetCardinalDirectionForObject(IntPtr arg)
     {
         var obj = Svc.Objects.CreateObjectReference(arg);
-        if (obj != null && Svc.ClientState.LocalPlayer != null)
+        if (obj != null && Svc.Objects.LocalPlayer != null)
         {
-            return MathHelper.GetCardinalDirection((MathHelper.GetRelativeAngle(Svc.ClientState.LocalPlayer.Position, obj.Position) + obj.Rotation.RadToDeg()) % 360);
+            return MathHelper.GetCardinalDirection((MathHelper.GetRelativeAngle(Svc.Objects.LocalPlayer.Position, obj.Position) + obj.Rotation.RadToDeg()) % 360);
         }
         else
         {
@@ -134,7 +134,7 @@ public unsafe class Avarice : IDalamudPlugin
                         var success = (int)(100f * currentProfile.CurrentEncounterStats.Hits / total);
                         Svc.Chat.Print(new SeStringBuilder()
                     .AddText($"Positionals summary for encounter: {currentProfile.CurrentEncounterStats.Hits}/{total} - ")
-                    .AddUiForeground($"{success}%", ECommons.GenericHelpers.GetParsedSeSetingColor(success))
+                    .AddUiForeground($"{success}%", Util.GetParsedSeStringColor(success))
                     .Build());
                     }
                     currentProfile.CurrentEncounterStats.Finished = true;
@@ -228,7 +228,7 @@ public unsafe class Avarice : IDalamudPlugin
         {
             PositionalStatus[1] = 0;
         }
-        if (Svc.ClientState.LocalPlayer != null)
+        if (Svc.Objects.LocalPlayer != null)
         {
             var newJob = (uint)Player.Job;
             if (newJob != Job)
