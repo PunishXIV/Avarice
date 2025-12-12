@@ -35,4 +35,9 @@ internal class Config : IPluginConfiguration
     /// Settings for the visual feedback system (checkmark/X display)
     /// </summary>
     public VisualFeedbackSettings VisualFeedbackSettings { get; set; }
+
+    // Pictomancy renderer settings
+    public bool UsePictomancyRenderer = false;
+    public byte PictomancyMaxAlpha = 255;
+    public bool PictomancyClipNativeUI = true;
 }

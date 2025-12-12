@@ -8,6 +8,7 @@ using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
+using Pictomancy;
 using PunishLib;
 
 #pragma warning disable CS0649
@@ -96,6 +97,7 @@ public unsafe class Avarice : IDalamudPlugin
             ComboCache.ComboCacheInstance = new ComboCache();
 
             PositionalManager = new();
+            PictoService.Initialize(Svc.PluginInterface);
         });
     }
 
@@ -217,6 +219,7 @@ public unsafe class Avarice : IDalamudPlugin
         ActionWatching.Dispose();
         ComboCache.ComboCacheInstance.Dispose();
         VisualFeedbackManager.Dispose();
+        PictoService.Dispose();
         PunishLibMain.Dispose();
         ECommonsMain.Dispose();
         P = null;

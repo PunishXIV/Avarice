@@ -105,6 +105,25 @@ internal unsafe class Canvas : Window
         // Drawing is already checked in DrawConditions() so no need for early return here
         var showPositionalFeatures = ShouldShowPositionalFeatures();
 
+        PictomancyRenderer.BeginFrame();
+
+        try
+        {
+            DrawAllOverlays(showPositionalFeatures);
+        }
+        finally
+        {
+            PictomancyRenderer.EndFrame();
+
+            if (P.config.UsePictomancyRenderer)
+            {
+                CImGui.igBringWindowToDisplayBack(CImGui.igGetCurrentWindow());
+            }
+        }
+    }
+
+    private void DrawAllOverlays(bool showPositionalFeatures)
+    {
         DrawTankMiddle();
         if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
         {
@@ -218,12 +237,17 @@ internal unsafe class Canvas : Window
 
         if (P.currentProfile.EnablePlayerDot && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
         {
-            if (Svc.GameGui.WorldToScreen(Svc.Objects.LocalPlayer.Position, out var pos))
+            var dotColor = TabSplatoon.IsUnsafe() ? P.config.SplatoonPixelCol : P.currentProfile.PlayerDotSettings.Color;
+            if (PictomancyRenderer.IsDrawing)
+            {
+                PictomancyRenderer.DrawDot(Svc.Objects.LocalPlayer.Position, P.currentProfile.PlayerDotSettings.Thickness, ImGui.ColorConvertFloat4ToU32(dotColor));
+            }
+            else if (Svc.GameGui.WorldToScreen(Svc.Objects.LocalPlayer.Position, out var pos))
             {
                 ImGui.GetWindowDrawList().AddCircleFilled(
                 new Vector2(pos.X, pos.Y),
                 P.currentProfile.PlayerDotSettings.Thickness,
-                ImGui.ColorConvertFloat4ToU32(TabSplatoon.IsUnsafe() ? P.config.SplatoonPixelCol : P.currentProfile.PlayerDotSettings.Color),
+                ImGui.ColorConvertFloat4ToU32(dotColor),
                 100);
             }
         }
@@ -234,7 +258,11 @@ internal unsafe class Canvas : Window
             {
                 if (x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.Objects.LocalPlayer.Address)
                 {
-                    if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out var pos))
+                    if (PictomancyRenderer.IsDrawing)
+                    {
+                        PictomancyRenderer.DrawDot(x.GameObject.Position, P.currentProfile.PartyDotSettings.Thickness, ImGui.ColorConvertFloat4ToU32(P.currentProfile.PartyDotSettings.Color));
+                    }
+                    else if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out var pos))
                     {
                         ImGui.GetWindowDrawList().AddCircleFilled(
                         new Vector2(pos.X, pos.Y),
@@ -253,7 +281,11 @@ internal unsafe class Canvas : Window
                 if (x is IPlayerCharacter pc && x.Address != Svc.Objects.LocalPlayer.Address
                   && (!P.currentProfile.PartyDot || !Svc.Party.Any(x => x.Address == x.GameObject?.Address)))
                 {
-                    if (Svc.GameGui.WorldToScreen(x.Position, out var pos))
+                    if (PictomancyRenderer.IsDrawing)
+                    {
+                        PictomancyRenderer.DrawDot(x.Position, P.currentProfile.AllDotSettings.Thickness, ImGui.ColorConvertFloat4ToU32(P.currentProfile.AllDotSettings.Color));
+                    }
+                    else if (Svc.GameGui.WorldToScreen(x.Position, out var pos))
                     {
                         ImGui.GetWindowDrawList().AddCircleFilled(
                         new Vector2(pos.X, pos.Y),
