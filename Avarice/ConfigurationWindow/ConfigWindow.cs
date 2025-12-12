@@ -65,7 +65,7 @@ internal unsafe partial class ConfigWindow : Window
             }
             ImGuiEx.Text($"Current action override: {(Svc.PluginInterface.TryGetData<List<uint>>("Avarice.ActionOverride", out var data) ? data[0] : 0)}");
             ImGuiEx.Text($"Combo: {P.memory.LastComboMove}");
-            foreach(var x in Svc.ClientState.LocalPlayer?.StatusList)
+            foreach(var x in Svc.Objects.LocalPlayer?.StatusList)
             {
                 ImGuiEx.TextCopy($"{x.GameData.ValueNullable?.Name}: id={x.StatusId}, time={x.RemainingTime}");
             }

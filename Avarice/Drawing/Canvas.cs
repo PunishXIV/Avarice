@@ -34,7 +34,7 @@ internal unsafe class Canvas : Window
     public override bool DrawConditions()
     {
         // Basic check - player exists
-        if (Svc.ClientState.LocalPlayer == null)
+        if (Svc.Objects.LocalPlayer == null)
             return false;
 
         // Check if drawing is enabled in profile
@@ -46,7 +46,14 @@ internal unsafe class Canvas : Window
         {
             // Make sure we have a valid target with positional requirements
             if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
-                return bnpc.HasPositional();
+            {
+                if (bnpc.HasPositional())
+                    return true;
+                // KEY: Still draw if MaxMeleeIgnorePositionalCheck is enabled
+                if (P.currentProfile.EnableMaxMeleeRing && P.currentProfile.MaxMeleeIgnorePositionalCheck)
+                    return true;
+                return false;
+            }
 
             // No valid target with positionals
             return false;
@@ -56,9 +63,47 @@ internal unsafe class Canvas : Window
         return true;
     }
 
+    private bool ShouldShowPositionalFeatures()
+    {
+        if (!P.config.OnlyDrawIfPositional)
+            return true;
+        if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
+            return bnpc.HasPositional();
+        return false;
+    }
+
+    private void DrawMaxMeleeForTarget(IBattleNpc bnpc)
+    {
+        var useSimpleCircle = P.currentProfile.MaxMeleeIgnorePositionalCheck && !bnpc.HasPositional();
+
+        if (useSimpleCircle)
+        {
+            if (P.currentProfile.Radius3)
+            {
+                CircleXZ(bnpc.Position, bnpc.HitboxRadius + GetSkillRadius(), P.currentProfile.MaxMeleeSettingsN);
+                if (P.currentProfile.Radius2)
+                    CircleXZ(bnpc.Position, bnpc.HitboxRadius + GetAttackRadius(), P.currentProfile.MaxMeleeSettingsN);
+            }
+            else if (P.currentProfile.Radius2)
+                CircleXZ(bnpc.Position, bnpc.HitboxRadius + GetAttackRadius(), P.currentProfile.MaxMeleeSettingsN);
+        }
+        else
+        {
+            if (P.currentProfile.Radius3)
+            {
+                DrawSegmentedCircle(bnpc, GetSkillRadius(), P.currentProfile.DrawLines);
+                if (P.currentProfile.Radius2)
+                    DrawSegmentedCircle(bnpc, GetAttackRadius(), false);
+            }
+            else if (P.currentProfile.Radius2)
+                DrawSegmentedCircle(bnpc, GetAttackRadius(), P.currentProfile.DrawLines);
+        }
+    }
+
     public override void Draw()
     {
         // Drawing is already checked in DrawConditions() so no need for early return here
+        var showPositionalFeatures = ShouldShowPositionalFeatures();
 
         DrawTankMiddle();
         if (P.currentProfile.CompassEnable && IsConditionMatching(P.currentProfile.CompassCondition))
@@ -107,7 +152,7 @@ internal unsafe class Canvas : Window
             }
         }
 
-        if (P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
+        if (showPositionalFeatures && P.currentProfile.EnableCurrentPie && IsConditionMatching(P.currentProfile.CurrentPieSettings.DisplayCondition))
         {
             {
                 if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
@@ -128,46 +173,24 @@ internal unsafe class Canvas : Window
             {
                 if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
                 {
-                    if (P.currentProfile.Radius3)
-                    {
-                        DrawSegmentedCircle(bnpc, GetSkillRadius(), P.currentProfile.DrawLines);
-                        if (P.currentProfile.Radius2)
-                        {
-                            DrawSegmentedCircle(bnpc, GetAttackRadius(), false);
-                        }
-                    }
-                    else if (P.currentProfile.Radius2)
-                    {
-                        DrawSegmentedCircle(bnpc, GetAttackRadius(), P.currentProfile.DrawLines);
-                    }
+                    DrawMaxMeleeForTarget(bnpc);
                 }
             }
             {
                 if (Svc.Targets.FocusTarget is IBattleNpc bnpc
                   && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
                 {
-                    if (P.currentProfile.Radius3)
-                    {
-                        DrawSegmentedCircle(bnpc, GetSkillRadius(), P.currentProfile.DrawLines);
-                        if (P.currentProfile.Radius2)
-                        {
-                            DrawSegmentedCircle(bnpc, GetAttackRadius(), false);
-                        }
-                    }
-                    else if (P.currentProfile.Radius2)
-                    {
-                        DrawSegmentedCircle(bnpc, GetAttackRadius(), P.currentProfile.DrawLines);
-                    }
+                    DrawMaxMeleeForTarget(bnpc);
                 }
             }
         }
 
         if (P.currentProfile.EnablePlayerRing && IsConditionMatching(P.currentProfile.PlayerRingSettings.DisplayCondition))
         {
-            CircleXZ(Svc.ClientState.LocalPlayer.Position, Svc.ClientState.LocalPlayer.HitboxRadius, P.currentProfile.PlayerRingSettings);
+            CircleXZ(Svc.Objects.LocalPlayer.Position, Svc.Objects.LocalPlayer.HitboxRadius, P.currentProfile.PlayerRingSettings);
         }
 
-        if (P.currentProfile.EnableFrontSegment && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
+        if (showPositionalFeatures && P.currentProfile.EnableFrontSegment && IsConditionMatching(P.currentProfile.FrontSegmentIndicator.DisplayCondition))
         {
             DrawFrontalPosition(Svc.Targets.Target);
             if (Svc.Targets.Target?.Address != Svc.Targets.FocusTarget?.Address)
@@ -176,8 +199,8 @@ internal unsafe class Canvas : Window
             }
         }
 
-        if (P.currentProfile.EnableAnticipatedPie && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
-           && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.ClientState.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u))))
+        if (showPositionalFeatures && P.currentProfile.EnableAnticipatedPie && IsConditionMatching(P.currentProfile.AnticipatedPieSettings.DisplayCondition)
+           && (!P.currentProfile.AnticipatedDisableTrueNorth || !Svc.Objects.LocalPlayer.StatusList.Any(x => x.StatusId.EqualsAny(1250u))))
         {
             {
                 if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile() && bnpc.HasPositional())
@@ -195,7 +218,7 @@ internal unsafe class Canvas : Window
 
         if (P.currentProfile.EnablePlayerDot && IsConditionMatching(P.currentProfile.PlayerDotSettings.DisplayCondition))
         {
-            if (Svc.GameGui.WorldToScreen(Svc.ClientState.LocalPlayer.Position, out var pos))
+            if (Svc.GameGui.WorldToScreen(Svc.Objects.LocalPlayer.Position, out var pos))
             {
                 ImGui.GetWindowDrawList().AddCircleFilled(
                 new Vector2(pos.X, pos.Y),
@@ -209,7 +232,7 @@ internal unsafe class Canvas : Window
         {
             foreach (var x in Svc.Party)
             {
-                if (x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.ClientState.LocalPlayer.Address)
+                if (x.GameObject is IPlayerCharacter pc && x.GameObject.Address != Svc.Objects.LocalPlayer.Address)
                 {
                     if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out var pos))
                     {
@@ -227,7 +250,7 @@ internal unsafe class Canvas : Window
         {
             foreach (var x in Svc.Objects)
             {
-                if (x is IPlayerCharacter pc && x.Address != Svc.ClientState.LocalPlayer.Address
+                if (x is IPlayerCharacter pc && x.Address != Svc.Objects.LocalPlayer.Address
                   && (!P.currentProfile.PartyDot || !Svc.Party.Any(x => x.Address == x.GameObject?.Address)))
                 {
                     if (Svc.GameGui.WorldToScreen(x.Position, out var pos))

@@ -24,7 +24,7 @@ namespace Avarice.Data
 
 		public static Status FindEffect(ushort effectID)
 		{
-			return FindEffect(effectID, Svc.ClientState.LocalPlayer, Svc.ClientState.LocalPlayer?.GameObjectId);
+			return FindEffect(effectID, Svc.Objects.LocalPlayer, Svc.Objects.LocalPlayer?.GameObjectId);
 		}
 
 		public static bool TargetHasEffect(ushort effectID)
@@ -34,7 +34,7 @@ namespace Avarice.Data
 
 		public static Status FindTargetEffect(ushort effectID)
 		{
-			return FindEffect(effectID, Svc.Targets.Target, Svc.ClientState.LocalPlayer?.GameObjectId);
+			return FindEffect(effectID, Svc.Targets.Target, Svc.Objects.LocalPlayer?.GameObjectId);
 		}
 
 		public static float GetDebuffRemainingTime(ushort effectId)
@@ -50,7 +50,7 @@ namespace Avarice.Data
 
 		public static Status FindEffectAny(ushort effectID)
 		{
-			return FindEffect(effectID, Svc.ClientState.LocalPlayer, null);
+			return FindEffect(effectID, Svc.Objects.LocalPlayer, null);
 		}
 
 		public static bool TargetHasEffectAny(ushort effectID)

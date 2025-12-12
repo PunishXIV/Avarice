@@ -19,7 +19,7 @@ namespace Avarice
         {
             try
             {
-                if (set.Source?.Address == Svc.ClientState.LocalPlayer?.Address)
+                if (set.Source?.Address == Svc.Objects.LocalPlayer?.Address)
                 {
                     var positionalState = PositionalState.Ignore;
                     if (P.PositionalManager?.IsPositional((int)set.Header.ActionID) == true)
