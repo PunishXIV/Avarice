@@ -90,7 +90,7 @@ internal static class DrawFunctions
 
         if (UsePictomancy)
         {
-            // Swap start/end since we negate angles
+            // Negate angles and swap start/end to maintain arc direction
             var pStart = ToPictomancyAngle(endRads);
             var pEnd = ToPictomancyAngle(startRads);
             if (brush.HasFill())
@@ -114,7 +114,7 @@ internal static class DrawFunctions
 
         if (UsePictomancy)
         {
-            // Swap start/end since we negate angles
+            // Negate angles and swap start/end to maintain arc direction
             var pStart = ToPictomancyAngle(endRads);
             var pEnd = ToPictomancyAngle(startRads);
             if (brush.HasFill())

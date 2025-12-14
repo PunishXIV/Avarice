@@ -37,6 +37,10 @@ internal unsafe class Canvas : Window
         if (Svc.Objects.LocalPlayer == null)
             return false;
 
+        // Hide during cutscenes
+        if (Svc.Condition[ConditionFlag.OccupiedInCutSceneEvent] || Svc.Condition[ConditionFlag.WatchingCutscene78])
+            return false;
+
         // Check if drawing is enabled in profile
         if (!P.currentProfile.DrawingEnabled)
             return false;
