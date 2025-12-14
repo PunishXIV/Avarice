@@ -11,6 +11,13 @@ internal static class DrawFunctions
         return Avarice.P?.currentProfile?.DrawingEnabled ?? false;
     }
 
+    private static bool UsePictomancy => PictomancyRenderer.IsDrawing;
+
+    // Pictomancy: X = Cos(a + PI/2), Z = Sin(a + PI/2) = X = -Sin(a), Z = Cos(a)
+    // Avarice:    X = Sin(a), Z = Cos(a)
+    // To convert: negate the angle to flip X axis
+    private static float ToPictomancyAngle(float angle) => -angle;
+
     // ----------- actor-aware draw methods --------------
     internal static void ActorConeXZ(IGameObject actor, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
@@ -62,57 +69,96 @@ internal static class DrawFunctions
     internal static void CircleXZ(Vector3 position, float radius, Brush brush)
     {
         if (!ShouldDraw()) return;
-        CircleArcXZ(position, radius, 0f, Maths.TAU, brush);
+
+        if (UsePictomancy)
+        {
+            if (brush.HasFill())
+                PictomancyRenderer.DrawCircleFilled(position, radius, ImGui.ColorConvertFloat4ToU32(brush.Fill));
+            if (brush.Thickness > 0)
+                PictomancyRenderer.DrawCircle(position, radius, ImGui.ColorConvertFloat4ToU32(brush.Color), brush.Thickness);
+        }
+        else
+        {
+            CircleArcXZ(position, radius, 0f, Maths.TAU, brush);
+        }
     }
 
     // ----------- position-based draw methods --------------
     internal static void ConeXZ(Vector3 center, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
         if (!ShouldDraw()) return;
-        var shape = new ConvexShape(brush);
-        if (lines) shape.Point(center);
-        shape.Arc(center, radius, startRads, endRads);
-        if (lines) shape.Point(center);
-        shape.Done();
+
+        if (UsePictomancy)
+        {
+            // Negate angles and swap start/end to maintain arc direction
+            var pStart = ToPictomancyAngle(endRads);
+            var pEnd = ToPictomancyAngle(startRads);
+            if (brush.HasFill())
+                PictomancyRenderer.DrawFanFilled(center, 0f, radius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Fill));
+            if (brush.Thickness > 0)
+                PictomancyRenderer.DrawFan(center, 0f, radius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Color), brush.Thickness);
+        }
+        else
+        {
+            var shape = new ConvexShape(brush);
+            if (lines) shape.Point(center);
+            shape.Arc(center, radius, startRads, endRads);
+            if (lines) shape.Point(center);
+            shape.Done();
+        }
     }
 
     internal static void DonutSliceXZ(Vector3 center, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
     {
         if (!ShouldDraw()) return;
-        if (innerRadius == 0 && endRads - startRads <= (Maths.PI + Maths.Epsilon))
+
+        if (UsePictomancy)
         {
-            // special case: a cone, which is a convex polygon
-            ConeXZ(center, outerRadius, startRads, endRads, brush);
-            return;
+            // Negate angles and swap start/end to maintain arc direction
+            var pStart = ToPictomancyAngle(endRads);
+            var pEnd = ToPictomancyAngle(startRads);
+            if (brush.HasFill())
+                PictomancyRenderer.DrawFanFilled(center, innerRadius, outerRadius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Fill));
+            if (brush.Thickness > 0)
+                PictomancyRenderer.DrawFan(center, innerRadius, outerRadius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Color), brush.Thickness);
         }
-
-        // a donut slice is a non-convex object so is not cleanly handled by imgui
-        // instead, approximate with slices
-        var segments = Maths.ArcSegments(startRads, endRads);
-        var radsPerSegment = (endRads - startRads) / (float)segments;
-
-        // outline
-        var outlineBrush = brush with { Fill = new() };
-        var outline = new ConvexShape(outlineBrush);
-        outline.Arc(center, outerRadius, startRads, endRads);
-        outline.Arc(center, innerRadius, endRads, startRads);
-        outline.PointRadial(center, outerRadius, startRads);
-        outline.Done();
-
-        // fill
-        if (brush.HasFill())
+        else
         {
-            var sliceBrush = brush with { Thickness = 0f };
-            for (var i = 0; i < segments; i++)
+            if (innerRadius == 0 && endRads - startRads <= (Maths.PI + Maths.Epsilon))
             {
-                var start = startRads + i * radsPerSegment;
-                var end = startRads + (i + 1) * radsPerSegment;
+                // special case: a cone, which is a convex polygon
+                ConeXZ(center, outerRadius, startRads, endRads, brush);
+                return;
+            }
 
-                var shape = new ConvexShape(sliceBrush);
-                shape.Arc(center, outerRadius, start, end);
-                shape.Arc(center, innerRadius, end, start);
-                shape.PointRadial(center, outerRadius, start);
-                shape.Done();
+            // a donut slice is a non-convex object so is not cleanly handled by imgui
+            // instead, approximate with slices
+            var segments = Maths.ArcSegments(startRads, endRads);
+            var radsPerSegment = (endRads - startRads) / (float)segments;
+
+            // outline
+            var outlineBrush = brush with { Fill = new() };
+            var outline = new ConvexShape(outlineBrush);
+            outline.Arc(center, outerRadius, startRads, endRads);
+            outline.Arc(center, innerRadius, endRads, startRads);
+            outline.PointRadial(center, outerRadius, startRads);
+            outline.Done();
+
+            // fill
+            if (brush.HasFill())
+            {
+                var sliceBrush = brush with { Thickness = 0f };
+                for (var i = 0; i < segments; i++)
+                {
+                    var start = startRads + i * radsPerSegment;
+                    var end = startRads + (i + 1) * radsPerSegment;
+
+                    var shape = new ConvexShape(sliceBrush);
+                    shape.Arc(center, outerRadius, start, end);
+                    shape.Arc(center, innerRadius, end, start);
+                    shape.PointRadial(center, outerRadius, start);
+                    shape.Done();
+                }
             }
         }
     }

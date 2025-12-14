@@ -127,6 +127,40 @@ internal static class TabSettings
             ImGui.Checkbox("Also print feedback to chat on successful positionals", ref P.currentProfile.EnableChatMessagesSuccess);
             ImGui.Checkbox("Output encounter performance summary", ref P.currentProfile.Announce);
             ImGuiComponents.HelpMarker("Prints an overall summary of your encounter and the positionals hit/missed when leaving combat.");
+
+            ImGui.Separator();
+
+            // Rendering Settings
+            ImGui.Text("Rendering Settings:");
+            ImGuiEx.Text(new Vector4(1.0f, 0.8f, 0.0f, 1.0f), "Warning: Pictomancy may have issues on Mac/Linux.");
+
+            if (ImGui.Checkbox("Render under UI (Pictomancy)", ref P.config.UsePictomancyRenderer))
+            {
+                Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+            }
+            ImGuiComponents.HelpMarker("When enabled, overlays will render underneath the game's native UI elements (action bars, job gauges, etc.) instead of on top.");
+
+            if (P.config.UsePictomancyRenderer)
+            {
+                ImGui.Indent();
+
+                if (ImGui.Checkbox("Clip around native UI", ref P.config.PictomancyClipNativeUI))
+                {
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+                ImGuiComponents.HelpMarker("Automatically clips rendering around native UI elements.");
+
+                ImGui.SetNextItemWidth(150f);
+                int maxAlpha = P.config.PictomancyMaxAlpha;
+                if (ImGui.SliderInt("Max Opacity", ref maxAlpha, 0, 255))
+                {
+                    P.config.PictomancyMaxAlpha = (byte)maxAlpha;
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+                ImGuiComponents.HelpMarker("Maximum opacity for all rendered overlays (0-255).");
+
+                ImGui.Unindent();
+            }
         },
         Label = "General settings"
     };
