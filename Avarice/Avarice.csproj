@@ -26,4 +26,8 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <PackageReference Update="DalamudPackager" Version="14.0.1" />
+	</ItemGroup>
 </Project>
