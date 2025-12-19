@@ -1,5 +1,4 @@
-﻿using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.ClientState.Statuses;
+using Dalamud.Game.ClientState.Objects.Types;
 
 namespace Avarice.Data
 {
@@ -12,17 +11,17 @@ namespace Avarice.Data
 
 		public static ushort GetBuffStacks(ushort effectId)
 		{
-			Status eff = FindEffect(effectId);
+			var eff = FindEffect(effectId);
 			return eff?.Param ?? 0;
 		}
 
 		public static float GetBuffRemainingTime(ushort effectId)
 		{
-			Status eff = FindEffect(effectId);
+			var eff = FindEffect(effectId);
 			return eff?.RemainingTime ?? 0;
 		}
 
-		public static Status FindEffect(ushort effectID)
+		public static StatusInfo? FindEffect(ushort effectID)
 		{
 			return FindEffect(effectID, Svc.Objects.LocalPlayer, Svc.Objects.LocalPlayer?.GameObjectId);
 		}
@@ -32,14 +31,14 @@ namespace Avarice.Data
 			return FindTargetEffect(effectID) is not null;
 		}
 
-		public static Status FindTargetEffect(ushort effectID)
+		public static StatusInfo? FindTargetEffect(ushort effectID)
 		{
 			return FindEffect(effectID, Svc.Targets.Target, Svc.Objects.LocalPlayer?.GameObjectId);
 		}
 
 		public static float GetDebuffRemainingTime(ushort effectId)
 		{
-			Status eff = FindTargetEffect(effectId);
+			var eff = FindTargetEffect(effectId);
 			return eff?.RemainingTime ?? 0;
 		}
 
@@ -48,7 +47,7 @@ namespace Avarice.Data
 			return FindEffectAny(effectID) is not null;
 		}
 
-		public static Status FindEffectAny(ushort effectID)
+		public static StatusInfo? FindEffectAny(ushort effectID)
 		{
 			return FindEffect(effectID, Svc.Objects.LocalPlayer, null);
 		}
@@ -58,17 +57,17 @@ namespace Avarice.Data
 			return FindTargetEffectAny(effectID) is not null;
 		}
 
-		public static Status FindTargetEffectAny(ushort effectID)
+		public static StatusInfo? FindTargetEffectAny(ushort effectID)
 		{
 			return FindEffect(effectID, Svc.Targets.Target, null);
 		}
 
-		public static Status FindEffect(ushort effectID, IGameObject obj, ulong? sourceID)
+		public static StatusInfo? FindEffect(ushort effectID, IGameObject? obj, ulong? sourceID)
 		{
 			return ComboCache.ComboCacheInstance.GetStatus(effectID, obj, sourceID);
 		}
 
-		public static Status FindEffectOnMember(ushort effectID, IGameObject obj)
+		public static StatusInfo? FindEffectOnMember(ushort effectID, IGameObject obj)
 		{
 			return ComboCache.ComboCacheInstance.GetStatus(effectID, obj, null);
 		}

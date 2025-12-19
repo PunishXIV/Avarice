@@ -1,7 +1,7 @@
-<Project Sdk="Dalamud.NET.Sdk/13.0.0">
+<Project Sdk="Dalamud.NET.Sdk/14.0.0">
 	<PropertyGroup>
 		<Authors>Puni.sh</Authors>
-		<Version>2.1.1.6</Version>
+		<Version>2.2.0.1</Version>
 		<DalamudLibPath>$(appdata)\XIVLauncher\addon\Hooks\dev\</DalamudLibPath>
 		<DalamudPluginPath>$(appdata)\XIVLauncher\installedPlugins\Avarice\$(version)</DalamudPluginPath>
 		<Nullable>disable</Nullable>
@@ -18,7 +18,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="CsvHelper" Version="33.0.1" />
-		<PackageReference Include="Pictomancy" Version="0.0.1" />
+		<PackageReference Include="Pictomancy" Version="0.0.2" />
 	</ItemGroup>
 
 	<ItemGroup>
