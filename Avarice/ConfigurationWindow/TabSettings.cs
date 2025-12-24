@@ -6,6 +6,27 @@ namespace Avarice.ConfigurationWindow;
 
 internal static class TabSettings
 {
+    // Sound effect names for the dropdown (SE1-SE16)
+    private static readonly string[] SoundNames = new[]
+    {
+        "Confirm",
+        "Cancel",
+        "Chime",
+        "Bell",
+        "Notification",
+        "Alert",
+        "Warning",
+        "System",
+        "Error",
+        "Fanfare",
+        "Complete",
+        "Discovery",
+        "Synthesize",
+        "Craft",
+        "Linkshell",
+        "Alarm"
+    };
+
     /*internal static Dictionary<ClassDisplayCondition, string> ClassDisplayConditionNames = new()
     {
         { ClassDisplayCondition.Do_not_display, "Never" },
@@ -48,85 +69,108 @@ internal static class TabSettings
 
             ImGui.Separator();
 
-            // Visual Feedback Settings
-            ImGui.Text("Visual Feedback Settings:");
-            
-            ImGui.Checkbox("Show feedback on missed positionals", ref P.currentProfile.EnableVFXFailure);
-            ImGuiComponents.HelpMarker("Displays a red X above your character when you miss a positional attack.");
-            ImGui.Checkbox("Show feedback on hit positionals", ref P.currentProfile.EnableVFXSuccess);
-            ImGuiComponents.HelpMarker("Displays a green checkmark above your character when you successfully hit a positional attack.");
-            
-            // Visual feedback customization
-            if (P.currentProfile.EnableVFXFailure || P.currentProfile.EnableVFXSuccess)
+            ImGui.Text("Positional Feedback:");
+
+            if (P.config.VisualFeedbackSettings == null)
+                P.config.VisualFeedbackSettings = new VisualFeedbackSettings();
+            if (P.config.AudioFeedbackSettings == null)
+                P.config.AudioFeedbackSettings = new AudioFeedbackSettings();
+
+            var visualSettings = P.config.VisualFeedbackSettings;
+            var audioSettings = P.config.AudioFeedbackSettings;
+
+            ImGui.Text("On Hit:");
+            ImGui.Indent();
+
+            ImGui.Checkbox("Visual##hit", ref P.currentProfile.EnableVFXSuccess);
+            if (P.currentProfile.EnableVFXSuccess)
             {
-                ImGui.Indent();
-                
-                if (P.config.VisualFeedbackSettings == null)
-                    P.config.VisualFeedbackSettings = new VisualFeedbackSettings();
-                
-                var settings = P.config.VisualFeedbackSettings;
-                
-                // Icon size
-                var iconSize = settings.IconSize;
-                if (ImGui.SliderFloat("Icon Size", ref iconSize, 20f, 100f))
+                ImGui.SameLine();
+                var successColor = visualSettings.SuccessColor;
+                if (ImGui.ColorEdit4("##hitColor", ref successColor, ImGuiColorEditFlags.NoInputs))
                 {
-                    settings.IconSize = iconSize;
+                    visualSettings.SuccessColor = successColor;
                     Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
                 }
-                
-                ImGui.Text("Colors:");
-                
-                // Only show Hit color if hits are enabled
-                if (P.currentProfile.EnableVFXSuccess)
-                {
-                    ImGui.AlignTextToFramePadding();
-                    ImGui.Text("Hit:");
-                    ImGui.SameLine();
-                    var successColor = settings.SuccessColor;
-                    if (ImGui.ColorEdit4("##successColor", ref successColor, ImGuiColorEditFlags.NoInputs))
-                    {
-                        settings.SuccessColor = successColor;
-                        Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
-                    }
-                }
-                
-                // Only show Miss color if misses are enabled
-                if (P.currentProfile.EnableVFXFailure)
-                {
-                    ImGui.AlignTextToFramePadding();
-                    ImGui.Text("Miss:");
-                    ImGui.SameLine();
-                    var failureColor = settings.FailureColor;
-                    if (ImGui.ColorEdit4("##failureColor", ref failureColor, ImGuiColorEditFlags.NoInputs))
-                    {
-                        settings.FailureColor = failureColor;
-                        Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
-                    }
-                }
-                
-                // Test buttons - only show for enabled types
-                if (P.currentProfile.EnableVFXSuccess)
-                {
-                    if (ImGui.Button("Test Hit"))
-                        VisualFeedbackManager.TestFeedback(true);
-                    if (P.currentProfile.EnableVFXFailure)
-                        ImGui.SameLine();
-                }
-                if (P.currentProfile.EnableVFXFailure)
-                {
-                    if (ImGui.Button("Test Miss"))
-                        VisualFeedbackManager.TestFeedback(false);
-                }
-                
-                ImGui.Unindent();
             }
-            
+
+            ImGui.Checkbox("Audio##hit", ref P.currentProfile.EnableAudioSuccess);
+            if (P.currentProfile.EnableAudioSuccess)
+            {
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(120f);
+                var successIndex = (int)audioSettings.SuccessSoundId - 1;
+                if (successIndex < 0 || successIndex > 15) successIndex = 1;
+                if (ImGui.Combo("##hitSound", ref successIndex, SoundNames, 16))
+                {
+                    audioSettings.SuccessSoundId = (uint)(successIndex + 1);
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+            }
+
+            if (P.currentProfile.EnableVFXSuccess || P.currentProfile.EnableAudioSuccess)
+            {
+                if (ImGui.Button("Test Hit"))
+                    PositionalFeedbackManager.TestFeedback(true);
+            }
+
+            ImGui.Unindent();
+
+            ImGui.Text("On Miss:");
+            ImGui.Indent();
+
+            ImGui.Checkbox("Visual##miss", ref P.currentProfile.EnableVFXFailure);
+            if (P.currentProfile.EnableVFXFailure)
+            {
+                ImGui.SameLine();
+                var failureColor = visualSettings.FailureColor;
+                if (ImGui.ColorEdit4("##missColor", ref failureColor, ImGuiColorEditFlags.NoInputs))
+                {
+                    visualSettings.FailureColor = failureColor;
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+            }
+
+            ImGui.Checkbox("Audio##miss", ref P.currentProfile.EnableAudioFailure);
+            if (P.currentProfile.EnableAudioFailure)
+            {
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(120f);
+                var failureIndex = (int)audioSettings.FailureSoundId - 1;
+                if (failureIndex < 0 || failureIndex > 15) failureIndex = 5;
+                if (ImGui.Combo("##missSound", ref failureIndex, SoundNames, 16))
+                {
+                    audioSettings.FailureSoundId = (uint)(failureIndex + 1);
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+            }
+
+            if (P.currentProfile.EnableVFXFailure || P.currentProfile.EnableAudioFailure)
+            {
+                if (ImGui.Button("Test Miss"))
+                    PositionalFeedbackManager.TestFeedback(false);
+            }
+
+            ImGui.Unindent();
+
+            if (P.currentProfile.EnableVFXSuccess || P.currentProfile.EnableVFXFailure)
+            {
+                ImGui.SetNextItemWidth(150f);
+                var iconSize = visualSettings.IconSize;
+                if (ImGui.SliderFloat("Icon Size", ref iconSize, 20f, 100f))
+                {
+                    visualSettings.IconSize = iconSize;
+                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                }
+            }
+
             ImGui.Separator();
-            ImGui.Checkbox("Output positional feedback to chat on failed positional", ref P.currentProfile.EnableChatMessagesFailure);
-            ImGuiComponents.HelpMarker("Prints either a success or failure message in the chat when you hit or miss a positional.");
-            ImGui.Checkbox("Also print feedback to chat on successful positionals", ref P.currentProfile.EnableChatMessagesSuccess);
-            ImGui.Checkbox("Output encounter performance summary", ref P.currentProfile.Announce);
-            ImGuiComponents.HelpMarker("Prints an overall summary of your encounter and the positionals hit/missed when leaving combat.");
+
+            ImGui.Text("Chat Messages:");
+            ImGui.Checkbox("Print on miss", ref P.currentProfile.EnableChatMessagesFailure);
+            ImGui.SameLine();
+            ImGui.Checkbox("Print on hit", ref P.currentProfile.EnableChatMessagesSuccess);
+            ImGui.Checkbox("Encounter summary on combat end", ref P.currentProfile.Announce);
 
             ImGui.Separator();
 

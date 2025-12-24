@@ -36,6 +36,11 @@ internal class Config : IPluginConfiguration
     /// </summary>
     public VisualFeedbackSettings VisualFeedbackSettings { get; set; }
 
+    /// <summary>
+    /// Settings for the audio feedback system
+    /// </summary>
+    public AudioFeedbackSettings AudioFeedbackSettings { get; set; }
+
     // Pictomancy renderer settings
     public bool UsePictomancyRenderer = false;
     public byte PictomancyMaxAlpha = 255;
