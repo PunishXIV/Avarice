@@ -90,13 +90,20 @@ internal static class DrawFunctions
 
         if (UsePictomancy)
         {
-            // Negate angles and swap start/end to maintain arc direction
             var pStart = ToPictomancyAngle(endRads);
             var pEnd = ToPictomancyAngle(startRads);
             if (brush.HasFill())
                 PictomancyRenderer.DrawFanFilled(center, 0f, radius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Fill));
             if (brush.Thickness > 0)
-                PictomancyRenderer.DrawFan(center, 0f, radius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Color), brush.Thickness);
+            {
+                if (lines)
+                    PictomancyRenderer.DrawFan(center, 0f, radius, pStart, pEnd, ImGui.ColorConvertFloat4ToU32(brush.Color), brush.Thickness);
+                else
+                {
+                    PictomancyRenderer.PathArcTo(center, radius, pStart, pEnd);
+                    PictomancyRenderer.PathStroke(ImGui.ColorConvertFloat4ToU32(brush.Color), brush.Thickness);
+                }
+            }
         }
         else
         {
@@ -114,7 +121,6 @@ internal static class DrawFunctions
 
         if (UsePictomancy)
         {
-            // Negate angles and swap start/end to maintain arc direction
             var pStart = ToPictomancyAngle(endRads);
             var pEnd = ToPictomancyAngle(startRads);
             if (brush.HasFill())

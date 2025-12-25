@@ -118,11 +118,6 @@ internal unsafe class Canvas : Window
         finally
         {
             PictomancyRenderer.EndFrame();
-
-            if (P.config.UsePictomancyRenderer)
-            {
-                CImGui.igBringWindowToDisplayBack(CImGui.igGetCurrentWindow());
-            }
         }
     }
 

@@ -157,7 +157,7 @@ internal static class TabSettings
             {
                 ImGui.SetNextItemWidth(150f);
                 var iconSize = visualSettings.IconSize;
-                if (ImGui.SliderFloat("Icon Size", ref iconSize, 20f, 100f))
+                if (ImGui.SliderFloat("Icon Size", ref iconSize, 5f, 100f))
                 {
                     visualSettings.IconSize = iconSize;
                     Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
