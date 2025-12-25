@@ -19,7 +19,7 @@ internal static class PictomancyRenderer
         try
         {
             var hints = new PctDrawHints(
-                autoDraw: false,
+                autoDraw: true,
                 maxAlpha: P.config.PictomancyMaxAlpha,
                 clipNativeUI: P.config.PictomancyClipNativeUI
             );
@@ -35,25 +35,8 @@ internal static class PictomancyRenderer
     public static void EndFrame()
     {
         if (_drawList == null) return;
-
-        try
-        {
-            var texture = _drawList.DrawToTexture();
-            ImGui.GetWindowDrawList().AddImage(
-                texture.TextureId,
-                ImGuiHelpers.MainViewport.Pos,
-                ImGuiHelpers.MainViewport.Pos + new Vector2(texture.Width, texture.Height)
-            );
-        }
-        catch (Exception ex)
-        {
-            PluginLog.Error($"Failed to end Pictomancy frame: {ex.Message}");
-        }
-        finally
-        {
-            _drawList?.Dispose();
-            _drawList = null;
-        }
+        _drawList.Dispose();
+        _drawList = null;
     }
 
     public static void DrawCircle(Vector3 center, float radius, uint color, float thickness)

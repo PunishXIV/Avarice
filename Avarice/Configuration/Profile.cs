@@ -11,6 +11,8 @@ public class Profile
     public bool EnableChatMessagesFailure = true;
     public bool EnableVFXSuccess = false;
     public bool EnableVFXFailure = true;
+    public bool EnableAudioSuccess = false;
+    public bool EnableAudioFailure = false;
     public bool Announce = false;
     public bool Debug = false;
     public bool DrawingEnabled = true; // New property for drawing toggle

@@ -170,7 +170,7 @@ public class VisualFeedbackSettings
     public float IconSize { get; set; } = 40f;
     public Vector4 SuccessColor { get; set; } = new Vector4(0.2f, 0.9f, 0.2f, 1f);
     public Vector4 FailureColor { get; set; } = new Vector4(0.9f, 0.2f, 0.2f, 1f);
-    
+
     // Keep old properties for backward compatibility but mark obsolete
     [Obsolete] public bool EnableFadeOut { get; set; }
     [Obsolete] public float VerticalOffset { get; set; }
@@ -178,4 +178,11 @@ public class VisualFeedbackSettings
     [Obsolete] public Vector2 Size { get; set; }
     [Obsolete] public bool ShowBackground { get; set; }
     [Obsolete] public float BackgroundAlpha { get; set; }
+}
+
+[Serializable]
+public class AudioFeedbackSettings
+{
+    public uint SuccessSoundId { get; set; } = AudioFeedbackManager.DefaultSuccessSound;
+    public uint FailureSoundId { get; set; } = AudioFeedbackManager.DefaultFailureSound;
 }

@@ -40,15 +40,11 @@ namespace Avarice
                     }
                     if (positionalState == PositionalState.Success)
                     {
-                        if (P.currentProfile?.EnableChatMessagesSuccess == true) Svc.Chat?.Print("Positional HIT!");
-                        if (P.currentProfile?.EnableVFXSuccess == true) VisualFeedbackManager.DisplayFeedback(true);
-                        P.RecordStat(false);
+                        PositionalFeedbackManager.TriggerFeedback(true);
                     }
                     else if (positionalState == PositionalState.Failure)
                     {
-                        if (P.currentProfile?.EnableChatMessagesFailure == true) Svc.Chat?.Print("Positional MISS!");
-                        if (P.currentProfile?.EnableVFXFailure == true) VisualFeedbackManager.DisplayFeedback(false);
-                        P.RecordStat(true);
+                        PositionalFeedbackManager.TriggerFeedback(false);
                     }
                     PluginLog.Debug($"Positional state: {positionalState}");
                 }

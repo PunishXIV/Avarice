@@ -118,11 +118,6 @@ internal unsafe class Canvas : Window
         finally
         {
             PictomancyRenderer.EndFrame();
-
-            if (P.config.UsePictomancyRenderer)
-            {
-                CImGui.igBringWindowToDisplayBack(CImGui.igGetCurrentWindow());
-            }
         }
     }
 
@@ -244,7 +239,8 @@ internal unsafe class Canvas : Window
             var dotColor = TabSplatoon.IsUnsafe() ? P.config.SplatoonPixelCol : P.currentProfile.PlayerDotSettings.Color;
             if (PictomancyRenderer.IsDrawing)
             {
-                PictomancyRenderer.DrawDot(Svc.Objects.LocalPlayer.Position, P.currentProfile.PlayerDotSettings.Thickness, ImGui.ColorConvertFloat4ToU32(dotColor));
+                var worldRadius = P.currentProfile.PlayerDotSettings.Thickness * 0.03f;
+                PictomancyRenderer.DrawCircleFilled(Svc.Objects.LocalPlayer.Position, worldRadius, ImGui.ColorConvertFloat4ToU32(dotColor));
             }
             else if (Svc.GameGui.WorldToScreen(Svc.Objects.LocalPlayer.Position, out var pos))
             {
@@ -264,7 +260,8 @@ internal unsafe class Canvas : Window
                 {
                     if (PictomancyRenderer.IsDrawing)
                     {
-                        PictomancyRenderer.DrawDot(x.GameObject.Position, P.currentProfile.PartyDotSettings.Thickness, ImGui.ColorConvertFloat4ToU32(P.currentProfile.PartyDotSettings.Color));
+                        var worldRadius = P.currentProfile.PartyDotSettings.Thickness * 0.03f;
+                        PictomancyRenderer.DrawCircleFilled(x.GameObject.Position, worldRadius, ImGui.ColorConvertFloat4ToU32(P.currentProfile.PartyDotSettings.Color));
                     }
                     else if (Svc.GameGui.WorldToScreen(x.GameObject.Position, out var pos))
                     {
@@ -287,7 +284,8 @@ internal unsafe class Canvas : Window
                 {
                     if (PictomancyRenderer.IsDrawing)
                     {
-                        PictomancyRenderer.DrawDot(x.Position, P.currentProfile.AllDotSettings.Thickness, ImGui.ColorConvertFloat4ToU32(P.currentProfile.AllDotSettings.Color));
+                        var worldRadius = P.currentProfile.AllDotSettings.Thickness * 0.03f;
+                        PictomancyRenderer.DrawCircleFilled(x.Position, worldRadius, ImGui.ColorConvertFloat4ToU32(P.currentProfile.AllDotSettings.Color));
                     }
                     else if (Svc.GameGui.WorldToScreen(x.Position, out var pos))
                     {
