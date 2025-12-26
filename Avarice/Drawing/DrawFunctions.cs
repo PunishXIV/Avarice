@@ -18,19 +18,35 @@ internal static class DrawFunctions
     // To convert: negate the angle to flip X axis
     private static float ToPictomancyAngle(float angle) => -angle;
 
+    private static bool IsInHousingZone()
+    {
+        var territoryIntendedUse = ECommons.GameHelpers.Player.TerritoryIntendedUseEnum;
+        return territoryIntendedUse == ECommons.ExcelServices.TerritoryIntendedUseEnum.Residential_Area
+            || territoryIntendedUse == ECommons.ExcelServices.TerritoryIntendedUseEnum.Housing_Instances;
+    }
+
+    private static Vector3 GetGroundedPosition(IGameObject actor)
+    {
+        if (IsInHousingZone())
+            return GroundDetection.GetAutoGroundedPosition(actor.Position);
+        return actor.Position;
+    }
+
     // ----------- actor-aware draw methods --------------
     internal static void ActorConeXZ(IGameObject actor, float radius, float startRads, float endRads, Brush brush, bool lines = true)
     {
         if (!ShouldDraw()) return;
-        ConeXZ(actor.Position, radius, startRads + actor.Rotation, endRads + actor.Rotation, brush, lines);
+        var pos = GetGroundedPosition(actor);
+        ConeXZ(pos, radius, startRads + actor.Rotation, endRads + actor.Rotation, brush, lines);
     }
 
     internal static void ActorLineXZ(IGameObject actor, float radius, float rotation, Brush brush)
     {
         if (!ShouldDraw()) return;
+        var pos = GetGroundedPosition(actor);
         var shape = new ConvexShape(brush);
-        shape.Point(actor.Position);
-        shape.Point(MathHelper.RotateWorldPoint(actor.Position, rotation - actor.Rotation + Maths.Radians(90), actor.Position + new Vector3(radius, 0, 0)));
+        shape.Point(pos);
+        shape.Point(MathHelper.RotateWorldPoint(pos, rotation - actor.Rotation + Maths.Radians(90), pos + new Vector3(radius, 0, 0)));
         shape.Done();
     }
 
@@ -38,11 +54,12 @@ internal static class DrawFunctions
     {
         if (!ShouldDraw()) return;
         var direction = angle + actor.Rotation;
+        var actorPos = GetGroundedPosition(actor);
 
         // scale the drawing by shifting the "circle center" up the radial
         // and reducing the radius accordingly
         var centerOffset = radius * (1 - scale);
-        var pos = actor.Position + new Vector3(
+        var pos = actorPos + new Vector3(
             centerOffset * (float)Math.Sin(direction),
             0,
             centerOffset * (float)Math.Cos(direction)
@@ -63,7 +80,8 @@ internal static class DrawFunctions
     internal static void ActorDonutSliceXZ(IGameObject actor, float innerRadius, float outerRadius, float startRads, float endRads, Brush brush)
     {
         if (!ShouldDraw()) return;
-        DonutSliceXZ(actor.Position, innerRadius, outerRadius, startRads + actor.Rotation, endRads + actor.Rotation, brush);
+        var pos = GetGroundedPosition(actor);
+        DonutSliceXZ(pos, innerRadius, outerRadius, startRads + actor.Rotation, endRads + actor.Rotation, brush);
     }
 
     internal static void CircleXZ(Vector3 position, float radius, Brush brush)
