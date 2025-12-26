@@ -9,22 +9,22 @@ internal static class TabSettings
     // Sound effect names for the dropdown (SE1-SE16)
     private static readonly string[] SoundNames = new[]
     {
-        "Confirm",
-        "Cancel",
-        "Chime",
-        "Bell",
-        "Notification",
-        "Alert",
-        "Warning",
-        "System",
-        "Error",
-        "Fanfare",
-        "Complete",
-        "Discovery",
-        "Synthesize",
-        "Craft",
-        "Linkshell",
-        "Alarm"
+        "<se.1>",
+        "<se.2>",
+        "<se.3>",
+        "<se.4>",
+        "<se.5>",
+        "<se.6>",
+        "<se.7>",
+        "<se.8>",
+        "<se.9>",
+        "<se.10>",
+        "<se.11>",
+        "<se.12>",
+        "<se.13>",
+        "<se.14>",
+        "<se.15>",
+        "<se.16>"
     };
 
     /*internal static Dictionary<ClassDisplayCondition, string> ClassDisplayConditionNames = new()
