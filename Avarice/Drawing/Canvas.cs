@@ -76,20 +76,28 @@ internal unsafe class Canvas : Window
         return false;
     }
 
+    private static bool IsInHousingZone()
+    {
+        var territoryIntendedUse = ECommons.GameHelpers.Player.TerritoryIntendedUseEnum;
+        return territoryIntendedUse == ECommons.ExcelServices.TerritoryIntendedUseEnum.Residential_Area
+            || territoryIntendedUse == ECommons.ExcelServices.TerritoryIntendedUseEnum.Housing_Instances;
+    }
+
     private void DrawMaxMeleeForTarget(IBattleNpc bnpc)
     {
         var useSimpleCircle = P.currentProfile.MaxMeleeIgnorePositionalCheck && !bnpc.HasPositional();
+        var pos = IsInHousingZone() ? GroundDetection.GetAutoGroundedPosition(bnpc.Position) : bnpc.Position;
 
         if (useSimpleCircle)
         {
             if (P.currentProfile.Radius3)
             {
-                CircleXZ(bnpc.Position, bnpc.HitboxRadius + GetSkillRadius(), P.currentProfile.MaxMeleeSettingsN);
+                CircleXZ(pos, bnpc.HitboxRadius + GetSkillRadius(), P.currentProfile.MaxMeleeSettingsN);
                 if (P.currentProfile.Radius2)
-                    CircleXZ(bnpc.Position, bnpc.HitboxRadius + GetAttackRadius(), P.currentProfile.MaxMeleeSettingsN);
+                    CircleXZ(pos, bnpc.HitboxRadius + GetAttackRadius(), P.currentProfile.MaxMeleeSettingsN);
             }
             else if (P.currentProfile.Radius2)
-                CircleXZ(bnpc.Position, bnpc.HitboxRadius + GetAttackRadius(), P.currentProfile.MaxMeleeSettingsN);
+                CircleXZ(pos, bnpc.HitboxRadius + GetAttackRadius(), P.currentProfile.MaxMeleeSettingsN);
         }
         else
         {
