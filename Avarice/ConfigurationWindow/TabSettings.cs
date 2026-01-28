@@ -64,6 +64,8 @@ internal static class TabSettings
                 ImGui.Indent();
                 ImGui.Checkbox("Still show distance indicator for non-positional targets", ref P.currentProfile.MaxMeleeIgnorePositionalCheck);
                 ImGuiComponents.HelpMarker("When enabled, the Enemy Distance Indicator will still show even when targeting enemies without positionals (like omnidirectional bosses)");
+                ImGui.Checkbox("Show positional Ring without Positional checks when non-positional buffs are present", ref P.currentProfile.ShowPositionalWithoutCheckWhenNonPositionalBuffs);
+                ImGuiComponents.HelpMarker("When enabled, the Enemy Distance Indicator and positional ring without positional checks when the target has non-positional buffs");
                 ImGui.Unindent();
             }
 
