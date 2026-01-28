@@ -52,6 +52,7 @@ public class Profile
 
     public bool EnableMaxMeleeRing = true;
     public bool MaxMeleeIgnorePositionalCheck = false;
+    public bool ShowPositionalWithoutCheckWhenNonPositionalBuffs = false;
     public Brush MaxMeleeSettingsN = new()
     {
         Color = ImGui.ColorConvertU32ToFloat4(0x501400E6),

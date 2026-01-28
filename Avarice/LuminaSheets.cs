@@ -58,6 +58,9 @@ namespace Avarice
 
             if (obj is not IBattleNpc bnpc)
                 return false;
+            
+            if (bnpc.StatusList.Any(x => x.StatusId == 3808) && !P.currentProfile.ShowPositionalWithoutCheckWhenNonPositionalBuffs)
+                return false;
 
             uint dataId = bnpc.BaseId;
             if (PositionalStatusCache.TryGetValue(dataId, out bool hasPositional))

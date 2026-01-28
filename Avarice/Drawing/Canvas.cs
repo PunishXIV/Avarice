@@ -72,7 +72,12 @@ internal unsafe class Canvas : Window
         if (!P.config.OnlyDrawIfPositional)
             return true;
         if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
+        {
+            if (bnpc.StatusList.Any(x => x.StatusId == 3808))
+                return false;
             return bnpc.HasPositional();
+        }
+
         return false;
     }
 
