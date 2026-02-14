@@ -320,20 +320,28 @@ internal static unsafe class Util
 	public static bool IsNINAnticipatedRear()
 	{
 		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.AeolianEdge).ClassJobLevel;
+		bool kunailevelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.KunaisBane).ClassJobLevel;
+		bool buffcheck = ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null ||
+		                 ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null;
+		
 		uint move = P.memory.LastComboMove;
-		return levelcheck && ((move.EqualsAny((uint)ActionID.GustSlash) && (NINGauge.Kazematoi > 3 || (NINGauge.Kazematoi > 0
-			&& ((ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null)
-			|| (ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null)))))
-			|| (P.currentProfile.TrickAttack && !ComboCache.ComboCacheInstance.GetCooldown((uint)ActionID.TrickAttack).IsCooldown
-			&& (uint)Player.Job == 30));
+		return levelcheck && move.EqualsAny((uint)ActionID.GustSlash) &&
+		    (P.currentProfile.Kazematoi && NINGauge.Kazematoi > 0 || //All valid positional option
+		     NINGauge.Kazematoi > 3 || //Spend Before
+		     NINGauge.Kazematoi > 0 && buffcheck || //Spend in buff window
+		     P.currentProfile.TrickAttack && !ComboCache.ComboCacheInstance.GetCooldown((uint)ActionID.TrickAttack).IsCooldown && !kunailevelcheck && (uint)Player.Job == 30); //Trick Attack Option
 	}
 	public static bool IsNINAnticipatedFlank()
 	{
 		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ArmorCrush).ClassJobLevel;
 		uint move = P.memory.LastComboMove;
-		return levelcheck && move.EqualsAny((uint)ActionID.GustSlash) && NINGauge.Kazematoi <= 3
-			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) == null
-			&& ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) == null;
+		bool buffcheck = ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null ||
+		                 ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null;
+		
+		return levelcheck && move.EqualsAny((uint)ActionID.GustSlash) && 
+			(P.currentProfile.Kazematoi && NINGauge.Kazematoi < 4 || //All valid positional option
+			 NINGauge.Kazematoi == 0 || //Generate charges if none even if in buff window
+			 NINGauge.Kazematoi <= 3 && !buffcheck); //Only generate charges if not in buff window
 	}
 
 	public static bool IsSAMAnticipatedRear()
