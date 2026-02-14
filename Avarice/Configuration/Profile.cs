@@ -114,6 +114,7 @@ public class Profile
     public bool FrontStand = false;
 
     public bool TrickAttack;
+    public bool Kazematoi;
     public bool Meikyo;
     public int Reaper;
 

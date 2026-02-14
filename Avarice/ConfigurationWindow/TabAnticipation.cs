@@ -81,6 +81,7 @@ internal static unsafe class TabAnticipation
 		ContentsAction = delegate
 		{
 			_ = ImGui.Checkbox("Show anticipation for rear when Trick Attack is off cooldown", ref P.currentProfile.TrickAttack);
+			_ = ImGui.Checkbox("Show both valid positionals based on Kazematoi charges.", ref P.currentProfile.Kazematoi);
 		}
 	};
 

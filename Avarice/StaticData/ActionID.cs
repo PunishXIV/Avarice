@@ -45,6 +45,7 @@ public enum ActionID : uint
 	//Positional skills
 	AeolianEdge = 2255,
 	TrickAttack = 2258,
+	KunaisBane = 36958,
 	ArmorCrush = 3563,
 
 	#endregion
