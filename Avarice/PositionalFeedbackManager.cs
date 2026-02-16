@@ -7,16 +7,23 @@ internal static class PositionalFeedbackManager
         var profile = P.currentProfile;
         if (profile == null) return;
 
-        if (success && profile.EnableVFXSuccess)
-            VisualFeedbackManager.DisplayFeedback(true);
-        else if (!success && profile.EnableVFXFailure)
-            VisualFeedbackManager.DisplayFeedback(false);
+        // Visual feedback
+        if ((success && profile.EnableVFXSuccess) || (!success && profile.EnableVFXFailure))
+        {
+            DisplayVisualFeedback(success);
+        }
 
-        if (success && profile.EnableAudioSuccess)
-            AudioFeedbackManager.PlaySuccessSound();
-        else if (!success && profile.EnableAudioFailure)
-            AudioFeedbackManager.PlayFailureSound();
+        // Audio feedback (only for Vector mode - GameVfx has built-in sounds)
+        var mode = P.config.VisualFeedbackSettings?.Mode ?? VisualFeedbackMode.Vector;
+        if (mode == VisualFeedbackMode.Vector)
+        {
+            if (success && profile.EnableAudioSuccess)
+                AudioFeedbackManager.PlaySuccessSound();
+            else if (!success && profile.EnableAudioFailure)
+                AudioFeedbackManager.PlayFailureSound();
+        }
 
+        // Chat messages
         if (success && profile.EnableChatMessagesSuccess)
             Svc.Chat?.Print("Positional HIT!");
         else if (!success && profile.EnableChatMessagesFailure)
@@ -30,14 +37,35 @@ internal static class PositionalFeedbackManager
         var profile = P.currentProfile;
         if (profile == null) return;
 
-        if (success && profile.EnableVFXSuccess)
-            VisualFeedbackManager.DisplayFeedback(true);
-        else if (!success && profile.EnableVFXFailure)
-            VisualFeedbackManager.DisplayFeedback(false);
+        if ((success && profile.EnableVFXSuccess) || (!success && profile.EnableVFXFailure))
+        {
+            DisplayVisualFeedback(success);
+        }
 
-        if (success && profile.EnableAudioSuccess)
-            AudioFeedbackManager.PlaySuccessSound();
-        else if (!success && profile.EnableAudioFailure)
-            AudioFeedbackManager.PlayFailureSound();
+        // Audio feedback (only for Vector mode - GameVfx has built-in sounds)
+        var mode = P.config.VisualFeedbackSettings?.Mode ?? VisualFeedbackMode.Vector;
+        if (mode == VisualFeedbackMode.Vector)
+        {
+            if (success && profile.EnableAudioSuccess)
+                AudioFeedbackManager.PlaySuccessSound();
+            else if (!success && profile.EnableAudioFailure)
+                AudioFeedbackManager.PlayFailureSound();
+        }
+    }
+
+    private static void DisplayVisualFeedback(bool success)
+    {
+        var mode = P.config.VisualFeedbackSettings?.Mode ?? VisualFeedbackMode.Vector;
+
+        switch (mode)
+        {
+            case VisualFeedbackMode.GameVfx:
+                VfxEditorManager.DisplayVfx(success);
+                break;
+            case VisualFeedbackMode.Vector:
+            default:
+                VisualFeedbackManager.DisplayFeedback(success);
+                break;
+        }
     }
 }
