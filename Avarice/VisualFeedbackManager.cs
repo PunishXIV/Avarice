@@ -164,9 +164,16 @@ internal class VisualFeedbackOverlay : Window
     }
 }
 
+public enum VisualFeedbackMode
+{
+    Vector,   // ImGui drawn checkmark/X (current default)
+    GameVfx   // VFXEditor spawned game effects (original)
+}
+
 [Serializable]
 public class VisualFeedbackSettings
 {
+    public VisualFeedbackMode Mode { get; set; } = VisualFeedbackMode.Vector;
     public float IconSize { get; set; } = 40f;
     public Vector4 SuccessColor { get; set; } = new Vector4(0.2f, 0.9f, 0.2f, 1f);
     public Vector4 FailureColor { get; set; } = new Vector4(0.9f, 0.2f, 0.2f, 1f);

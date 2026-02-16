@@ -81,11 +81,39 @@ internal static class TabSettings
             var visualSettings = P.config.VisualFeedbackSettings;
             var audioSettings = P.config.AudioFeedbackSettings;
 
+            // Visual Mode selector
+            ImGui.AlignTextToFramePadding();
+            ImGui.Text("Visual Mode:");
+            ImGui.SameLine();
+            ImGui.SetNextItemWidth(200f);
+            var currentMode = (int)visualSettings.Mode;
+            var modeNames = new[] { "Vector (Checkmark/X)", "Game VFX (VFXEditor)" };
+            if (ImGui.Combo("##visualMode", ref currentMode, modeNames, modeNames.Length))
+            {
+                visualSettings.Mode = (VisualFeedbackMode)currentMode;
+                Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+            }
+
+            // Show warning/info based on mode
+            if (visualSettings.Mode == VisualFeedbackMode.GameVfx)
+            {
+                if (!VfxEditorManager.IsVfxEditorAvailable())
+                {
+                    ImGui.TextColored(new Vector4(1f, 0.4f, 0.4f, 1f), "VFXEditor plugin not detected!");
+                    ImGuiComponents.HelpMarker("Game VFX mode requires the VFXEditor plugin to be installed. Install it from the Dalamud plugin installer.");
+                }
+                else
+                {
+                    ImGui.TextColored(new Vector4(0.4f, 1f, 0.4f, 1f), "VFXEditor detected");
+                }
+                ImGui.TextColored(new Vector4(0.7f, 0.7f, 0.7f, 1f), "Game VFX includes built-in sounds");
+            }
+
             ImGui.Text("On Hit:");
             ImGui.Indent();
 
             ImGui.Checkbox("Visual##hit", ref P.currentProfile.EnableVFXSuccess);
-            if (P.currentProfile.EnableVFXSuccess)
+            if (P.currentProfile.EnableVFXSuccess && visualSettings.Mode == VisualFeedbackMode.Vector)
             {
                 ImGui.SameLine();
                 var successColor = visualSettings.SuccessColor;
@@ -96,21 +124,25 @@ internal static class TabSettings
                 }
             }
 
-            ImGui.Checkbox("Audio##hit", ref P.currentProfile.EnableAudioSuccess);
-            if (P.currentProfile.EnableAudioSuccess)
+            // Only show audio options for Vector mode
+            if (visualSettings.Mode == VisualFeedbackMode.Vector)
             {
-                ImGui.SameLine();
-                ImGui.SetNextItemWidth(120f);
-                var successIndex = (int)audioSettings.SuccessSoundId - 1;
-                if (successIndex < 0 || successIndex > 15) successIndex = 1;
-                if (ImGui.Combo("##hitSound", ref successIndex, SoundNames, 16))
+                ImGui.Checkbox("Audio##hit", ref P.currentProfile.EnableAudioSuccess);
+                if (P.currentProfile.EnableAudioSuccess)
                 {
-                    audioSettings.SuccessSoundId = (uint)(successIndex + 1);
-                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    ImGui.SameLine();
+                    ImGui.SetNextItemWidth(120f);
+                    var successIndex = (int)audioSettings.SuccessSoundId - 1;
+                    if (successIndex < 0 || successIndex > 15) successIndex = 1;
+                    if (ImGui.Combo("##hitSound", ref successIndex, SoundNames, 16))
+                    {
+                        audioSettings.SuccessSoundId = (uint)(successIndex + 1);
+                        Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    }
                 }
             }
 
-            if (P.currentProfile.EnableVFXSuccess || P.currentProfile.EnableAudioSuccess)
+            if (P.currentProfile.EnableVFXSuccess || (visualSettings.Mode == VisualFeedbackMode.Vector && P.currentProfile.EnableAudioSuccess))
             {
                 if (ImGui.Button("Test Hit"))
                     PositionalFeedbackManager.TestFeedback(true);
@@ -122,7 +154,7 @@ internal static class TabSettings
             ImGui.Indent();
 
             ImGui.Checkbox("Visual##miss", ref P.currentProfile.EnableVFXFailure);
-            if (P.currentProfile.EnableVFXFailure)
+            if (P.currentProfile.EnableVFXFailure && visualSettings.Mode == VisualFeedbackMode.Vector)
             {
                 ImGui.SameLine();
                 var failureColor = visualSettings.FailureColor;
@@ -133,21 +165,25 @@ internal static class TabSettings
                 }
             }
 
-            ImGui.Checkbox("Audio##miss", ref P.currentProfile.EnableAudioFailure);
-            if (P.currentProfile.EnableAudioFailure)
+            // Only show audio options for Vector mode
+            if (visualSettings.Mode == VisualFeedbackMode.Vector)
             {
-                ImGui.SameLine();
-                ImGui.SetNextItemWidth(120f);
-                var failureIndex = (int)audioSettings.FailureSoundId - 1;
-                if (failureIndex < 0 || failureIndex > 15) failureIndex = 5;
-                if (ImGui.Combo("##missSound", ref failureIndex, SoundNames, 16))
+                ImGui.Checkbox("Audio##miss", ref P.currentProfile.EnableAudioFailure);
+                if (P.currentProfile.EnableAudioFailure)
                 {
-                    audioSettings.FailureSoundId = (uint)(failureIndex + 1);
-                    Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    ImGui.SameLine();
+                    ImGui.SetNextItemWidth(120f);
+                    var failureIndex = (int)audioSettings.FailureSoundId - 1;
+                    if (failureIndex < 0 || failureIndex > 15) failureIndex = 5;
+                    if (ImGui.Combo("##missSound", ref failureIndex, SoundNames, 16))
+                    {
+                        audioSettings.FailureSoundId = (uint)(failureIndex + 1);
+                        Safe(() => Svc.PluginInterface.SavePluginConfig(P.config));
+                    }
                 }
             }
 
-            if (P.currentProfile.EnableVFXFailure || P.currentProfile.EnableAudioFailure)
+            if (P.currentProfile.EnableVFXFailure || (visualSettings.Mode == VisualFeedbackMode.Vector && P.currentProfile.EnableAudioFailure))
             {
                 if (ImGui.Button("Test Miss"))
                     PositionalFeedbackManager.TestFeedback(false);
@@ -155,7 +191,8 @@ internal static class TabSettings
 
             ImGui.Unindent();
 
-            if (P.currentProfile.EnableVFXSuccess || P.currentProfile.EnableVFXFailure)
+            // Icon size only applies to Vector mode
+            if (visualSettings.Mode == VisualFeedbackMode.Vector && (P.currentProfile.EnableVFXSuccess || P.currentProfile.EnableVFXFailure))
             {
                 ImGui.SetNextItemWidth(150f);
                 var iconSize = visualSettings.IconSize;
