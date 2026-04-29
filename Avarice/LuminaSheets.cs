@@ -67,7 +67,7 @@ namespace Avarice
                 return hasPositional;
 
             bool result = !NonPositionalUnits.Contains(dataId);
-            if (result && bnpc.BattleNpcKind != Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind.Enemy)
+            if (result && bnpc.BattleNpcKind != Dalamud.Game.ClientState.Objects.Enums.BattleNpcSubKind.Combatant)
                 result = false;
 
             PositionalStatusCache[dataId] = result;
