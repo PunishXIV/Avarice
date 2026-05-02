@@ -97,7 +97,7 @@ public unsafe class Avarice : IDalamudPlugin
             ComboCache.ComboCacheInstance = new ComboCache();
 
             PositionalManager = new();
-            PictoService.Initialize(Svc.PluginInterface);
+            PctService.Initialize(Svc.PluginInterface);
         });
     }
 
@@ -219,7 +219,7 @@ public unsafe class Avarice : IDalamudPlugin
         ActionWatching.Dispose();
         ComboCache.ComboCacheInstance.Dispose();
         VisualFeedbackManager.Dispose();
-        PictoService.Dispose();
+        PctService.Dispose();
         PunishLibMain.Dispose();
         ECommonsMain.Dispose();
         P = null;
