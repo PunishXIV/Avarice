@@ -57,6 +57,6 @@ internal static class VfxEditorManager
     private static IDalamudPlugin Get()
     {
         DalamudReflector.TryGetDalamudPlugin("VFXEditor", out var instance);
-        return instance;
+        return instance as IDalamudPlugin;
     }
 }

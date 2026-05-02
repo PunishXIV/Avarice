@@ -1,47 +1,60 @@
-﻿using CsvHelper;
+using CsvHelper;
 using System.Globalization;
 using System.IO;
-using System.Net.Http;
 
 namespace Avarice.Positional;
 
 public class PositionalManager
 {
-	private const string SheetUrl = "https://docs.google.com/spreadsheets/d/1z2skn_jokyj02Qv2GPEs6HSmAZVLiw2LbwQxkXPjiEs/gviz/tq?tqx=out:csv&sheet=main1";
-	private readonly string _filePath = Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "positionals.csv");
-
-	private readonly HttpClient _client;
-	private readonly Dictionary<int, PositionalAction> _actionStore;
+	private readonly string _localOverridePath = Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName!, "positionals_local.csv");
+	private readonly Dictionary<int, PositionalAction> _actionStore = new();
 
 	public PositionalManager()
 	{
-		_client = new HttpClient();
-		_actionStore = new Dictionary<int, PositionalAction>();
-		Get();
 		Load();
+		LoadLocalOverride();
 	}
 
 	public void Reset()
 	{
-		Get();
 		Load();
-	}
-
-	private void Get()
-	{
-		string text = _client.GetAsync(SheetUrl).Result.Content.ReadAsStringAsync().Result;
-		if (!File.Exists(_filePath) || File.ReadAllText(_filePath) != text)
-		{
-			File.WriteAllText(_filePath, text);
-		}
+		LoadLocalOverride();
 	}
 
 	private void Load()
 	{
 		_actionStore.Clear();
-		using StreamReader reader = new(_filePath);
+		foreach (var row in StaticData.PositionalPotencies.Records)
+		{
+			if (!_actionStore.TryGetValue(row.Id, out PositionalAction action))
+			{
+				action = new PositionalAction
+				{
+					Id = row.Id,
+					ActionName = row.Name,
+					ActionPosition = row.Position,
+					Positionals = new(),
+				};
+				_actionStore.Add(row.Id, action);
+			}
+
+			action.Positionals[row.Percent] = new PositionalParameters
+			{
+				Percent = row.Percent,
+				IsHit = row.IsHit,
+				Comment = row.Comment,
+			};
+		}
+	}
+
+	private void LoadLocalOverride()
+	{
+		if (!File.Exists(_localOverridePath)) return;
+
+		using StreamReader reader = new(_localOverridePath);
 		using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
 
+		int count = 0;
 		foreach (PositionalRecord record in csv.GetRecords<PositionalRecord>())
 		{
 			if (!_actionStore.TryGetValue(record.Id, out PositionalAction action))
@@ -56,14 +69,15 @@ public class PositionalManager
 				_actionStore.Add(record.Id, action);
 			}
 
-			PositionalParameters parameters = new()
+			action.Positionals[record.Percent] = new PositionalParameters
 			{
 				Percent = record.Percent,
 				IsHit = record.IsHit == "TRUE",
 				Comment = record.Comment,
 			};
-			action.Positionals.Add(record.Percent, parameters);
+			count++;
 		}
+		PluginLog.Information($"Loaded {count} positional override row(s) from positionals_local.csv");
 	}
 
 	public bool IsPositionalHit(int actionId, int percent)

@@ -18,12 +18,12 @@ internal static class PictomancyRenderer
 
         try
         {
-            var hints = new PctDrawHints(
-                autoDraw: true,
-                maxAlpha: P.config.PictomancyMaxAlpha,
-                clipNativeUI: P.config.PictomancyClipNativeUI
-            );
-            _drawList = PictoService.Draw(ImGui.GetWindowDrawList(), hints);
+            var hints = new PctDrawHints
+            {
+                UIMask = P.config.PictomancyClipNativeUI ? UIMask.BackbufferAlpha : UIMask.None,
+                MaxAlpha = P.config.PictomancyMaxAlpha,
+            };
+            _drawList = PctService.Draw(ImGui.GetWindowDrawList(), hints);
         }
         catch (Exception ex)
         {
