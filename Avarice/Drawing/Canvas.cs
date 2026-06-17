@@ -45,25 +45,6 @@ internal unsafe class Canvas : Window
         if (!P.currentProfile.DrawingEnabled)
             return false;
 
-        // Check for positional requirements if enabled
-        if (P.config.OnlyDrawIfPositional)
-        {
-            // Make sure we have a valid target with positional requirements
-            if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
-            {
-                if (bnpc.HasPositional())
-                    return true;
-                // KEY: Still draw if MaxMeleeIgnorePositionalCheck is enabled
-                if (P.currentProfile.EnableMaxMeleeRing && P.currentProfile.MaxMeleeIgnorePositionalCheck)
-                    return true;
-                return false;
-            }
-
-            // No valid target with positionals
-            return false;
-        }
-
-        // All conditions passed
         return true;
     }
 
@@ -86,6 +67,11 @@ internal unsafe class Canvas : Window
         var territoryIntendedUse = ECommons.GameHelpers.Player.TerritoryIntendedUseEnum;
         return territoryIntendedUse == ECommons.ExcelServices.TerritoryIntendedUseEnum.Residential_Area
             || territoryIntendedUse == ECommons.ExcelServices.TerritoryIntendedUseEnum.Housing_Instances;
+    }
+
+    private static bool ShouldDrawMaxMelee(IBattleNpc bnpc)
+    {
+        return bnpc.HasPositional() || P.currentProfile.MaxMeleeIgnorePositionalCheck;
     }
 
     private void DrawMaxMeleeForTarget(IBattleNpc bnpc)
@@ -202,14 +188,14 @@ internal unsafe class Canvas : Window
         if (P.currentProfile.EnableMaxMeleeRing && IsConditionMatching(P.currentProfile.MaxMeleeSettingsN.DisplayCondition))
         {
             {
-                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile())
+                if (Svc.Targets.Target is IBattleNpc bnpc && bnpc.IsHostile() && ShouldDrawMaxMelee(bnpc))
                 {
                     DrawMaxMeleeForTarget(bnpc);
                 }
             }
             {
                 if (Svc.Targets.FocusTarget is IBattleNpc bnpc
-                  && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile())
+                  && Svc.Targets.FocusTarget.Address != Svc.Targets.Target?.Address && bnpc.IsHostile() && ShouldDrawMaxMelee(bnpc))
                 {
                     DrawMaxMeleeForTarget(bnpc);
                 }

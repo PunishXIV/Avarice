@@ -109,4 +109,9 @@ public class PositionalManager
 	{
 		return _actionStore.ContainsKey(actionId);
 	}
+
+	public string GetActionPosition(int actionId)
+	{
+		return _actionStore.TryGetValue(actionId, out PositionalAction action) ? action.ActionPosition : null;
+	}
 }
