@@ -1,12 +1,12 @@
 ﻿{
-  "Author": "кайт машина (Puni.sh)",
+  "Author": "kawaii, NightmareXIV, Wah",
   "Name": "Avarice",
   "InternalName": "Avarice",
   "Description": "Positional feedback with pixel perfect rear/flank tracking, range indicators, and more.",
   "Punchline": "Positional feedback with pixel perfect rear/flank tracking, range indicators, and more.",
   "ApplicableVersion": "any",
   "RepoUrl": "https://github.com/PunishXIV/Avarice",
-  "IconUrl": "https://love.puni.sh/resources/avarice.png",
+  "IconUrl": "https://s3.puni.sh/media/plugin/11/icon-d95r9462spc.png",
     "Tags": [
         "combat"
     ],
