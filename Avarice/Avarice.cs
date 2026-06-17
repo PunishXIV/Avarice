@@ -31,6 +31,7 @@ public unsafe class Avarice : IDalamudPlugin
     internal WindowSystem windowSystem;
     internal ConfigWindow configWindow;
     private Canvas canvas;
+    internal PositionalDebugWindow positionalDebugWindow;
     internal Memory memory;
 
     internal static uint[] PositionalJobs = new uint[] { 2, 4, 29, 30, 20, 34, 39, 22 };
@@ -62,6 +63,8 @@ public unsafe class Avarice : IDalamudPlugin
             windowSystem.AddWindow(configWindow);
             canvas = new();
             windowSystem.AddWindow(canvas);
+            positionalDebugWindow = new();
+            windowSystem.AddWindow(positionalDebugWindow);
             Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
             Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configWindow.IsOpen = true; };
             Svc.Condition.ConditionChange += OnConditionChange;
@@ -70,6 +73,7 @@ public unsafe class Avarice : IDalamudPlugin
                 if (args == "debug")
                 {
                     P.currentProfile.Debug = !P.currentProfile.Debug;
+                    positionalDebugWindow.IsOpen = P.currentProfile.Debug;
                     Svc.Chat.Print($"Debug mode {(P.currentProfile.Debug ? "enabled" : "disabled")}");
                 }
                 else if (args == "draw") // Added new command for toggling drawing

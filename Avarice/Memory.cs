@@ -2,6 +2,7 @@
 using ECommons.Hooks;
 using ECommons.Hooks.ActionEffectTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.System.Framework;
 
 namespace Avarice
 {
@@ -21,23 +22,30 @@ namespace Avarice
             {
                 if (set.Source?.Address == Svc.Objects.LocalPlayer?.Address)
                 {
-                    var positionalState = PositionalState.Ignore;
-                    if (P.PositionalManager?.IsPositional((int)set.Header.ActionID) == true)
+                    var actionId = (int)set.Header.ActionID;
+                    var isPositional = P.PositionalManager?.IsPositional(actionId) == true;
+                    var positionalState = isPositional ? PositionalState.Failure : PositionalState.Ignore;
+
+                    var param2Parts = new List<string>();
+                    var detailParts = new List<string>();
+                    if (set.TargetEffects != null)
                     {
-                        positionalState = PositionalState.Failure;
-                        if (set.TargetEffects != null)
+                        foreach (var effect in set.TargetEffects)
                         {
-                            foreach (var effect in set.TargetEffects)
+                            effect.ForEach(entry =>
                             {
-                                effect.ForEach(entry =>
+                                if (entry.type == ActionEffectType.Damage)
                                 {
-                                    if (entry.type == ActionEffectType.Damage)
-                                        if (P.PositionalManager?.IsPositionalHit((int)set.Header.ActionID, entry.param2) == true)
-                                            positionalState = PositionalState.Success;
-                                });
-                            }
+                                    var matched = isPositional && P.PositionalManager?.IsPositionalHit(actionId, entry.param2) == true;
+                                    if (matched)
+                                        positionalState = PositionalState.Success;
+                                    param2Parts.Add(matched ? $"{entry.param2}*" : $"{entry.param2}");
+                                    detailParts.Add(entry.ToString());
+                                }
+                            });
                         }
                     }
+
                     if (positionalState == PositionalState.Success)
                     {
                         PositionalFeedbackManager.TriggerFeedback(true);
@@ -46,6 +54,23 @@ namespace Avarice
                     {
                         PositionalFeedbackManager.TriggerFeedback(false);
                     }
+
+                    if (isPositional || param2Parts.Count > 0)
+                    {
+                        PositionalDebugWindow.Record(new PositionalDebugWindow.Entry
+                        {
+                            Frame = Framework.Instance()->FrameCounter,
+                            ActionId = set.Header.ActionID,
+                            ActionName = set.Name,
+                            InTable = isPositional,
+                            TablePosition = P.PositionalManager?.GetActionPosition(actionId),
+                            Param2Display = param2Parts.Count > 0 ? string.Join(", ", param2Parts) : "(no damage)",
+                            Verdict = positionalState,
+                            Target = set.Target?.Name.ToString() ?? "",
+                            Detail = string.Join("\n", detailParts),
+                        });
+                    }
+
                     PluginLog.Debug($"Positional state: {positionalState}");
                 }
             }

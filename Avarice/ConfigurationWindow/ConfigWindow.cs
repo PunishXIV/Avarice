@@ -36,6 +36,10 @@ internal unsafe partial class ConfigWindow : Window
 
     private void Debug()
     {
+        if(ImGui.Button("Open Positional Debug window"))
+        {
+            P.positionalDebugWindow.IsOpen = true;
+        }
         if(ImGui.CollapsingHeader("StaticAutoDetectRadiusData"))
         {
             ImGuiEx.Text(P.StaticAutoDetectRadiusData.Select(x => x.ToString()).Join("\n"));
