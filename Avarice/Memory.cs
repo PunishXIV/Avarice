@@ -1,4 +1,4 @@
-﻿using Avarice.Structs;
+using Avarice.Structs;
 using ECommons.Hooks;
 using ECommons.Hooks.ActionEffectTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
