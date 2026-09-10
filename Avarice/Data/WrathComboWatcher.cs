@@ -8,8 +8,8 @@ internal sealed class WrathComboWatcher : IDisposable
     private const string HintGate = "WrathCombo.GetUpcomingPositionalHint";
     private const string HintChangedGate = "OnUpcomingPositionalHint";
     private const int HintFieldCount = 7;
-    private const int PollIntervalMs = 1000;
-    private const int FailedPollIntervalMs = 2500;
+    private const int PollIntervalMs = 50;
+    private const int FailedPollIntervalMs = 250;
 
     private readonly ICallGateSubscriber<uint[]> getHintSubscriber;
     private readonly ICallGateSubscriber<object> hintChangedSubscriber;
