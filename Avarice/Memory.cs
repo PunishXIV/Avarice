@@ -1,4 +1,4 @@
-﻿using Avarice.Structs;
+using Avarice.Structs;
 using ECommons.Hooks;
 using ECommons.Hooks.ActionEffectTypes;
 using FFXIVClientStructs.FFXIV.Client.Game;
@@ -11,6 +11,7 @@ internal unsafe class Memory
 {
     public delegate* unmanaged<void*, uint, GameObjectId, void> ShowLockonIcon = (delegate* unmanaged<void*, uint, GameObjectId, void>)Svc.SigScanner.ScanText("85 D2 0F 84 ?? ?? ?? ?? 48 89 6C 24 ?? 57 48 83 EC 30");
     internal uint LastComboMove => ActionManager.Instance()->Combo.Action;
+    internal float ComboTimer => ActionManager.Instance()->Combo.Timer;
 
     internal Memory()
     {
@@ -75,8 +76,9 @@ internal unsafe class Memory
                         Detail = string.Join("\n", detailParts),
                     });
                 }
-
-                PluginLog.Debug($"Positional state: {positionalState}");
+                
+                if (positionalState != PositionalState.Ignore)
+                    PluginLog.Debug($"Positional state: {positionalState}");
             }
         }
         catch(Exception e)

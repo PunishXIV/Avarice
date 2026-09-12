@@ -1,43 +1,27 @@
-using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.Types;
 using Dalamud.Plugin.Services;
-using FFXIVClientStructs.FFXIV.Client.Game;
 using System.Collections.Concurrent;
 
 namespace Avarice.Data
 {
-	internal partial class ComboCache : IDisposable
+	internal class ComboCache : IDisposable
 	{
 		private const uint InvalidObjectID = 0xE000_0000;
 
 		private readonly ConcurrentDictionary<(uint StatusID, ulong? TargetID, ulong? SourceID), StatusInfo?> statusCache = new();
 		private readonly ConcurrentDictionary<uint, CooldownData> cooldownCache = new();
 
-		private readonly ConcurrentDictionary<Type, JobGaugeBase> jobGaugeCache = new();
-
 		public ComboCache()
 		{
 			Svc.Framework.Update += Framework_Update;
 		}
-
-		private delegate IntPtr GetActionCooldownSlotDelegate(IntPtr actionManager, int cooldownGroup);
 
 		public void Dispose()
 		{
 			Svc.Framework.Update -= Framework_Update;
 		}
 
-		internal T GetJobGauge<T>() where T : JobGaugeBase
-		{
-			if (!jobGaugeCache.TryGetValue(typeof(T), out JobGaugeBase gauge))
-			{
-				gauge = jobGaugeCache[typeof(T)] = Svc.Gauges.Get<T>();
-			}
-
-			return (T)gauge;
-		}
-
-		internal StatusInfo? GetStatus(uint statusID, IGameObject? obj, ulong? sourceID)
+		internal StatusInfo? GetStatus(uint statusID, IGameObject obj, ulong? sourceID)
 		{
 			(uint statusID, ulong? GameObjectId, ulong? sourceID) key = (statusID, obj?.GameObjectId, sourceID);
 			if (statusCache.TryGetValue(key, out StatusInfo? found))
@@ -72,7 +56,7 @@ namespace Avarice.Data
 			return statusCache[key] = null;
 		}
 
-		internal unsafe CooldownData GetCooldown(uint actionID)
+		internal CooldownData GetCooldown(uint actionID)
 		{
 			if (cooldownCache.TryGetValue(actionID, out CooldownData found))
 			{
@@ -89,20 +73,7 @@ namespace Avarice.Data
 
 		internal static ComboCache ComboCacheInstance { get; set; } = null!;
 
-		internal static unsafe int GetResourceCost(uint actionID)
-		{
-			ActionManager* actionManager = ActionManager.Instance();
-			if (actionManager == null)
-			{
-				return 0;
-			}
-
-			int cost = ActionManager.GetActionCost(ActionType.Action, actionID, 0, 0, 0, 0);
-
-			return cost;
-		}
-
-		private unsafe void Framework_Update(IFramework framework)
+		private void Framework_Update(IFramework framework)
 		{
 			statusCache.Clear();
 		}

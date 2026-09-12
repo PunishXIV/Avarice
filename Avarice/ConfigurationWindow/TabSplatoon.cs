@@ -1,9 +1,4 @@
 ﻿using Dalamud.Interface.Components;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Avarice.ConfigurationWindow
 {
@@ -11,14 +6,14 @@ namespace Avarice.ConfigurationWindow
     {
         internal static void Draw()
         {
-            if(ImGui.Checkbox("Enable Splatoon IPC", ref P.config.SplatoonUnsafePixel))
+            if(ImGui.Checkbox("Change colour in danger zones", ref P.config.SplatoonUnsafePixel))
             {
                 WriteRequest();
             }
-            ImGuiComponents.HelpMarker("Enables changing the colour of your Player Damage Pixel based on if your position is determined to be within the bounds of a preset configured as \"dangerous\".");
-            ImGui.ColorEdit4("Danger Pixel Colour", ref P.config.SplatoonPixelCol, ImGuiColorEditFlags.NoInputs);
-            ImGuiComponents.HelpMarker("The colour your Player Damage Pixel will change to if you are standing in a configured danger zone. You must have the Player Damage Pixel feature enabled for this to do anything.");
-            ImGuiEx.TextWrapped($"This feature will probably not function for any pre-6.5 presets as it specifically requires the preset author to apply the \"Dangerous\" attribute to the preset metadata for Avarice to read it. Additionally, you must enable this feature in Splatoon in General settings.");
+            ImGuiComponents.HelpMarker("Turns the player damage pixel a warning colour when Splatoon marks your position as dangerous. Needs the player damage pixel on, and Splatoon must expose danger zones.");
+            ImGui.ColorEdit4("Danger colour", ref P.config.SplatoonPixelCol, ImGuiColorEditFlags.NoInputs);
+            ImGuiComponents.HelpMarker("Colour used while you are standing in a Splatoon danger zone.");
+            ImGuiEx.TextWrapped("Works on presets that mark themselves as dangerous. Enable the matching option in Splatoon's general settings. Older presets from before 6.5 usually do not set this.");
         }
 
         internal static void WriteRequest()

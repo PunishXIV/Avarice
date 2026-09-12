@@ -38,5 +38,14 @@
             {ActionID.HuntersCoil, EnemyPositional.Flank },
             {ActionID.SwiftskinsCoil, EnemyPositional.Rear },
         };
+
+        internal static bool TryGetPositional(uint actionId, out EnemyPositional positional)
+        {
+            positional = EnemyPositional.None;
+            if (actionId == 0)
+                return false;
+            return ActionPositional.TryGetValue((ActionID)actionId, out positional) &&
+                   positional is EnemyPositional.Rear or EnemyPositional.Flank;
+        }
     }
 }

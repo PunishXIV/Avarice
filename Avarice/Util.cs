@@ -1,16 +1,13 @@
-using Avarice.Data;
-using Avarice.StaticData;
-using Dalamud.Game.ClientState.JobGauge.Enums;
-using Dalamud.Game.ClientState.JobGauge.Types;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
-using PunishLib.ImGuiMethods;
-using System.IO;
 
 namespace Avarice;
 
-internal static unsafe class Util
+internal static class Util
 {
 	internal static Vector4 GetParsedColor(int percent)
 	{
@@ -104,13 +101,14 @@ internal static unsafe class Util
 		return false;
 	}
 
-	internal static HashSet<uint> LoadStaticAutoDetectRadiusData()
+	internal static async Task<HashSet<uint>> LoadStaticAutoDetectRadiusDataAsync(CancellationToken cancellationToken)
 	{
 		HashSet<uint> ret = new();
 		try
 		{
 			string path = Path.Combine(Svc.PluginInterface.AssemblyLocation.DirectoryName, "res", "AutoDetectTankRadius.csv");
-			foreach (string x in File.ReadAllText(path).Split("\n", StringSplitOptions.TrimEntries))
+			var text = await File.ReadAllTextAsync(path, cancellationToken).ConfigureAwait(false);
+			foreach (string x in text.Split("\n", StringSplitOptions.TrimEntries))
 			{
 				if (x != "" && uint.TryParse(x, out uint res))
 				{
@@ -123,13 +121,6 @@ internal static unsafe class Util
 			e.LogDebug();
 		}
 		return ret;
-	}
-
-	internal static void DrawStretched(this Drawing.InfoBox box)
-	{
-		_ = ImGuiGroup.BeginGroupBox(box.Label);
-		box.ContentsAction();
-		ImGuiGroup.EndGroupBox();
 	}
 
 	internal static (int min, int max) GetAngleRangeForDirection(CardinalDirection d)
@@ -235,170 +226,5 @@ internal static unsafe class Util
 	internal static bool IsPositionalJob()
 	{
 		return Svc.Objects.LocalPlayer?.ClassJob.RowId.EqualsAny(PositionalJobs) == true;
-	}
-
-	private static MNKGauge MNKGauge
-	{
-		get
-		{
-			return Svc.Gauges.Get<MNKGauge>();
-		}
-	}
-
-	private static DRGGauge DRGGauge
-	{
-		get
-		{
-			return Svc.Gauges.Get<DRGGauge>();
-		}
-	}
-
-	private static NINGauge NINGauge
-	{
-		get
-		{
-			return Svc.Gauges.Get<NINGauge>();
-		}
-	}
-
-	private static SAMGauge SAMGauge
-	{
-		get
-		{
-			return Svc.Gauges.Get<SAMGauge>();
-		}
-	}
-
-	private static RPRGauge RPRGauge
-	{
-		get
-		{
-			return Svc.Gauges.Get<RPRGauge>();
-		}
-	}
-
-	private static VPRGauge VPRGauge
-	{
-		get
-		{
-			return Svc.Gauges.Get<VPRGauge>();
-		}
-	}
-
-	public static bool IsMNKAnticipatedRear()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Demolish).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return levelcheck && MNKGauge.CoeurlFury == 0
-			&& (move.EqualsAny((uint)ActionID.TwinSnakes) || move.EqualsAny((uint)ActionID.TrueStrike) || move.EqualsAny((uint)ActionID.RisingRaptor));
-	}
-	public static bool IsMNKAnticipatedFlank()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.SnapPunch).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return levelcheck && MNKGauge.CoeurlFury > 0
-			&& (move.EqualsAny((uint)ActionID.TwinSnakes) || move.EqualsAny((uint)ActionID.TrueStrike) || move.EqualsAny((uint)ActionID.RisingRaptor));
-	}
-
-	public static bool IsDRGAnticipatedRear()
-	{
-		bool levelcheckChaos = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ChaosThrust).ClassJobLevel;
-		bool levelcheckWheeling = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.WheelingThrust).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return levelcheckChaos
-			&& (move.EqualsAny((uint)ActionID.Disembowel) || move.EqualsAny((uint)ActionID.SpiralBlow)
-			|| (levelcheckWheeling && (move.EqualsAny((uint)ActionID.ChaosThrust) || move.EqualsAny((uint)ActionID.ChaoticSpring))));
-	}
-	public static bool IsDRGAnticipatedFlank()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.FangandClaw).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return levelcheck
-			&& (move.EqualsAny((uint)ActionID.FullThrust) || move.EqualsAny((uint)ActionID.HeavensThrust));
-	}
-
-	public static bool IsNINAnticipatedRear()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.AeolianEdge).ClassJobLevel;
-		bool kunailevelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.KunaisBane).ClassJobLevel;
-		bool buffcheck = ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null ||
-		                 ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null;
-		
-		uint move = P.memory.LastComboMove;
-		return levelcheck && move.EqualsAny((uint)ActionID.GustSlash) &&
-		    (P.currentProfile.Kazematoi && NINGauge.Kazematoi > 0 || //All valid positional option
-		     NINGauge.Kazematoi > 3 || //Spend Before
-		     NINGauge.Kazematoi > 0 && buffcheck || //Spend in buff window
-		     P.currentProfile.TrickAttack && !ComboCache.ComboCacheInstance.GetCooldown((uint)ActionID.TrickAttack).IsCooldown && !kunailevelcheck && (uint)Player.Job == 30); //Trick Attack Option
-	}
-	public static bool IsNINAnticipatedFlank()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.ArmorCrush).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		bool buffcheck = ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.TrickAttackDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null ||
-		                 ComboCache.ComboCacheInstance.GetStatus((uint)ActionID.KunaisBaneDebuff, Svc.Targets.Target, Svc.Objects.LocalPlayer.GameObjectId) != null;
-		
-		return levelcheck && move.EqualsAny((uint)ActionID.GustSlash) && 
-			(P.currentProfile.Kazematoi && NINGauge.Kazematoi < 4 || //All valid positional option
-			 NINGauge.Kazematoi == 0 || //Generate charges if none even if in buff window
-			 NINGauge.Kazematoi <= 3 && !buffcheck); //Only generate charges if not in buff window
-	}
-
-	public static bool IsSAMAnticipatedRear()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gekko).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return levelcheck && (move.EqualsAny((uint)ActionID.Jinpu)
-			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.Getsu) && SAMGauge.Sen.HasFlag(Sen.Ka)
-			&& !P.currentProfile.Meikyo));
-	}
-	public static bool IsSAMAnticipatedFlank()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Kasha).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return levelcheck && (move.EqualsAny((uint)ActionID.Shifu)
-			|| (Player.Status.Any(x => x.StatusId.EqualsAny(1233u)) && !SAMGauge.Sen.HasFlag(Sen.Ka)
-			&& !P.currentProfile.Meikyo));
-	}
-
-	public static bool IsRPRAnticipatedRear()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gallows).ClassJobLevel;
-		return levelcheck && Player.Status.Any(x => x.StatusId.EqualsAny(2587u, 3858u))
-			&& (Player.Status.Any(x => x.StatusId.EqualsAny(2589u))
-			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(2588u)) && !Player.Status.Any(x => x.StatusId.EqualsAny(2589u)) && P.currentProfile.Reaper == 0));
-	}
-	public static bool IsRPRAnticipatedFlank()
-	{
-		bool levelcheck = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Gibbet).ClassJobLevel;
-		return levelcheck && Player.Status.Any(x => x.StatusId.EqualsAny(2587u, 3858u))
-			&& (Player.Status.Any(x => x.StatusId.EqualsAny(2588u))
-			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(2588u)) && !Player.Status.Any(x => x.StatusId.EqualsAny(2589u)) && P.currentProfile.Reaper == 1));
-	}
-
-	public static bool IsVPRAnticipatedRear()
-	{
-		bool levelcheckMain = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.HindstingStrike).ClassJobLevel;
-		bool levelcheckVice = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
-			&& (Player.Status.Any(x => x.StatusId.EqualsAny(3647u, 3648u))
-			|| (!Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u, 3647u, 3648u)))))
-			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder
-			&& CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.Swiftscaled) <=
-			   CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.HuntersInstinct))
-			|| (ActionWatching.LastWeaponskill == (uint)ActionID.HuntersCoil && VPRGauge.DreadCombo != 0)));
-	}
-	public static bool IsVPRAnticipatedFlank()
-	{
-		bool levelcheckMain = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.FlankstingStrike).ClassJobLevel;
-		bool levelcheckVice = Svc.Objects.LocalPlayer.Level >= Svc.Data.GetExcelSheet<Lumina.Excel.Sheets.Action>().GetRow((uint)ActionID.Vicewinder).ClassJobLevel;
-		uint move = P.memory.LastComboMove;
-		return (levelcheckMain && (move.EqualsAny((uint)ActionID.HuntersSting) || move.EqualsAny((uint)ActionID.SwiftskinsSting))
-			&& Player.Status.Any(x => x.StatusId.EqualsAny(3645u, 3646u)))
-			|| (levelcheckVice && ((ActionWatching.LastWeaponskill == (uint)ActionID.Vicewinder
-			&& CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.HuntersInstinct) <
-			   CustomComboFunctions.GetBuffRemainingTime((ushort)ActionID.Swiftscaled))
-			|| (ActionWatching.LastWeaponskill == (uint)ActionID.SwiftskinsCoil && VPRGauge.DreadCombo != 0)));
 	}
 }

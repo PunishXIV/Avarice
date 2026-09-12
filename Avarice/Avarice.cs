@@ -6,24 +6,24 @@ using Dalamud.Game.Text.SeStringHandling;
 using ECommons.EzSharedDataManager;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
-using ECommons.Schedulers;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
 using Pictomancy;
 using PunishLib;
+using System.Threading;
+using SysTask = System.Threading.Tasks.Task;
+using SysValueTask = System.Threading.Tasks.ValueTask;
 
 #pragma warning disable CS0649
 
 namespace Avarice;
 
-public unsafe class Avarice : IDalamudPlugin
+public class Avarice : IAsyncDalamudPlugin
 {
-    public string Name
-    {
-        get
-        {
-            return "Avarice";
-        }
-    }
+    public string Name => "Avarice";
+
+    private readonly IDalamudPluginInterface pluginInterface;
+    private bool loaded;
+    private bool servicesInited;
 
     internal Config config;
     internal Profile currentProfile;
@@ -34,77 +34,84 @@ public unsafe class Avarice : IDalamudPlugin
     internal PositionalDebugWindow positionalDebugWindow;
     internal Memory memory;
 
-    internal static uint[] PositionalJobs = new uint[] { 2, 4, 29, 30, 20, 34, 39, 22 };
+    internal static uint[] PositionalJobs = new uint[] { 2, 4, 29, 30, 20, 34, 39, 22, 41 };
     internal uint Job = 0;
     internal HashSet<uint> StaticAutoDetectRadiusData;
     internal PositionalManager PositionalManager;
     internal uint[] PositionalStatus;
     internal RotationSolverWatcher RotationSolverWatcher;
+    internal WrathComboWatcher WrathComboWatcher;
 
     public Avarice(IDalamudPluginInterface pi)
     {
+        pluginInterface = pi;
+    }
+
+    public async SysTask LoadAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
         P = this;
-        ECommonsMain.Init(pi, this, Module.DalamudReflector, Module.ObjectFunctions);
-        PunishLibMain.Init(pi, Svc.PluginInterface.InternalName, PunishOption.DefaultKoFi);
-        _ = new TickScheduler(delegate
+        ECommonsMain.Init(pluginInterface, this, Module.DalamudReflector, Module.ObjectFunctions);
+        PunishLibMain.Init(pluginInterface, Svc.PluginInterface.InternalName, PunishOption.DefaultKoFi);
+        servicesInited = true;
+
+        var configTask = SysTask.Run(() => Svc.PluginInterface.GetPluginConfig() as Config ?? new(), cancellationToken);
+        var radiusTask = Util.LoadStaticAutoDetectRadiusDataAsync(cancellationToken);
+
+        config = await configTask.ConfigureAwait(false);
+        StaticAutoDetectRadiusData = await radiusTask.ConfigureAwait(false);
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (config.Profiles.Count == 0)
+            config.Profiles.Add(new() { Name = "Default", IsDefault = true });
+        foreach (var pr in config.Profiles)
+            if (pr.IsDefault && pr.Name == "Default profile") pr.Name = "Default";
+        currentProfile = config.Profiles.FirstOr0(x => x.IsDefault);
+
+        PositionalStatus = EzSharedData.GetOrCreate<uint[]>("Avarice.PositionalStatus", [0, 0]);
+        RotationSolverWatcher = new();
+        WrathComboWatcher = new();
+        memory = new();
+        windowSystem = new();
+        configWindow = new();
+        windowSystem.AddWindow(configWindow);
+        canvas = new();
+        windowSystem.AddWindow(canvas);
+        positionalDebugWindow = new();
+        windowSystem.AddWindow(positionalDebugWindow);
+        Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
+        Svc.PluginInterface.UiBuilder.OpenConfigUi += OpenConfigWindow;
+        Svc.PluginInterface.UiBuilder.OpenMainUi += OpenConfigWindow;
+        Svc.Condition.ConditionChange += OnConditionChange;
+        _ = Svc.Commands.AddHandler("/avarice", new CommandInfo((_, args) =>
         {
-            PositionalStatus = EzSharedData.GetOrCreate<uint[]>("Avarice.PositionalStatus", [0, 0]);
-            config = Svc.PluginInterface.GetPluginConfig() as Config ?? new();
-            if (config.Profiles.Count == 0)
+            if (args == "debug")
             {
-                config.Profiles.Add(new() { Name = "Default", IsDefault = true });
+                P.currentProfile.Debug = !P.currentProfile.Debug;
+                positionalDebugWindow.IsOpen = P.currentProfile.Debug;
+                Svc.Chat.Print($"Debug mode {(P.currentProfile.Debug ? "enabled" : "disabled")}");
             }
-            foreach (var pr in config.Profiles)
-                if (pr.IsDefault && pr.Name == "Default profile") pr.Name = "Default";
-            currentProfile = config.Profiles.FirstOr0(x => x.IsDefault);
-            //Svc.GameNetwork.NetworkMessage += OnNetworkMessage;
-            RotationSolverWatcher = new();
-            memory = new();
-            windowSystem = new();
-            configWindow = new();
-            windowSystem.AddWindow(configWindow);
-            canvas = new();
-            windowSystem.AddWindow(canvas);
-            positionalDebugWindow = new();
-            windowSystem.AddWindow(positionalDebugWindow);
-            Svc.PluginInterface.UiBuilder.Draw += windowSystem.Draw;
-            Svc.PluginInterface.UiBuilder.OpenConfigUi += delegate { configWindow.IsOpen = true; };
-            Svc.Condition.ConditionChange += OnConditionChange;
-            _ = Svc.Commands.AddHandler("/avarice", new CommandInfo((string cmd, string args) =>
+            else if (args == "draw")
             {
-                if (args == "debug")
-                {
-                    P.currentProfile.Debug = !P.currentProfile.Debug;
-                    positionalDebugWindow.IsOpen = P.currentProfile.Debug;
-                    Svc.Chat.Print($"Debug mode {(P.currentProfile.Debug ? "enabled" : "disabled")}");
-                }
-                else if (args == "draw") // Added new command for toggling drawing
-                {
-                    P.currentProfile.DrawingEnabled = !P.currentProfile.DrawingEnabled;
-                    Svc.Chat.Print($"Drawing {(P.currentProfile.DrawingEnabled ? "enabled" : "disabled")}");
-                }
-                else
-                {
-                    configWindow.IsOpen = !configWindow.IsOpen;
-                }
-            })
-            { HelpMessage = "Toggle configuration window. Use '/avarice draw' to toggle drawing, '/avarice debug' for debug mode." });
-            //LoadOpcode.Start();
-            LuminaSheets.Init();
-            Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
-            Svc.Framework.Update += Tick;
-            StaticAutoDetectRadiusData = Util.LoadStaticAutoDetectRadiusData();
-            if (config.SplatoonUnsafePixel)
-            {
-                TabSplatoon.WriteRequest();
+                P.currentProfile.DrawingEnabled = !P.currentProfile.DrawingEnabled;
+                Svc.Chat.Print($"Drawing {(P.currentProfile.DrawingEnabled ? "enabled" : "disabled")}");
             }
+            else
+            {
+                configWindow.IsOpen = !configWindow.IsOpen;
+            }
+        })
+        { HelpMessage = "Toggle configuration window. Use '/avarice draw' to toggle drawing, '/avarice debug' for debug mode." });
+        LuminaSheets.Init();
+        Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").RegisterFunc(GetCardinalDirectionForObject);
+        Svc.Framework.Update += Tick;
+        if (config.SplatoonUnsafePixel)
+            TabSplatoon.WriteRequest();
 
-            ActionWatching.Enable();
-            ComboCache.ComboCacheInstance = new ComboCache();
-
-            PositionalManager = new();
-            PctService.Initialize(Svc.PluginInterface);
-        });
+        ComboCache.ComboCacheInstance = new ComboCache();
+        PositionalManager = new();
+        PctService.Initialize(Svc.PluginInterface);
+        loaded = true;
     }
 
     private CardinalDirection GetCardinalDirectionForObject(IntPtr arg)
@@ -197,6 +204,12 @@ public unsafe class Avarice : IDalamudPlugin
         }
     }
 
+    private void OpenConfigWindow()
+    {
+        if (configWindow != null)
+            configWindow.IsOpen = true;
+    }
+
     internal Profile GetProfileForJob(uint job)
     {
         if (P.config.JobProfiles.TryGetValue(job, out var guid))
@@ -209,34 +222,45 @@ public unsafe class Avarice : IDalamudPlugin
         return null;
     }
 
-    public void Dispose()
+    public SysValueTask DisposeAsync()
     {
-        Safe(() => Svc.PluginInterface.SavePluginConfig(config));
-        //Svc.GameNetwork.NetworkMessage -= OnNetworkMessage;
-        Svc.PluginInterface.UiBuilder.Draw -= windowSystem.Draw;
-        _ = Svc.Commands.RemoveHandler("/avarice");
-        Svc.Condition.ConditionChange -= OnConditionChange;
-        Svc.Framework.Update -= Tick;
-        Safe(() =>
+        if (loaded)
         {
-            Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").UnregisterFunc();
-        });
-        memory.Dispose();
-        ActionWatching.Dispose();
-        ComboCache.ComboCacheInstance.Dispose();
-        VisualFeedbackManager.Dispose();
-        PctService.Dispose();
-        RotationSolverWatcher.Dispose();
-        PunishLibMain.Dispose();
-        ECommonsMain.Dispose();
+            Safe(() => Svc.PluginInterface.SavePluginConfig(config));
+            Svc.PluginInterface.UiBuilder.Draw -= windowSystem.Draw;
+            Svc.PluginInterface.UiBuilder.OpenConfigUi -= OpenConfigWindow;
+            Svc.PluginInterface.UiBuilder.OpenMainUi -= OpenConfigWindow;
+            _ = Svc.Commands.RemoveHandler("/avarice");
+            Svc.Condition.ConditionChange -= OnConditionChange;
+            Svc.Framework.Update -= Tick;
+            Safe(() =>
+            {
+                Svc.PluginInterface.GetIpcProvider<IntPtr, CardinalDirection>("Avarice.CardinalDirection").UnregisterFunc();
+            });
+            memory?.Dispose();
+            ComboCache.ComboCacheInstance?.Dispose();
+            WrathComboWatcher?.Dispose();
+            VisualFeedbackManager.Dispose();
+            PctService.Dispose();
+            RotationSolverWatcher?.Dispose();
+        }
+        if (servicesInited)
+        {
+            PunishLibMain.Dispose();
+            ECommonsMain.Dispose();
+        }
         P = null;
+        return SysValueTask.CompletedTask;
     }
 
     private void Tick(object framework)
     {
-        if (Framework.Instance()->FrameCounter - PositionalStatus[0] > 1)
+        WrathComboWatcher?.Tick();
+
+        unsafe
         {
-            PositionalStatus[1] = 0;
+            if (Framework.Instance()->FrameCounter - PositionalStatus[0] > 1)
+                PositionalStatus[1] = 0;
         }
         if (Svc.Objects.LocalPlayer != null)
         {

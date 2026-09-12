@@ -3,7 +3,7 @@ using ECommons.GameFunctions;
 using ECommons.GameHelpers;
 using ECommons.MathHelpers;
 using FFXIVClientStructs.FFXIV.Client.System.Framework;
-using Avarice.StaticData;
+using Avarice.Positional;
 using static Avarice.Drawing.DrawFunctions;
 using static Avarice.Util;
 
@@ -142,32 +142,10 @@ internal static unsafe class Functions
             P.PositionalStatus[1] = 2;
         }
 
-        if (P.currentProfile.UseRotationSolver && P.RotationSolverWatcher.IPCAvailable) 
-        {
-            switch (P.RotationSolverWatcher.DesiredPositional) 
-            {
-                case EnemyPositional.Flank:
-                    DrawSides();
-                    return;
-                case EnemyPositional.Rear:
-                    DrawRear();
-                    return;
-                case EnemyPositional.None:
-                case EnemyPositional.Front:
-                default: return;
-            }
-        }
-        
-        if(IsMNKAnticipatedRear() || IsDRGAnticipatedRear() || IsNINAnticipatedRear()
-          || IsSAMAnticipatedRear() || IsRPRAnticipatedRear() || IsVPRAnticipatedRear())
-        {
+        var hint = Anticipation.Resolve(bnpc);
+        if (hint.Segments.HasFlag(AnticipatedSegments.Rear))
             DrawRear();
-        }
-
-        if(IsMNKAnticipatedFlank() || IsDRGAnticipatedFlank() || IsNINAnticipatedFlank()
-          || IsSAMAnticipatedFlank() || IsRPRAnticipatedFlank() || IsVPRAnticipatedFlank())
-        {
+        if (hint.Segments.HasFlag(AnticipatedSegments.Flank))
             DrawSides();
-        }
     }
 }

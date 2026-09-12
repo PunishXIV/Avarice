@@ -11,7 +11,6 @@ namespace Avarice
     {
         internal static HashSet<uint> NonPositionalUnits = new HashSet<uint>();
         private static Dictionary<uint, bool> PositionalStatusCache = new Dictionary<uint, bool>();
-        internal static readonly uint[] TrueNorthEffects = new uint[] { 1250 };
 
         internal static void Init()
         {
@@ -72,24 +71,6 @@ namespace Avarice
 
             PositionalStatusCache[dataId] = result;
             return result;
-        }
-
-        public static bool HasTrueNorthEffect()
-        {
-            if (Svc.Objects.LocalPlayer == null)
-                return false;
-
-            foreach (var status in Svc.Objects.LocalPlayer.StatusList)
-            {
-                if (TrueNorthEffects.Contains(status.StatusId))
-                    return true;
-            }
-            return false;
-        }
-
-        public static void ClearCaches()
-        {
-            PositionalStatusCache.Clear();
         }
     }
 }
